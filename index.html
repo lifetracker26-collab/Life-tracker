@@ -362,7 +362,7 @@ function getDashboard(){return `
     <div class="tni" onclick="SV('sc',this)">🌎 Social</div>
     <div class="tni" onclick="SV('ex',this)">📖 Expertos</div>
     <div class="tni" onclick="SV('hl',this)">💪 Salud</div>
-    <div class="tni" onclick="SV('dm',this)">💬 DMs <span class="nbg">3</span></div>
+    <div class="tni" onclick="SV('dm',this)">💬 DMs <span class="nbg">3</span></div><div class="tni" onclick="SV('pf',this)">👤 Perfil</div>
   </div>
   <div class="tnr_">
     <button class="mc_" onclick="OM('mmc')">🎙️ Comando</button>
@@ -389,7 +389,7 @@ function getDashboard(){return `
   <div class="lsi" onclick="SV('dm',null);SA(this)"><span class="lsic">💬</span>Mensajes<span class="lsb2">3</span></div>
   <div class="lsi" onclick="T('👥 Grupos: Mujeres que se mueven, WFH Warriors','')"><span class="lsic">👥</span>Mis grupos</div>
   <div class="lsi" onclick="T('🏆 Estás en el #4 · Solo 340 pts al podio','')"><span class="lsic">🏆</span>Wall of Fame</div>
-  <div class="lss">Cuenta</div>
+  <div class="lsi" onclick="SV('pf',null);SA(this)"><span class="lsic">👤</span>Mi Perfil</div><div class="lss">Cuenta</div>
   <div class="lsi" onclick="T('⚙️ Configuración','')"><span class="lsic">⚙️</span>Configuración</div>
   <div class="lsi" onclick="T('🎨 Temas: Celeste, Oscuro, Púrpura, Coral','')"><span class="lsic">🎨</span>Personalizar</div>
   <div class="uc_"><div class="ucc">
@@ -493,6 +493,93 @@ function getDashboard(){return `
   <div class="dm" onclick="T('💬 Chat con Carlos','')"><div class="dmav" style="background:linear-gradient(135deg,#2EAF7D,#22C55E)"><div class="dmd" style="background:#22C55E"></div>C</div><div class="dmi"><div class="dmn">Carlos M.</div><div class="dmp">Te comparto la receta 👍</div></div><div class="dmu">1</div></div>
   <div class="dm" onclick="T('💬 Chat con Luisa','')"><div class="dmav" style="background:linear-gradient(135deg,#7C3AED,#A855F7)"><div class="dmd" style="background:#94A3B8"></div>L</div><div class="dmi"><div class="dmn">Luisa G.</div><div class="dmp">¡Qué racha tan increíble! 🔥</div></div><div style="font-size:.54rem;color:#7A9AB8">1d</div></div>
   <div class="dm" style="border:1.5px dashed rgba(46,158,224,0.2);background:transparent" onclick="T('🔍 Buscar por @ de Instagram','')"><div class="dmav" style="background:linear-gradient(135deg,#7EC8F0,#2E9EE0)">＋</div><div class="dmi"><div class="dmn" style="color:#2E9EE0">Nuevo mensaje</div><div class="dmp">Busca por @usuario de Instagram</div></div></div>
+</div>
+
+<div class="vw" id="v-pf">
+  <div class="pt">👤 Mi Perfil</div>
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(46,158,224,0.12);overflow:hidden;box-shadow:0 4px 20px rgba(46,158,224,0.06)">
+    <div style="height:110px;background:linear-gradient(135deg,#7C3AED,#D946EF,#F59E0B);position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.14) 1px,transparent 1px);background-size:14px 14px"></div>
+      <div style="position:absolute;bottom:8px;left:12px;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);border-radius:7px;padding:3px 8px;display:flex;align-items:center;gap:4px"><span style="font-size:.9rem">🎵</span><span style="font-size:.5rem;color:#fff;font-weight:600">Flowers · Miley Cyrus</span></div>
+      <button onclick="T('✏️ Editar portada','s')" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.28);color:#fff;border:none;font-size:.5rem;padding:3px 7px;border-radius:5px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif">✏️ Editar portada</button>
+    </div>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px;margin-top:-30px;margin-bottom:10px">
+      <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#D946EF);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;font-weight:700;border:3px solid #fff;box-shadow:0 4px 12px rgba(124,58,237,.3)">M</div>
+      <button onclick="T('✏️ Editar perfil','s')" style="background:#EAF5FF;border:1px solid #A8D4F0;color:#1470A8;font-size:.6rem;font-weight:600;padding:5px 10px;border-radius:8px;cursor:pointer;font-family:DM Sans,sans-serif">✏️ Editar perfil</button>
+    </div>
+    <div style="padding:0 16px 12px;border-bottom:1px solid rgba(46,158,224,0.12)">
+      <div style="font-family:Playfair Display,serif;font-size:1.1rem;font-weight:700;color:#0D2137">María González</div>
+      <div style="font-size:.6rem;color:#7A9AB8;margin-bottom:4px">@maria_g · Miami 🌴</div>
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px"><span style="font-size:.56rem;color:#7A9AB8">Estado:</span><span style="background:#EAF5FF;color:#1470A8;font-size:.56rem;font-weight:700;padding:2px 7px;border-radius:5px">💪 Motivada hoy</span></div>
+      <div style="font-size:.64rem;color:#3A5570;line-height:1.4;margin-bottom:6px">Mamá 👶 · Work from home 💻 · Construyendo mejores hábitos un día a la vez ✨</div>
+      <div style="display:flex;gap:4px;align-items:center">
+        <span style="font-size:.54rem;color:#7A9AB8">🎨 Tema:</span>
+        <div onclick="T('🎨 Tema: Celeste seleccionado','s')" style="width:13px;height:13px;border-radius:50%;background:#7EC8F0;cursor:pointer;border:2px solid #0D2137"></div>
+        <div onclick="T('🎨 Tema: Púrpura seleccionado','s')" style="width:13px;height:13px;border-radius:50%;background:#7C3AED;cursor:pointer;border:1.5px solid transparent"></div>
+        <div onclick="T('🎨 Tema: Coral seleccionado','s')" style="width:13px;height:13px;border-radius:50%;background:#E8735A;cursor:pointer;border:1.5px solid transparent"></div>
+        <div onclick="T('🎨 Tema: Verde seleccionado','s')" style="width:13px;height:13px;border-radius:50%;background:#2EAF7D;cursor:pointer;border:1.5px solid transparent"></div>
+        <div onclick="T('🎨 Tema: Oscuro seleccionado','s')" style="width:13px;height:13px;border-radius:50%;background:#1A1A2E;cursor:pointer;border:1.5px solid transparent"></div>
+      </div>
+    </div>
+    <div style="display:flex;padding:10px 16px;border-bottom:1px solid rgba(46,158,224,0.12)">
+      <div style="flex:1;text-align:center"><div style="font-family:Playfair Display,serif;font-size:1rem;font-weight:700;color:#0D2137">248</div><div style="font-size:.5rem;color:#7A9AB8">Seguidores</div></div>
+      <div style="width:1px;background:rgba(46,158,224,0.12)"></div>
+      <div style="flex:1;text-align:center"><div style="font-family:Playfair Display,serif;font-size:1rem;font-weight:700;color:#0D2137">183</div><div style="font-size:.5rem;color:#7A9AB8">Siguiendo</div></div>
+      <div style="width:1px;background:rgba(46,158,224,0.12)"></div>
+      <div style="flex:1;text-align:center"><div style="font-family:Playfair Display,serif;font-size:1rem;font-weight:700;color:#0D2137">12🔥</div><div style="font-size:.5rem;color:#7A9AB8">Racha</div></div>
+      <div style="width:1px;background:rgba(46,158,224,0.12)"></div>
+      <div style="flex:1;text-align:center"><div style="font-family:Playfair Display,serif;font-size:1rem;font-weight:700;color:#0D2137">42</div><div style="font-size:.5rem;color:#7A9AB8">Hábitos</div></div>
+    </div>
+    <div style="margin:10px 16px;background:#FEF8E7;border-radius:13px;padding:10px 12px;border:1px solid rgba(240,180,41,.22);display:flex;align-items:center;gap:8px">
+      <span style="font-size:1.1rem">🪙</span>
+      <div style="flex:1"><div style="font-size:.62rem;color:#3A5570">Puntos totales: <strong style="color:#2E9EE0">12,400</strong></div><div style="font-size:.82rem;font-weight:700;color:#F0B429">1,240 Life Coins</div></div>
+      <button onclick="T('🪙 Usando Life Coins...','s')" style="background:#F0B429;color:#fff;border:none;font-size:.56rem;font-weight:700;padding:4px 9px;border-radius:7px;cursor:pointer;font-family:DM Sans,sans-serif">Usar</button>
+    </div>
+    <div style="padding:10px 16px 12px;border-bottom:1px solid rgba(46,158,224,0.12)">
+      <div style="font-size:.58rem;font-weight:700;color:#7A9AB8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🏅 Logros</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div onclick="T('🔥 Logro: Racha de 10 días','s')" style="background:#fff;border-radius:9px;padding:6px 8px;text-align:center;border:1px solid rgba(46,158,224,0.12);cursor:pointer"><div style="font-size:.9rem">🔥</div><div style="font-size:.44rem;color:#7A9AB8">Racha 10</div></div>
+        <div onclick="T('💧 Logro: Hidratación perfecta','s')" style="background:#fff;border-radius:9px;padding:6px 8px;text-align:center;border:1px solid rgba(46,158,224,0.12);cursor:pointer"><div style="font-size:.9rem">💧</div><div style="font-size:.44rem;color:#7A9AB8">Hidratada</div></div>
+        <div onclick="T('🏆 Logro: Top 10 ranking','s')" style="background:#fff;border-radius:9px;padding:6px 8px;text-align:center;border:1px solid rgba(46,158,224,0.12);cursor:pointer"><div style="font-size:.9rem">🏆</div><div style="font-size:.44rem;color:#7A9AB8">Top 10</div></div>
+        <div onclick="T('🌅 Logro: Madrugadora','s')" style="background:#fff;border-radius:9px;padding:6px 8px;text-align:center;border:1px solid rgba(46,158,224,0.12);cursor:pointer"><div style="font-size:.9rem">🌅</div><div style="font-size:.44rem;color:#7A9AB8">Madrugadora</div></div>
+        <div onclick="T('⭐ Logro: 30 días seguidos','s')" style="background:#fff;border-radius:9px;padding:6px 8px;text-align:center;border:1px solid rgba(46,158,224,0.12);cursor:pointer"><div style="font-size:.9rem">⭐</div><div style="font-size:.44rem;color:#7A9AB8">30 días</div></div>
+      </div>
+    </div>
+    <div style="padding:10px 16px 14px;border-bottom:1px solid rgba(46,158,224,0.12)">
+      <div style="font-size:.58rem;font-weight:700;color:#7A9AB8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">📱 Mis redes sociales</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div onclick="T('↗ instagram.com/maria_g','s')" style="background:#fff;border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:10px;border:1px solid rgba(46,158,224,0.12);cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);display:flex;align-items:center;justify-content:center;font-size:.9rem">📸</div>
+          <div style="flex:1"><div style="font-size:.7rem;font-weight:600;color:#0D2137">Instagram</div><div style="font-size:.58rem;color:#7A9AB8">@maria_g · 2,840 seguidores</div></div>
+          <span style="font-size:.7rem;color:#7A9AB8">↗</span>
+        </div>
+        <div onclick="T('↗ tiktok.com/@maria_g','s')" style="background:#fff;border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:10px;border:1px solid rgba(46,158,224,0.12);cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:8px;background:#000;display:flex;align-items:center;justify-content:center;font-size:.9rem">🎵</div>
+          <div style="flex:1"><div style="font-size:.7rem;font-weight:600;color:#0D2137">TikTok</div><div style="font-size:.58rem;color:#7A9AB8">@maria_g · 1,200 seguidores</div></div>
+          <span style="font-size:.7rem;color:#7A9AB8">↗</span>
+        </div>
+        <div onclick="T('↗ x.com/maria_g','s')" style="background:#fff;border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:10px;border:1px solid rgba(46,158,224,0.12);cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:8px;background:#000;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;font-weight:900">𝕏</div>
+          <div style="flex:1"><div style="font-size:.7rem;font-weight:600;color:#0D2137">Twitter / X</div><div style="font-size:.58rem;color:#7A9AB8">@maria_g · 890 seguidores</div></div>
+          <span style="font-size:.7rem;color:#7A9AB8">↗</span>
+        </div>
+        <div onclick="T('↗ facebook.com/mariagonzalez','s')" style="background:#fff;border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:10px;border:1px solid rgba(46,158,224,0.12);cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:8px;background:#1877F2;display:flex;align-items:center;justify-content:center;font-size:.9rem">👤</div>
+          <div style="flex:1"><div style="font-size:.7rem;font-weight:600;color:#0D2137">Facebook</div><div style="font-size:.58rem;color:#7A9AB8">María González · 520 amigos</div></div>
+          <span style="font-size:.7rem;color:#7A9AB8">↗</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 16px 14px">
+      <div style="font-size:.58rem;font-weight:700;color:#7A9AB8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">👥 Mis amigos</div>
+      <div style="display:flex;gap:8px">
+        <div onclick="T('👤 Ana Rodríguez · @ana_fit','s')" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#E8735A,#F2A27D);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff">A</div><div style="font-size:.46rem;color:#7A9AB8">Ana R.</div></div>
+        <div onclick="T('👤 Carlos M. · @carlosfit','s')" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2EAF7D,#22C55E);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff">C</div><div style="font-size:.46rem;color:#7A9AB8">Carlos</div></div>
+        <div onclick="T('👤 Luisa G.','s')" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#A855F7);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff">L</div><div style="font-size:.46rem;color:#7A9AB8">Luisa</div></div>
+        <div onclick="T('👤 Pedro L.','s')" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff">P</div><div style="font-size:.46rem;color:#7A9AB8">Pedro</div></div>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="vw" id="v-nt">
   <div class="pt">📝 Notas y Recordatorios</div><div class="ps_">Captura todo · Libera espacio en tu mente</div>
