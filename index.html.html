@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#EAF5FF;--sky2:#D0E8F8;--sky3:#A8D4F0;
+  --blue:#2E9EE0;--blue2:#1470A8;
+  --white:#FFFFFF;--off:#F5FAFF;--paper:#FAFCFF;
+  --text:#0D2137;--tmid:#3A5570;--tlight:#7A9AB8;
+  --gold:#F0B429;--goldl:#FEF8E7;
+  --green:#2EAF7D;--greenl:#E8F8F3;
+  --pink:#E8547A;--purple:#7C3AED;
+  --border:rgba(46,158,224,0.12);--border2:rgba(46,158,224,0.2);
+  --grad:linear-gradient(135deg,#7EC8F0,#2E9EE0);
+  --grad2:linear-gradient(135deg,#2E9EE0,#1470A8);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'DM Sans',sans-serif;color:var(--text)}
+
+/* ═══════════════════════════════
+   COMING SOON PAGE
+═══════════════════════════════ */
+#coming-soon{
+  min-height:100vh;
+  background:linear-gradient(160deg,#C8E4F5 0%,#EAF5FF 50%,#D0E8F8 100%);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 20px;position:relative;overflow:hidden;
+}
+.bg-circle{position:absolute;border-radius:50%;pointer-events:none}
+.bc1{width:600px;height:600px;background:rgba(46,158,224,0.06);top:-200px;right:-200px}
+.bc2{width:400px;height:400px;background:rgba(46,158,224,0.05);bottom:-100px;left:-150px}
+.cs-card{
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(20px);
+  border-radius:28px;
+  border:1px solid rgba(46,158,224,0.15);
+  box-shadow:0 20px 60px rgba(46,158,224,0.12),0 4px 20px rgba(0,0,0,0.05);
+  padding:52px 48px;
+  max-width:580px;width:100%;
+  text-align:center;position:relative;z-index:1;
+}
+.logo-mark{
+  width:72px;height:72px;background:var(--grad2);
+  border-radius:22px;display:flex;align-items:center;
+  justify-content:center;margin:0 auto 16px;
+  box-shadow:0 8px 24px rgba(46,158,224,0.35);font-size:2rem;
+}
+.logo-text{
+  font-family:'Playfair Display',serif;
+  font-size:2.6rem;font-weight:900;
+  background:var(--grad2);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:-.5px;margin-bottom:6px;
+}
+.logo-tag{font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--tlight);margin-bottom:24px}
+.divider{width:60px;height:3px;background:var(--grad);border-radius:3px;margin:0 auto 24px}
+.headline{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--text);line-height:1.25;margin-bottom:12px}
+.headline span{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{font-size:.86rem;color:var(--tmid);line-height:1.65;max-width:420px;margin:0 auto 28px}
+.features{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
+.feat-pill{background:var(--sky);border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:.66rem;font-weight:600;color:var(--blue2);display:flex;align-items:center;gap:4px}
+.form-label{font-size:.7rem;font-weight:700;color:var(--tmid);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.form-row{display:flex;gap:8px;max-width:400px;margin:0 auto 28px}
+.email-input{flex:1;background:var(--sky);border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;font-size:.76rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.email-input:focus{border-color:var(--blue)}
+.email-input::placeholder{color:var(--tlight)}
+.notify-btn{background:var(--grad2);border:none;border-radius:11px;padding:11px 18px;color:white;font-size:.76rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap;box-shadow:0 4px 14px rgba(46,158,224,0.3)}
+.notify-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,158,224,0.4)}
+.progress-section{margin-bottom:28px}
+.progress-label{display:flex;justify-content:space-between;font-size:.63rem;font-weight:600;color:var(--tlight);margin-bottom:7px}
+.progress-bar{height:6px;background:var(--sky);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:var(--grad);border-radius:3px;transition:width 1.5s ease}
+.admin-area{border-top:1px solid var(--border);padding-top:18px;margin-top:4px}
+.admin-btn{background:transparent;border:none;font-size:.56rem;color:rgba(122,154,184,0.35);cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;letter-spacing:.5px}
+.admin-btn:hover{color:var(--tlight)}
+@media(max-width:600px){.cs-card{padding:36px 22px}.headline{font-size:1.45rem}.form-row{flex-direction:column}.notify-btn{width:100%}}
+
+/* ═══════════════════════════════
+   PASSWORD MODAL
+═══════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,33,55,.45);display:flex;align-items:center;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px);padding:20px}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:white;border-radius:22px;padding:32px 36px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(13,33,55,.18);transform:translateY(24px);transition:transform .2s;text-align:center}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-icon{font-size:2.2rem;margin-bottom:12px}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.modal-sub{font-size:.7rem;color:var(--tlight);margin-bottom:18px}
+.pwd-input{width:100%;background:var(--sky);border:1.5px solid var(--border);border-radius:11px;padding:12px 16px;font-size:.82rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;text-align:center;letter-spacing:2px;margin-bottom:10px;transition:border-color .15s}
+.pwd-input:focus{border-color:var(--blue)}
+.pwd-error{font-size:.66rem;color:var(--pink);margin-bottom:10px;display:none}
+.modal-btns{display:flex;gap:10px}
+.mbtn{flex:1;border:none;border-radius:10px;padding:12px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.mbtn.primary{background:var(--grad2);color:white}
+.mbtn.primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(46,158,224,0.3)}
+.mbtn.secondary{background:var(--sky);color:var(--tmid)}
+
+/* ═══════════════════════════════
+   DASHBOARD
+═══════════════════════════════ */
+#dashboard{display:none;background:var(--sky2)}
+
+/* ADMIN BAR */
+.admin-bar{background:var(--text);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.ab-left{font-size:.62rem;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:8px}
+.ab-dot{width:7px;height:7px;background:var(--green);border-radius:50%}
+.ab-right{display:flex;gap:8px}
+.ab-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:5px 12px;font-size:.62rem;font-weight:600;color:rgba(255,255,255,.8);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.ab-btn:hover{background:rgba(255,255,255,.2)}
+.ab-btn.logout{background:rgba(232,84,122,.2);border-color:rgba(232,84,122,.3);color:var(--pink)}
+
+/* BROWSER */
+.browser-wrap{padding:16px;max-width:1300px;margin:0 auto}
+.browser{background:var(--white);border-radius:14px;overflow:hidden;box-shadow:0 16px 64px rgba(46,158,224,0.15),0 4px 16px rgba(0,0,0,0.06)}
+.bbar{background:#F0F3F7;border-bottom:1px solid #DDE2E8;padding:10px 18px;display:flex;align-items:center;gap:12px}
+.bdots{display:flex;gap:6px}
+.bd{width:11px;height:11px;border-radius:50%}
+.burl{flex:1;background:white;border:1px solid #DDD;border-radius:8px;padding:5px 14px;font-size:.7rem;color:#555;display:flex;align-items:center;gap:7px;max-width:460px;margin:0 auto}
+
+/* TOP NAV */
+.topnav{background:var(--white);border-bottom:2px solid var(--border2);display:flex;align-items:center;padding:0 24px;height:60px;position:sticky;top:40px;z-index:100}
+.tnlogo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-right:28px;letter-spacing:-.5px;white-space:nowrap}
+.tnlinks{display:flex;flex:1;overflow-x:auto}
+.tnl{font-size:.72rem;font-weight:500;color:var(--tmid);padding:0 14px;height:60px;display:flex;align-items:center;gap:5px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tnl:hover{color:var(--blue);background:var(--sky)}
+.tnl.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:700}
+.nbadge{background:var(--blue);color:white;font-size:.44rem;font-weight:700;padding:1px 5px;border-radius:5px;margin-left:4px}
+.tnr{display:flex;align-items:center;gap:10px;margin-left:auto}
+.mic-cta{background:var(--grad2);border:none;border-radius:9px;padding:8px 16px;color:white;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(46,158,224,0.3);transition:all .15s}
+.mic-cta:hover{transform:translateY(-1px)}
+.coins-cta{background:var(--goldl);border:1px solid rgba(240,180,41,.3);border-radius:9px;padding:7px 13px;font-size:.72rem;font-weight:700;color:#92400E;cursor:pointer}
+.notifbtn{position:relative;background:var(--sky);border:1px solid var(--border2);border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer}
+.ndot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--pink);border-radius:50%;border:1.5px solid white}
+.userav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#D946EF);display:flex;align-items:center;justify-content:center;color:white;font-size:.82rem;font-weight:700;cursor:pointer}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:230px 1fr 280px;min-height:calc(100vh - 140px)}
+
+/* LEFT SIDEBAR */
+.lsb{background:var(--paper);border-right:1px solid var(--border2);padding:20px 14px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.lsb-sec{font-size:.56rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--tlight);padding:14px 10px 6px}
+.lsb-i{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:.74rem;color:var(--tmid);cursor:pointer;font-weight:500;transition:all .12s}
+.lsb-i:hover{background:var(--sky);color:var(--blue)}
+.lsb-i.on{background:var(--sky);color:var(--blue);font-weight:700}
+.lsb-ic{font-size:.92rem;width:20px;text-align:center}
+.lsb-b{background:var(--blue);color:white;font-size:.46rem;font-weight:700;padding:1px 5px;border-radius:5px;margin-left:auto}
+.lsb-b.gold{background:var(--gold)}
+.usercard{margin-top:auto;padding-top:16px;border-top:1px solid var(--border2)}
+.uc{background:var(--sky);border-radius:13px;padding:13px;border:1px solid var(--border2)}
+.uc-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.ucav{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#D946EF);display:flex;align-items:center;justify-content:center;color:white;font-size:.88rem;font-weight:700}
+.uc-name{font-size:.76rem;font-weight:700;color:var(--text)}
+.uc-handle{font-size:.6rem;color:var(--tlight)}
+.uc-ig{font-size:.58rem;color:var(--blue);font-weight:600;cursor:pointer}
+.uc-stats{display:flex;gap:8px}
+.ucs{background:var(--white);border-radius:8px;padding:6px 8px;text-align:center;flex:1;border:1px solid var(--border)}
+.ucsv{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:700;color:var(--text)}
+.ucsl{font-size:.46rem;color:var(--tlight)}
+
+/* MAIN */
+.main{padding:24px 26px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;background:var(--off)}
+.view{display:none;flex-direction:column;gap:18px}
+.view.active{display:flex}
+
+/* HERO */
+.hero{background:var(--grad2);border-radius:20px;padding:24px 28px;position:relative;overflow:hidden;display:flex;gap:24px;align-items:center}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:220px;height:220px;background:rgba(255,255,255,.06);border-radius:50%}
+.hero-l{flex:1;position:relative;z-index:1}
+.hero-tag{color:rgba(255,255,255,.72);font-size:.64rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.hero-name{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1.1;margin-bottom:8px}
+.hero-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.hpill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;font-size:.68rem;color:rgba(255,255,255,.9);display:flex;align-items:center;gap:5px}
+.hero-mic{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:11px;padding:9px 14px;display:flex;align-items:center;gap:9px;font-size:.67rem;color:rgba(255,255,255,.88);font-style:italic;cursor:pointer;transition:all .15s}
+.hero-mic:hover{background:rgba(255,255,255,.2)}
+.hmtag{background:rgba(255,255,255,.22);color:white;font-size:.52rem;padding:3px 8px;border-radius:6px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.hero-r{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1;flex-shrink:0}
+.hstat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:12px 18px;text-align:center;min-width:100px;cursor:pointer;transition:all .15s}
+.hstat:hover{background:rgba(255,255,255,.22)}
+.hsv{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:white}
+.hsl{font-size:.58rem;color:rgba(255,255,255,.7);font-weight:600;margin-top:2px}
+
+/* CARDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.crd{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(46,158,224,0.05)}
+.crh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.crt{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.crl{font-size:.62rem;color:var(--blue);font-weight:600;cursor:pointer}
+.crb{padding:16px 18px}
+.pc{background:var(--white);border-radius:16px;border:1px solid var(--border);padding:16px 18px;box-shadow:0 2px 10px rgba(46,158,224,0.05)}
+.pct{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pctt{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--text)}
+.pcflow{display:flex;align-items:center;gap:12px}
+.pcbox{flex:1;border-radius:13px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .15s}
+.pcbox:hover{transform:scale(1.02)}
+.pcbox.pts{background:var(--sky);border:1px solid var(--sky3)}
+.pcbox.coins{background:var(--goldl);border:1px solid rgba(240,180,41,.28)}
+.pcv{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700}
+.pcbox.pts .pcv{color:var(--blue)}
+.pcbox.coins .pcv{color:var(--gold)}
+.pcl{font-size:.56rem;font-weight:600;margin-top:3px}
+.pcbox.pts .pcl{color:var(--tlight)}
+.pcbox.coins .pcl{color:#92400E}
+.pcarr{font-size:1.5rem;color:var(--tlight)}
+.pcr{font-size:.62rem;color:var(--tlight);text-align:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.pcr strong{color:var(--blue)}
+.qcard{background:linear-gradient(135deg,var(--sky),var(--sky2));border-radius:16px;padding:18px 20px;border-left:4px solid var(--blue);border:1px solid var(--border2);border-left:4px solid var(--blue)}
+.qlbl{font-size:.58rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px}
+.qtxt{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text);line-height:1.5;font-style:italic;font-weight:600;margin-bottom:5px}
+.qsub{font-size:.62rem;color:var(--tlight)}
+.caldh{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:6px}
+.cdhn{font-size:.58rem;font-weight:700;color:var(--tlight);padding:3px 0}
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.c2{font-size:.7rem;color:var(--tmid);padding:8px 2px;border-radius:9px;text-align:center;cursor:pointer;position:relative;transition:all .1s}
+.c2:hover{background:var(--sky);color:var(--blue)}
+.c2.oth{opacity:.28}
+.c2.tod{background:var(--grad2);color:white;font-weight:700}
+.c2.hev::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.c2.tod.hev::after{background:rgba(255,255,255,.7)}
+.schaddbtn{background:var(--grad);border:none;border-radius:9px;padding:7px 16px;color:white;font-size:.67rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.schaddbtn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(46,158,224,0.3)}
+.schi{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;border:1px solid var(--border);cursor:pointer;transition:all .1s;margin-bottom:7px}
+.schi:last-child{margin-bottom:0}
+.schi:hover{background:var(--sky);border-color:var(--border2);transform:translateX(3px)}
+.schi.done{background:var(--greenl);border-color:rgba(46,175,125,.2)}
+.scht{font-size:.67rem;font-weight:700;color:var(--blue);min-width:50px;text-align:right}
+.schl{width:3px;height:32px;border-radius:2px;flex-shrink:0}
+.schi-info{flex:1}
+.schn{font-size:.8rem;font-weight:600;color:var(--text)}
+.schs{font-size:.62rem;color:var(--tlight);margin-top:2px}
+.tp{font-size:.55rem;font-weight:700;padding:3px 9px;border-radius:7px;white-space:nowrap;cursor:pointer}
+.tp.ver{background:var(--sky);color:var(--blue2)}
+.tp.pts{background:var(--greenl);color:var(--green)}
+.tp.col{background:rgba(124,58,237,.1);color:var(--purple)}
+.ring-big{position:relative;width:60px;height:60px;flex-shrink:0}
+.ring-big svg{width:60px;height:60px;transform:rotate(-90deg)}
+.rbg2{fill:none;stroke:rgba(46,158,224,.1);stroke-width:6}
+.rfill2{fill:none;stroke:url(#rg2);stroke-width:6;stroke-linecap:round;stroke-dasharray:157;stroke-dashoffset:39;transition:stroke-dashoffset .5s ease}
+.rt2{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:.7rem;font-weight:700;color:var(--text)}
+.hb{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .1s}
+.hb:hover{padding-left:4px}
+.hb:last-child{border-bottom:none}
+.hbic2{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.hbi2{flex:1}
+.hbn2{font-size:.72rem;font-weight:600;color:var(--text)}
+.hbm2{font-size:.57rem;color:var(--tlight);margin-top:1px}
+.hbch2{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.7rem;cursor:pointer;transition:all .15s}
+.hbch2.done{background:var(--green);color:white}
+.hbch2.open{background:var(--sky);color:var(--tlight);border:1.5px solid var(--border2)}
+.hbch2.open:hover{background:var(--green);color:white;border-color:var(--green)}
+.woftabs2{display:flex;gap:5px;margin-bottom:10px}
+.wt2{background:var(--sky);border:1px solid var(--border2);border-radius:7px;padding:5px 12px;font-size:.62rem;font-weight:600;color:var(--tlight);cursor:pointer;transition:all .1s}
+.wt2.on{background:var(--blue);color:white;border-color:transparent}
+.wt2:hover{background:var(--blue);color:white;border-color:transparent}
+.wofi2{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:11px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .1s}
+.wofi2:hover{background:var(--sky);transform:translateX(3px)}
+.wofi2.me{background:var(--sky);border-color:var(--border2)}
+.wofi2:last-child{margin-bottom:0}
+.w2rk{font-size:.7rem;font-weight:700;color:var(--tlight);width:22px;text-align:center}
+.w2av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:white;flex-shrink:0}
+.w2nm{flex:1;font-size:.72rem;font-weight:600;color:var(--text)}
+.wofi2.me .w2nm{color:var(--blue);font-weight:700}
+.w2pts{font-size:.68rem;font-weight:700;color:var(--gold)}
+.w2up{font-size:.55rem;color:var(--green);font-weight:600;margin-left:4px}
+.dmi2{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:12px;border:1px solid var(--border);cursor:pointer;transition:all .1s;margin-bottom:6px}
+.dmi2:hover{background:var(--sky);border-color:var(--border2);transform:translateX(3px)}
+.dmav2{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:white;flex-shrink:0;position:relative}
+.dmdot{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;border:2px solid white}
+.dmin2{flex:1;overflow:hidden}
+.dmn2{font-size:.72rem;font-weight:600;color:var(--text)}
+.dmp2{font-size:.61rem;color:var(--tlight);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.dmu2{background:var(--blue);color:white;font-size:.48rem;font-weight:700;padding:2px 6px;border-radius:5px}
+.collab{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.2);border-radius:13px;padding:12px 15px;display:flex;align-items:center;gap:12px}
+.cbic{font-size:1.2rem}
+.cbinf{flex:1}
+.cbt{font-size:.76rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.cbs{font-size:.62rem;color:var(--tlight)}
+.cbbtns{display:flex;gap:6px}
+.cbyes{background:var(--green);color:white;font-size:.62rem;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.cbyes:hover{background:#24966a}
+.cbno{background:var(--sky);color:var(--tmid);font-size:.62rem;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+.aicard{background:var(--grad2);border-radius:16px;padding:15px 17px;box-shadow:0 4px 16px rgba(46,158,224,0.2)}
+.aitop{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.aiav{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.ainame{font-size:.76rem;font-weight:700;color:white}
+.aisub{font-size:.57rem;color:rgba(255,255,255,.65)}
+.aipro{background:var(--gold);color:white;font-size:.48rem;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:auto}
+.aimsg{background:rgba(255,255,255,.12);border-radius:11px;padding:10px 12px;font-size:.68rem;color:rgba(255,255,255,.92);line-height:1.55;margin-bottom:9px;font-style:italic}
+.aiinput{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:9px 13px;font-size:.65rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:8px;cursor:pointer}
+.aiinput:hover{background:rgba(255,255,255,.2)}
+.rsb{border-left:1px solid var(--border2);padding:20px 16px;display:flex;flex-direction:column;gap:16px;background:var(--paper);overflow-y:auto}
+.page-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.page-sub{font-size:.68rem;color:var(--tlight);margin-bottom:16px}
+.habit-full-item{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.habit-full-item:hover{border-color:var(--blue);transform:translateX(4px)}
+.habit-full-item.done{border-color:rgba(46,175,125,.35);background:var(--greenl)}
+.hfic{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.hfi{flex:1}
+.hfn{font-size:.82rem;font-weight:600;color:var(--text)}
+.hfm{font-size:.62rem;color:var(--tlight);margin-top:2px;display:flex;gap:8px}
+.hfch{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .2s;cursor:pointer}
+.hfch.done{background:var(--green);color:white}
+.hfch.open{background:var(--sky);border:2px solid var(--border2)}
+.hfch.open:hover{background:var(--green);color:white;border-color:var(--green)}
+.add-habit-btn{background:var(--grad2);border:none;border-radius:13px;padding:13px;width:100%;color:white;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;margin-top:6px;transition:all .15s}
+.add-habit-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(46,158,224,0.35)}
+.post{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.phead{display:flex;align-items:center;gap:8px;padding:12px 14px 0}
+.pav2{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:white}
+.pu{flex:1}
+.pun{font-size:.72rem;font-weight:600;color:var(--text)}
+.ph{font-size:.58rem;color:var(--tlight)}
+.pbody{font-size:.72rem;color:var(--tmid);padding:8px 14px;line-height:1.5}
+.pht{color:var(--blue);font-weight:600}
+.pimg{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:2.2rem}
+.pacts{display:flex;gap:14px;padding:8px 14px 12px;border-top:1px solid var(--border)}
+.pa{font-size:.64rem;color:var(--tlight);display:flex;align-items:center;gap:4px;font-weight:500;cursor:pointer;transition:all .1s}
+.pa:hover{color:var(--blue)}
+.pa.lk{color:var(--pink)}
+.htag{background:var(--sky);color:var(--blue2);font-size:.6rem;padding:4px 10px;border-radius:15px;font-weight:600;cursor:pointer;margin:0 4px 8px 0;display:inline-block}
+.htag.on{background:var(--blue);color:white}
+.modal-overlay2{position:fixed;inset:0;background:rgba(13,33,55,.45);display:flex;align-items:center;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px);padding:20px}
+.modal-overlay2.show{opacity:1;pointer-events:all}
+.modal2{background:white;border-radius:22px;padding:28px 32px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(13,33,55,.18);transform:translateY(24px);transition:transform .2s}
+.modal-overlay2.show .modal2{transform:translateY(0)}
+.modal2-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:5px}
+.modal2-sub{font-size:.66rem;color:var(--tlight);margin-bottom:16px}
+.minput{width:100%;background:var(--sky);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.76rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;transition:border-color .15s}
+.minput:focus{border-color:var(--blue)}
+.mselect{width:100%;background:var(--sky);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.74rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px}
+.mrow{display:flex;gap:8px}
+.mrow .minput{flex:1;margin-bottom:0}
+.mrow .mselect{flex:1;margin-bottom:0}
+.mbtns{display:flex;gap:10px;margin-top:14px}
+.mbtn2{flex:1;border:none;border-radius:10px;padding:11px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.mbtn2.primary{background:var(--grad2);color:white}
+.mbtn2.primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(46,158,224,0.3)}
+.mbtn2.secondary{background:var(--sky);color:var(--tmid)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:white;padding:12px 20px;border-radius:12px;font-size:.72rem;font-weight:600;z-index:2000;transform:translateY(80px);opacity:0;transition:all .3s;box-shadow:0 8px 24px rgba(13,33,55,.25);display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--pink)}
+
+@keyframes popIn{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.pop{animation:popIn .3s ease}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" style="stop-color:#7EC8F0"/>
+  <stop offset="100%" style="stop-color:#2E9EE0"/>
+</linearGradient>
+</defs>
+</svg>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════ COMING SOON PAGE ═══════════ -->
+<div id="coming-soon">
+  <div class="bg-circle bc1"></div>
+  <div class="bg-circle bc2"></div>
+
+  <!-- PASSWORD MODAL -->
+  <div class="modal-overlay" id="admin-modal">
+    <div class="modal">
+      <div class="modal-icon">🔐</div>
+      <div class="modal-title">Acceso Administrador</div>
+      <div class="modal-sub">Ingresa tu contraseña para ver el dashboard</div>
+      <input class="pwd-input" id="pwd-input" type="password" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')checkPassword()">
+      <div class="pwd-error" id="pwd-error">❌ Contraseña incorrecta</div>
+      <div class="modal-btns">
+        <button class="mbtn secondary" onclick="closeAdminModal()">Cancelar</button>
+        <button class="mbtn primary" onclick="checkPassword()">→ Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cs-card">
+    <div class="logo-mark">✨</div>
+    <div class="logo-text">Life Tracker</div>
+    <div class="logo-tag">Disciplina · Constancia · Paciencia</div>
+    <div class="divider"></div>
+    <div class="headline">Tu segundo cerebro.<br><span>Gamificado y social.</span></div>
+    <div class="subtitle">La app que te ayuda a crear hábitos reales, organizar tu vida completa y conectar con personas que también están construyendo su mejor versión.</div>
+    <div class="features">
+      <div class="feat-pill">🔥 Hábitos gamificados</div>
+      <div class="feat-pill">📅 Agenda inteligente</div>
+      <div class="feat-pill">🌎 Comunidad social</div>
+      <div class="feat-pill">🤖 Asistente IA</div>
+      <div class="feat-pill">🪙 Life Coins</div>
+      <div class="feat-pill">🏆 Wall of Fame</div>
+    </div>
+    <div class="form-label">Sé la primera en saberlo</div>
+    <div class="form-row">
+      <input class="email-input" id="email-cs" type="email" placeholder="tu@email.com">
+      <button class="notify-btn" onclick="subscribeEmail()">Notifícame 🚀</button>
+    </div>
+    <div class="progress-section">
+      <div class="progress-label"><span>Desarrollo en progreso</span><span>72%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>
+    </div>
+    <div class="admin-area">
+      <button class="admin-btn" onclick="openAdminModal()">· acceso admin ·</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div id="dashboard">
+
+  <!-- ADMIN BAR -->
+  <div class="admin-bar">
+    <div class="ab-left"><div class="ab-dot"></div>Modo Administrador · Life Tracker Dashboard</div>
+    <div class="ab-right">
+      <button class="ab-btn" onclick="showToast('📊 Vista previa de admin activa','')">👁 Vista Admin</button>
+      <button class="ab-btn logout" onclick="logout()">← Salir al Coming Soon</button>
+    </div>
+  </div>
+
+  <!-- MODALS DASHBOARD -->
+  <div class="modal-overlay2" id="modal-event">
+    <div class="modal2">
+      <div class="modal2-title">➕ Nuevo evento</div>
+      <div class="modal2-sub">Agrega algo a tu agenda de hoy</div>
+      <input class="minput" id="event-name" placeholder="¿Qué tienes? (ej. Llamada con cliente)">
+      <div class="mrow">
+        <input class="minput" id="event-time" type="time" value="10:00">
+        <select class="mselect" id="event-cat">
+          <option>💼 Trabajo</option><option>🏃 Fitness</option><option>🩺 Salud</option><option>👨‍👩‍👧 Personal</option>
+        </select>
+      </div>
+      <div class="mbtns">
+        <button class="mbtn2 secondary" onclick="closeM('modal-event')">Cancelar</button>
+        <button class="mbtn2 primary" onclick="addEvent()">✓ Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay2" id="modal-habit">
+    <div class="modal2">
+      <div class="modal2-title">✅ Crear nuevo hábito</div>
+      <div class="modal2-sub">La IA sugerirá el mejor horario para ti</div>
+      <input class="minput" id="habit-name" placeholder="¿Qué hábito quieres crear?">
+      <div class="mrow">
+        <select class="mselect" id="habit-freq"><option>Todos los días</option><option>Lun-Vie</option><option>3 veces/semana</option></select>
+        <select class="mselect" id="habit-verify"><option>⏱ Timer</option><option>📸 Foto</option><option>📍 Ubicación</option><option>⌚ Watch</option><option>✓ Check</option></select>
+      </div>
+      <input class="minput" id="habit-time" type="time" value="08:00">
+      <div class="mbtns">
+        <button class="mbtn2 secondary" onclick="closeM('modal-habit')">Cancelar</button>
+        <button class="mbtn2 primary" onclick="addHabit()">✓ Crear hábito</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay2" id="modal-mic">
+    <div class="modal2" style="text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:10px">🎙️</div>
+      <div class="modal2-title">Comando de voz</div>
+      <div class="modal2-sub">Di o escribe tu comando</div>
+      <input class="minput" id="mic-text" placeholder='"Agéndame doctor a la 1pm"'>
+      <div class="mbtns">
+        <button class="mbtn2 secondary" onclick="closeM('modal-mic')">Cancelar</button>
+        <button class="mbtn2 primary" onclick="processVoice()">✓ Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BROWSER CHROME -->
+  <div class="browser-wrap">
+  <div class="browser">
+    <div class="bbar">
+      <div class="bdots">
+        <div class="bd" style="background:#FF5F57"></div>
+        <div class="bd" style="background:#FFBD2E"></div>
+        <div class="bd" style="background:#28CA41"></div>
+      </div>
+      <div class="burl"><span style="color:var(--green)">🔒</span> lifetrackerapp.netlify.app/dashboard</div>
+    </div>
+
+    <!-- TOP NAV -->
+    <div class="topnav">
+      <div class="tnlogo">Life Tracker</div>
+      <div class="tnlinks">
+        <div class="tnl on" onclick="sv('home',this)">🏠 Inicio</div>
+        <div class="tnl" onclick="sv('habits',this)">✅ Hábitos</div>
+        <div class="tnl" onclick="sv('social',this)">🌎 Social</div>
+        <div class="tnl" onclick="sv('experts',this)">📖 Expertos</div>
+        <div class="tnl" onclick="sv('health',this)">💪 Salud</div>
+        <div class="tnl" onclick="sv('dms',this)">💬 DMs <span class="nbadge">3</span></div>
+      </div>
+      <div class="tnr">
+        <button class="mic-cta" onclick="openM('modal-mic')">🎙️ Comando rápido</button>
+        <div class="coins-cta" onclick="showToast('🪙 1,240 Life Coins · Cada 10 pts = 1 coin','')">🪙 <span id="coin-count">1,240</span></div>
+        <div class="notifbtn" onclick="showToast('🔔 3 notificaciones nuevas','')">🔔<div class="ndot"></div></div>
+        <div class="userav" onclick="showToast('👤 María González · @maria_g','')">M</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT SIDEBAR -->
+      <div class="lsb">
+        <div class="lsb-sec">Principal</div>
+        <div class="lsb-i on" onclick="sv('home',null);sa(this)"><span class="lsb-ic">🏠</span> Dashboard</div>
+        <div class="lsb-i" onclick="sv('home',null);sa(this)"><span class="lsb-ic">📅</span> Calendario</div>
+        <div class="lsb-i" onclick="sv('habits',null);sa(this)"><span class="lsb-ic">✅</span> Mis hábitos</div>
+        <div class="lsb-i" onclick="sv('notes',null);sa(this)"><span class="lsb-ic">📝</span> Notas</div>
+        <div class="lsb-i" onclick="showToast('📔 Diario privado · 100% tuyo','')"><span class="lsb-ic">📔</span> Diario privado</div>
+        <div class="lsb-sec">Bienestar</div>
+        <div class="lsb-i" onclick="sv('health',null);sa(this)"><span class="lsb-ic">💪</span> Salud & Fitness</div>
+        <div class="lsb-i" onclick="sv('experts',null);sa(this)"><span class="lsb-ic">📖</span> Zona Expertos</div>
+        <div class="lsb-i" onclick="showToast('🎯 5 retos disponibles esta semana','')"><span class="lsb-ic">🎯</span> Retos Extra <span class="lsb-b gold">5</span></div>
+        <div class="lsb-i" onclick="showToast('🤖 Asistente IA Premium · $1/mes','')"><span class="lsb-ic">🤖</span> Asistente IA <span class="lsb-b">PRO</span></div>
+        <div class="lsb-sec">Comunidad</div>
+        <div class="lsb-i" onclick="sv('social',null);sa(this)"><span class="lsb-ic">🌎</span> Timeline social</div>
+        <div class="lsb-i" onclick="sv('dms',null);sa(this)"><span class="lsb-ic">💬</span> Mensajes <span class="lsb-b">3</span></div>
+        <div class="lsb-i" onclick="showToast('👥 Grupos: Mujeres que se mueven, WFH Warriors','')"><span class="lsb-ic">👥</span> Mis grupos</div>
+        <div class="lsb-i" onclick="showToast('🏆 Estás en el #4 · Solo 340 pts al podio','')"><span class="lsb-ic">🏆</span> Wall of Fame</div>
+        <div class="lsb-sec">Cuenta</div>
+        <div class="lsb-i" onclick="showToast('⚙️ Configuración','')"><span class="lsb-ic">⚙️</span> Configuración</div>
+        <div class="lsb-i" onclick="showToast('🎨 Temas: Celeste, Oscuro, Púrpura, Coral','')"><span class="lsb-ic">🎨</span> Personalizar tema</div>
+        <div class="usercard">
+          <div class="uc">
+            <div class="uc-row">
+              <div class="ucav">M</div>
+              <div><div class="uc-name">María González</div><div class="uc-handle">@maria_g</div><div class="uc-ig">↗ instagram.com/maria_g</div></div>
+            </div>
+            <div class="uc-stats">
+              <div class="ucs"><div class="ucsv" id="streak-sb">12🔥</div><div class="ucsl">Racha</div></div>
+              <div class="ucs"><div class="ucsv" id="pts-sb">340</div><div class="ucsl">Pts hoy</div></div>
+              <div class="ucs"><div class="ucsv">🪙<span id="coins-sb">1,240</span></div><div class="ucsl">Coins</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN -->
+      <div class="main">
+
+        <!-- HOME -->
+        <div class="view active" id="view-home">
+          <div class="hero">
+            <div class="hero-l">
+              <div class="hero-tag">☀️ Lunes 1 de Junio 2026 · Buenos días,</div>
+              <div class="hero-name">María ✨</div>
+              <div class="hero-pills">
+                <div class="hpill">🔥 Racha de <span id="h-streak">12</span> días</div>
+                <div class="hpill">✅ <span id="h-hab">3</span> de 5 hábitos hoy</div>
+                <div class="hpill">🌡️ 28°C · Miami</div>
+                <div class="hpill" onclick="sv('social',null)">🏆 #4 en el ranking</div>
+              </div>
+              <div class="hero-mic" onclick="openM('modal-mic')">🎙️ &nbsp;"Toca aquí para dar un comando de voz..."<span class="hmtag">Probar</span></div>
+            </div>
+            <div class="hero-r">
+              <div class="hstat" onclick="showToast('⚡ Hoy llevas '+pts+' puntos','')"><div class="hsv" id="h-pts">340</div><div class="hsl">⚡ Pts hoy</div></div>
+              <div class="hstat" onclick="showToast('🪙 1,240 Life Coins disponibles','')"><div class="hsv">🪙 1,240</div><div class="hsl">Life Coins</div></div>
+              <div class="hstat" onclick="showToast('🔥 12 días seguidos · ¡Increíble!','')"><div class="hsv">12 🔥</div><div class="hsl">Días racha</div></div>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="pc">
+              <div class="pct"><div class="pctt">⚡ Puntos → Life Coins</div></div>
+              <div class="pcflow">
+                <div class="pcbox pts" onclick="showToast('⚡ Ganas puntos completando hábitos y tareas','')"><div class="pcv" id="pts-box">340</div><div class="pcl">Puntos ganados</div></div>
+                <div class="pcarr">→</div>
+                <div class="pcbox coins" onclick="showToast('🪙 Usa coins para IA, temas y más','')"><div class="pcv">🪙 34</div><div class="pcl">Coins de hoy</div></div>
+              </div>
+              <div class="pcr">Total: <strong>12,400 pts → 1,240 coins</strong> · 10 pts = 1 coin</div>
+            </div>
+            <div class="qcard">
+              <div class="qlbl">✦ Motivación del día</div>
+              <div class="qtxt">"No busco perfección.<br>Busco consistencia."</div>
+              <div class="qsub">Disciplina · Constancia · Paciencia = Tu mejor versión</div>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="crd">
+              <div class="crh">
+                <div class="crt">📅 Junio 2026</div>
+                <div style="display:flex;gap:5px">
+                  <button style="background:var(--sky);border:1px solid var(--border2);border-radius:7px;padding:4px 11px;font-size:.65rem;color:var(--blue);cursor:pointer" onclick="showToast('← Mayo 2026','')">‹</button>
+                  <button style="background:var(--sky);border:1px solid var(--border2);border-radius:7px;padding:4px 11px;font-size:.65rem;color:var(--blue);cursor:pointer" onclick="showToast('→ Julio 2026','')">›</button>
+                </div>
+              </div>
+              <div class="crb">
+                <div class="caldh"><div class="cdhn">Do</div><div class="cdhn">Lu</div><div class="cdhn">Ma</div><div class="cdhn">Mi</div><div class="cdhn">Ju</div><div class="cdhn">Vi</div><div class="cdhn">Sá</div></div>
+                <div class="calg">
+                  <div class="c2 tod hev" onclick="showToast('📅 Hoy · 1 Junio')">1</div><div class="c2 hev" onclick="showToast('📅 2 Junio')">2</div><div class="c2" onclick="showToast('📅 3 Junio')">3</div><div class="c2 hev" onclick="showToast('📅 4 Junio')">4</div><div class="c2" onclick="showToast('📅 5 Junio')">5</div><div class="c2" onclick="showToast('📅 6 Junio')">6</div><div class="c2" onclick="showToast('📅 7 Junio')">7</div>
+                  <div class="c2" onclick="showToast('📅 8 Junio')">8</div><div class="c2 hev" onclick="showToast('📅 9 Junio')">9</div><div class="c2" onclick="showToast('📅 10 Junio')">10</div><div class="c2" onclick="showToast('📅 11 Junio')">11</div><div class="c2 hev" onclick="showToast('📅 12 Junio')">12</div><div class="c2" onclick="showToast('📅 13 Junio')">13</div><div class="c2" onclick="showToast('📅 14 Junio')">14</div>
+                  <div class="c2" onclick="showToast('📅 15 Junio')">15</div><div class="c2 hev" onclick="showToast('📅 16 Junio')">16</div><div class="c2" onclick="showToast('📅 17 Junio')">17</div><div class="c2" onclick="showToast('📅 18 Junio')">18</div><div class="c2" onclick="showToast('📅 19 Junio')">19</div><div class="c2 hev" onclick="showToast('📅 20 Junio')">20</div><div class="c2" onclick="showToast('📅 21 Junio')">21</div>
+                  <div class="c2" onclick="showToast('📅 22 Junio')">22</div><div class="c2" onclick="showToast('📅 23 Junio')">23</div><div class="c2 hev" onclick="showToast('📅 24 Junio')">24</div><div class="c2" onclick="showToast('📅 25 Junio')">25</div><div class="c2" onclick="showToast('📅 26 Junio')">26</div><div class="c2" onclick="showToast('📅 27 Junio')">27</div><div class="c2" onclick="showToast('📅 28 Junio')">28</div>
+                  <div class="c2" onclick="showToast('📅 29 Junio')">29</div><div class="c2" onclick="showToast('📅 30 Junio')">30</div>
+                </div>
+              </div>
+            </div>
+            <div class="crd">
+              <div class="crh"><div class="crt">🗓️ Agenda · Hoy</div><button class="schaddbtn" onclick="openM('modal-event')">＋ Agregar</button></div>
+              <div class="crb" id="schedule-list">
+                <div class="schi" onclick="completeEvent(this)"><div class="scht">10:00 AM</div><div class="schl" style="background:var(--blue)"></div><div class="schi-info"><div class="schn">🧘 Meditación</div><div class="schs">15 min · Hábito diario</div></div><div class="tp ver">⏱</div><div class="tp pts">+10</div></div>
+                <div class="schi" onclick="completeEvent(this)"><div class="scht">1:00 PM</div><div class="schl" style="background:var(--gold)"></div><div class="schi-info"><div class="schn">🩺 Doctor García</div><div class="schs">Clínica Centro</div></div><div class="tp ver">📍</div><div class="tp pts">+5</div></div>
+                <div class="schi" onclick="completeEvent(this)"><div class="scht">3:00 PM</div><div class="schl" style="background:var(--purple)"></div><div class="schi-info"><div class="schn">👥 Rutina con Ana</div><div class="schs">Hábito compartido</div></div><div class="tp col">👥</div><div class="tp pts">+15</div></div>
+                <div class="schi" onclick="completeEvent(this)"><div class="scht">6:00 PM</div><div class="schl" style="background:var(--green)"></div><div class="schi-info"><div class="schn">💊 Medicamento</div><div class="schs">vía 🎙️ IA</div></div><div class="tp ver">📸</div><div class="tp pts">+3</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="collab" id="collab-banner">
+              <div class="cbic">👥</div>
+              <div class="cbinf"><div class="cbt">Ana te invita a "Correr 5km el sábado"</div><div class="cbs">Se añade a tu agenda si aceptas · +20 pts</div></div>
+              <div class="cbbtns">
+                <button class="cbyes" onclick="acceptCollab()">✓ Aceptar</button>
+                <button class="cbno" onclick="declineCollab()">✗</button>
+              </div>
+            </div>
+            <div class="aicard">
+              <div class="aitop"><div class="aiav">🤖</div><div><div class="ainame">Tu Asistente IA</div><div class="aisub">Personalizado · Siempre contigo</div></div><div class="aipro">PRO · $1/mes</div></div>
+              <div class="aimsg">"María, hoy a las 3pm sueles procrastinar 👀 Ya bloqueé Instagram 1h. ¡Estás en el #4, puedes subir al podio!"</div>
+              <div class="aiinput" onclick="showToast('🤖 Asistente IA · Plan PRO $1/mes','')">🎙️ &nbsp;Escribe o habla con tu IA...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HABITS VIEW -->
+        <div class="view" id="view-habits">
+          <div class="page-title">✅ Mis Hábitos</div>
+          <div class="page-sub">Hoy · 1 de Junio · Toca el círculo para marcar completado</div>
+          <div id="habits-list">
+            <div class="habit-full-item done" onclick="toggleHabit(this,'Meditación',10)"><div class="hfic" style="background:#E8F5E9">🧘</div><div class="hfi"><div class="hfn">Meditación</div><div class="hfm"><span>🔥 12 días</span><span>⏱ Timer</span><span>+10 pts</span></div></div><div class="hfch done">✓</div></div>
+            <div class="habit-full-item done" onclick="toggleHabit(this,'2L de agua',10)"><div class="hfic" style="background:#E3F2FD">💧</div><div class="hfi"><div class="hfn">2L de agua</div><div class="hfm"><span>🔥 20 días</span><span>✓ Check</span><span>+10 pts</span></div></div><div class="hfch done">✓</div></div>
+            <div class="habit-full-item done" onclick="toggleHabit(this,'Leer',10)"><div class="hfic" style="background:#FFF8E1">📚</div><div class="hfi"><div class="hfn">Leer 20 min</div><div class="hfm"><span>🔥 5 días</span><span>⏱ Timer</span><span>+10 pts</span></div></div><div class="hfch done">✓</div></div>
+            <div class="habit-full-item" onclick="toggleHabit(this,'Ejercicio',10)"><div class="hfic" style="background:#FCE4EC">🏃</div><div class="hfi"><div class="hfn">Ejercicio 30 min</div><div class="hfm"><span>Pendiente</span><span>⌚ Watch</span><span>+10 pts</span></div></div><div class="hfch open">○</div></div>
+            <div class="habit-full-item" onclick="toggleHabit(this,'Comida saludable',10)"><div class="hfic" style="background:#E8F5E9">🥗</div><div class="hfi"><div class="hfn">Comida saludable</div><div class="hfm"><span>Pendiente</span><span>📸 Foto</span><span>+10 pts</span></div></div><div class="hfch open">○</div></div>
+          </div>
+          <button class="add-habit-btn" onclick="openM('modal-habit')">＋ Crear nuevo hábito</button>
+        </div>
+
+        <!-- SOCIAL VIEW -->
+        <div class="view" id="view-social">
+          <div class="page-title">🌎 Comunidad</div>
+          <div>
+            <div class="htag on" onclick="filterTag(this,'#Todo')">#Todo</div>
+            <div class="htag" onclick="filterTag(this,'#Fitness')">#Fitness</div>
+            <div class="htag" onclick="filterTag(this,'#Travel')">#Travel</div>
+            <div class="htag" onclick="filterTag(this,'#Recetas')">#Recetas</div>
+            <div class="htag" onclick="filterTag(this,'#Miami')">#Miami</div>
+          </div>
+          <div class="post">
+            <div class="phead"><div class="pav2" style="background:linear-gradient(135deg,#E8735A,#F2A27D)">A</div><div class="pu"><div class="pun">Ana Rodríguez</div><div class="ph">@ana_fit · 🔥 30 días</div></div><div style="font-size:.58rem;color:var(--tlight)">2h</div></div>
+            <div class="pbody">¡Día 30! 🎉 Gym en Miami Beach 💪 <span class="pht">#Miami #Travel #Fitness</span></div>
+            <div class="pimg" style="background:linear-gradient(135deg,#D0E8FF,#B0CCFF)">🏋️‍♀️</div>
+            <div class="pacts"><div class="pa lk" onclick="likePost(this)">❤️ 84</div><div class="pa" onclick="showToast('💬 23 comentarios','')">💬 23</div><div class="pa" onclick="showToast('↗ Compartir','')">↗️ Compartir</div></div>
+          </div>
+          <div class="post">
+            <div class="phead"><div class="pav2" style="background:linear-gradient(135deg,#2EAF7D,#22C55E)">C</div><div class="pu"><div class="pun">Carlos M.</div><div class="ph">@carlosfit · 🔥 18 días</div></div><div style="font-size:.58rem;color:var(--tlight)">4h</div></div>
+            <div class="pbody">Bowl de quinoa 🥗 420 cal. ¡Riquísimo! <span class="pht">#Recetas #Nutrición</span></div>
+            <div class="pacts"><div class="pa lk" onclick="likePost(this)">❤️ 52</div><div class="pa" onclick="showToast('💬 14 comentarios','')">💬 14</div><div class="pa" onclick="showToast('↗ Compartir','')">↗️ Compartir</div></div>
+          </div>
+        </div>
+
+        <!-- EXPERTS VIEW -->
+        <div class="view" id="view-experts">
+          <div class="page-title">📖 Zona Expertos</div>
+          <div class="page-sub">Contenido que transforma · Gana puntos al terminar</div>
+          <div style="background:var(--grad2);border-radius:16px;padding:20px 22px;color:white">
+            <div style="font-size:.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:5px">✦ Destacado esta semana</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:4px">5 hábitos para dejar de procrastinar hoy</div>
+            <div style="font-size:.66rem;color:rgba(255,255,255,.7);margin-bottom:12px">Equipo Life Tracker · 12 min lectura</div>
+            <div style="display:flex;gap:8px">
+              <button onclick="showToast('📖 Leyendo artículo · +20 pts al terminar','success')" style="background:white;color:var(--blue2);border:none;border-radius:8px;padding:7px 14px;font-size:.66rem;font-weight:700;cursor:pointer">▶ Leer ahora</button>
+              <button onclick="showToast('🪙 +20 pts al terminar la lectura','success')" style="background:rgba(255,255,255,.18);color:white;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:7px 14px;font-size:.66rem;font-weight:700;cursor:pointer">🪙 +20 pts</button>
+            </div>
+          </div>
+          <div style="background:var(--white);border-radius:14px;padding:14px 16px;display:flex;gap:12px;border:1px solid var(--border);cursor:pointer" onclick="showToast('▶ Reproduciendo video · +15 pts','success')">
+            <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#FFE0D0,#FFC4B0);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">▶️</div>
+            <div style="flex:1"><div style="font-size:.6rem;font-weight:700;color:var(--pink);text-transform:uppercase;margin-bottom:2px">Video · 8 min</div><div style="font-size:.76rem;font-weight:600;color:var(--text)">Rutina matutina para más energía</div><div style="font-size:.6rem;color:var(--tlight)">Fitness · 2,400 vistas</div></div>
+            <div style="font-size:.6rem;font-weight:700;color:var(--gold);background:var(--goldl);padding:3px 8px;border-radius:7px;align-self:center">+15pts</div>
+          </div>
+          <div style="background:var(--white);border-radius:14px;padding:14px 16px;display:flex;gap:12px;border:1px solid var(--border);cursor:pointer" onclick="showToast('📄 Descargando PDF · +10 pts','success')">
+            <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#D0E8FF,#B0CCFF);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">📄</div>
+            <div style="flex:1"><div style="font-size:.6rem;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:2px">PDF · Guía</div><div style="font-size:.76rem;font-weight:600;color:var(--text)">Meal prep semanal para principiantes</div><div style="font-size:.6rem;color:var(--tlight)">Nutrición · 1,840 descargas</div></div>
+            <div style="font-size:.6rem;font-weight:700;color:var(--gold);background:var(--goldl);padding:3px 8px;border-radius:7px;align-self:center">+10pts</div>
+          </div>
+        </div>
+
+        <!-- HEALTH VIEW -->
+        <div class="view" id="view-health">
+          <div class="page-title">💪 Salud & Fitness</div>
+          <div class="page-sub">Sincronizado con Apple Watch y Google Fit</div>
+          <div class="g2">
+            <div style="background:var(--white);border-radius:16px;padding:18px;border:1px solid var(--border)"><div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:10px">🔥 Calorías hoy</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--blue)">1,840</div><div style="font-size:.62rem;color:var(--tlight);margin-bottom:8px">de 2,200 · meta diaria</div><div style="height:6px;background:var(--sky);border-radius:3px;overflow:hidden"><div style="height:100%;width:84%;background:var(--grad);border-radius:3px"></div></div></div>
+            <div style="background:var(--white);border-radius:16px;padding:18px;border:1px solid var(--border)"><div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:10px">🚶 Pasos hoy</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--green)">7,240</div><div style="font-size:.62rem;color:var(--tlight);margin-bottom:8px">de 10,000 · meta</div><div style="height:6px;background:var(--sky);border-radius:3px;overflow:hidden"><div style="height:100%;width:72%;background:linear-gradient(135deg,#7EC8F0,#2EAF7D);border-radius:3px"></div></div></div>
+            <div style="background:var(--white);border-radius:16px;padding:18px;border:1px solid var(--border);cursor:pointer" onclick="showToast('💧 +1 vaso registrado · +3 pts','success')"><div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:10px">💧 Agua hoy</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--blue)">1.4L</div><div style="font-size:.62rem;color:var(--tlight);margin-bottom:8px">de 2L · Toca para registrar</div><div style="height:6px;background:var(--sky);border-radius:3px;overflow:hidden"><div style="height:100%;width:70%;background:var(--grad);border-radius:3px"></div></div></div>
+            <div style="background:var(--white);border-radius:16px;padding:18px;border:1px solid var(--border)"><div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:10px">😴 Sueño anoche</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--gold)">6.5h</div><div style="font-size:.62rem;color:var(--tlight);margin-bottom:8px">Recomendado: 7-9h</div><div style="height:6px;background:var(--sky);border-radius:3px;overflow:hidden"><div style="height:100%;width:65%;background:linear-gradient(135deg,#F0B429,#E8735A);border-radius:3px"></div></div></div>
+          </div>
+          <div style="background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.2);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start">
+            <div style="font-size:1.1rem">🤖</div>
+            <div style="flex:1"><div style="font-size:.74rem;font-weight:600;color:var(--text);margin-bottom:3px">Tu IA detectó algo</div><div style="font-size:.66rem;color:var(--tmid);line-height:1.5">Llevas 3 días durmiendo menos de 7h. Te recomendamos el artículo "Cómo dormir mejor en 7 noches" en la Zona Expertos. +8 pts al leerlo.</div></div>
+            <button onclick="sv('experts',null);showToast('📖 Abriendo Zona Expertos...','success')" style="background:var(--purple);color:white;border:none;border-radius:8px;padding:7px 12px;font-size:.62rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">Ver artículo</button>
+          </div>
+        </div>
+
+        <!-- DMs VIEW -->
+        <div class="view" id="view-dms">
+          <div class="page-title">💬 Mensajes Directos</div>
+          <div class="page-sub">Busca por @ de Instagram · Toca un chat para abrir</div>
+          <div class="collab">
+            <div class="cbic">👥</div>
+            <div class="cbinf"><div class="cbt">Ana te invita a "Correr 5km el sábado"</div><div class="cbs">Se añade a tu agenda si aceptas · +20 pts</div></div>
+            <div class="cbbtns"><button class="cbyes" onclick="acceptCollab()">✓ Aceptar</button><button class="cbno" onclick="declineCollab()">✗</button></div>
+          </div>
+          <div class="dmi2" onclick="showToast('💬 Chat con Ana Rodríguez','')"><div class="dmav2" style="background:linear-gradient(135deg,#E8735A,#F2A27D)"><div class="dmdot" style="background:#22C55E"></div>A</div><div class="dmin2"><div class="dmn2">Ana Rodríguez</div><div class="dmp2">¿Mañana corremos juntas? 🏃‍♀️</div></div><div class="dmu2">2</div></div>
+          <div class="dmi2" onclick="showToast('💬 Chat con Carlos M.','')"><div class="dmav2" style="background:linear-gradient(135deg,#2EAF7D,#22C55E)"><div class="dmdot" style="background:#22C55E"></div>C</div><div class="dmin2"><div class="dmn2">Carlos M.</div><div class="dmp2">Te comparto la receta 👍</div></div><div class="dmu2">1</div></div>
+          <div class="dmi2" onclick="showToast('💬 Chat con Luisa G.','')"><div class="dmav2" style="background:linear-gradient(135deg,#7C3AED,#A855F7)"><div class="dmdot" style="background:#94A3B8"></div>L</div><div class="dmin2"><div class="dmn2">Luisa G.</div><div class="dmp2">¡Qué racha tan increíble! 🔥</div></div><div style="font-size:.54rem;color:var(--tlight)">1d</div></div>
+          <div class="dmi2" style="border:1.5px dashed var(--border2);background:transparent" onclick="showToast('🔍 Buscar por @ de Instagram','')"><div class="dmav2" style="background:var(--grad)">＋</div><div class="dmin2"><div class="dmn2" style="color:var(--blue)">Nuevo mensaje</div><div class="dmp2">Busca por @usuario de Instagram</div></div></div>
+        </div>
+
+        <!-- NOTES VIEW -->
+        <div class="view" id="view-notes">
+          <div class="page-title">📝 Notas y Recordatorios</div>
+          <div class="page-sub">Captura todo · Libera espacio en tu mente</div>
+          <div style="background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden">
+            <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700">📝 Mis notas</div>
+              <button onclick="showToast('📝 Nueva nota creada','success')" style="background:var(--grad);border:none;border-radius:9px;padding:7px 16px;color:white;font-size:.67rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">＋ Nueva nota</button>
+            </div>
+            <div style="padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+              <div style="background:var(--sky);border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid var(--border2)" onclick="showToast('📝 Abriendo: Compras del super','')"><div style="font-size:.76rem;font-weight:600;color:var(--text);margin-bottom:3px">🛒 Compras del super</div><div style="font-size:.62rem;color:var(--tlight)">Leche, aguacate, pollo, avena, té verde...</div></div>
+              <div style="background:var(--goldl);border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid rgba(240,180,41,.2)" onclick="showToast('💡 Abriendo: Idea para la app','')"><div style="font-size:.76rem;font-weight:600;color:var(--text);margin-bottom:3px">💡 Idea para la app</div><div style="font-size:.62rem;color:var(--tlight)">Agregar sección de gratitud diaria en el diario...</div></div>
+              <div style="background:var(--greenl);border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid rgba(46,175,125,.2)" onclick="showToast('💳 Recordatorio: Pagar tarjeta','')"><div style="font-size:.76rem;font-weight:600;color:var(--text);margin-bottom:3px">💳 Pagar tarjeta · Lunes 10am</div><div style="font-size:.62rem;color:var(--tlight)">Creado vía 🎙️ comando de voz</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end main -->
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="rsb">
+        <div class="crd">
+          <div class="crh"><div class="crt">✅ Hábitos de hoy</div><div class="crl" onclick="sv('habits',null)">Ver todos →</div></div>
+          <div class="crb">
+            <div style="display:flex;align-items:center;gap:13px;margin-bottom:13px">
+              <div class="ring-big"><svg viewBox="0 0 60 60"><circle class="rbg2" cx="30" cy="30" r="25"/><circle class="rfill2" id="habit-ring" cx="30" cy="30" r="25"/></svg><div class="rt2" id="habit-pct">75%</div></div>
+              <div><div style="font-size:.85rem;font-weight:700;color:var(--text)" id="habit-summary">3 de 5 hoy</div><div style="font-size:.62rem;color:var(--tlight)">🔥 Racha de 12 días</div></div>
+            </div>
+            <div class="hb" onclick="toggleSideHabit(this,'Meditación',10)"><div class="hbic2" style="background:#E8F5E9">🧘</div><div class="hbi2"><div class="hbn2">Meditación</div><div class="hbm2">🔥 12 días · ⏱</div></div><div class="hbch2 done">✓</div></div>
+            <div class="hb" onclick="toggleSideHabit(this,'Agua',10)"><div class="hbic2" style="background:#E3F2FD">💧</div><div class="hbi2"><div class="hbn2">2L de agua</div><div class="hbm2">🔥 20 días</div></div><div class="hbch2 done">✓</div></div>
+            <div class="hb" onclick="toggleSideHabit(this,'Lectura',10)"><div class="hbic2" style="background:#FFF8E1">📚</div><div class="hbi2"><div class="hbn2">Leer 20 min</div><div class="hbm2">🔥 5 días</div></div><div class="hbch2 done">✓</div></div>
+            <div class="hb" onclick="toggleSideHabit(this,'Ejercicio',10)"><div class="hbic2" style="background:#FCE4EC">🏃</div><div class="hbi2"><div class="hbn2">Ejercicio</div><div class="hbm2">Pendiente · 5:00 PM</div></div><div class="hbch2 open">○</div></div>
+            <div class="hb" onclick="toggleSideHabit(this,'Comida',10)"><div class="hbic2" style="background:#E8F5E9">🥗</div><div class="hbi2"><div class="hbn2">Comida saludable</div><div class="hbm2">Pendiente · 1:00 PM</div></div><div class="hbch2 open">○</div></div>
+          </div>
+        </div>
+        <div class="crd">
+          <div class="crh"><div class="crt">🏆 Wall of Fame</div><div class="crl" onclick="showToast('🏆 Ranking semanal completo','')">Ver →</div></div>
+          <div class="crb">
+            <div class="woftabs2"><div class="wt2 on" onclick="wofTab(this,'Semana')">Semana</div><div class="wt2" onclick="wofTab(this,'Mes')">Mes</div><div class="wt2" onclick="wofTab(this,'Año')">Año</div></div>
+            <div class="wofi2" onclick="showToast('👑 Ana · #1 · 2,840 pts','')"><div class="w2rk">👑</div><div class="w2av" style="background:linear-gradient(135deg,#F59E0B,#D97706)">A</div><div class="w2n
