@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Tracker · Crear cuenta</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tm:#3A5570;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--go:#F0B429;--br:rgba(46,158,224,0.15);--g:linear-gradient(135deg,#7EC8F0,#2E9EE0);--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;color:var(--t);min-height:100vh;background:linear-gradient(160deg,#C8E4F5,#EAF5FF,#D0E8F8);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;position:relative;overflow:hidden}
+.bc{position:absolute;border-radius:50%;pointer-events:none}
+.bc1{width:500px;height:500px;background:rgba(46,158,224,0.06);top:-150px;right:-150px}
+.bc2{width:350px;height:350px;background:rgba(46,158,224,0.05);bottom:-100px;left:-100px}
+.card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:24px;border:1px solid var(--br);box-shadow:0 20px 60px rgba(46,158,224,0.12);padding:36px 40px;max-width:520px;width:100%;position:relative;z-index:1}
+.logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:4px}
+.logo-tag{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tl);text-align:center;margin-bottom:20px}
+.steps{display:flex;gap:0;margin-bottom:24px}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.step::after{content:'';position:absolute;top:13px;right:-50%;width:100%;height:2px;background:var(--br);z-index:0}
+.step:last-child::after{display:none}
+.step-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;position:relative;z-index:1;transition:all .3s}
+.step-dot.done{background:var(--gr);color:#fff}
+.step-dot.active{background:var(--g2);color:#fff;box-shadow:0 0 0 3px rgba(46,158,224,0.2)}
+.step-dot.pending{background:var(--sky);color:var(--tl);border:2px solid var(--br)}
+.step-lbl{font-size:.52rem;font-weight:600;color:var(--tl);text-align:center}
+.step.active .step-lbl{color:var(--b);font-weight:700}
+.form-view{display:none}
+.form-view.on{display:block}
+.section-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--t);margin-bottom:4px}
+.section-sub{font-size:.68rem;color:var(--tl);margin-bottom:20px}
+.field{margin-bottom:14px}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+label{font-size:.64rem;font-weight:700;color:var(--tm);display:block;margin-bottom:5px}
+input,select{width:100%;background:var(--sky);border:1.5px solid var(--br);border-radius:10px;padding:11px 14px;font-size:.76rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;transition:all .15s}
+input:focus,select:focus{border-color:var(--b);background:#fff;box-shadow:0 0 0 3px rgba(46,158,224,0.08)}
+input.error{border-color:var(--pk);background:#FFF5F5}
+input::placeholder{color:var(--tl)}
+.input-hint{font-size:.58rem;color:var(--tl);margin-top:4px}
+.input-hint.error{color:var(--pk)}
+.avatar-upload{border:2px dashed var(--br);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .15s;background:var(--sky);position:relative;overflow:hidden}
+.avatar-upload:hover{border-color:var(--b);background:#fff}
+.avatar-upload.has-img{padding:0;border-style:solid;border-color:var(--b)}
+.avatar-preview{width:100%;height:140px;object-fit:cover;border-radius:12px;display:none}
+.avatar-upload.has-img .avatar-preview{display:block}
+.avatar-upload.has-img .avatar-placeholder{display:none}
+.avatar-placeholder{pointer-events:none}
+.av-icon{font-size:2rem;margin-bottom:6px}
+.av-text{font-size:.68rem;font-weight:600;color:var(--tm);margin-bottom:3px}
+.av-sub{font-size:.58rem;color:var(--tl)}
+.av-change{position:absolute;bottom:8px;right:8px;background:var(--g2);color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:.56rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:none}
+.avatar-upload.has-img .av-change{display:block}
+.pass-wrap{position:relative}
+.pass-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:.8rem;color:var(--tl);background:none;border:none;padding:4px}
+.strength-bar{height:4px;border-radius:2px;background:var(--sky);margin-top:6px;overflow:hidden}
+.strength-fill{height:100%;border-radius:2px;width:0;transition:all .3s}
+.strength-text{font-size:.56rem;margin-top:3px}
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0}
+.divider-line{flex:1;height:1px;background:var(--br)}
+.divider-text{font-size:.62rem;color:var(--tl);font-weight:500}
+.google-btn{width:100%;background:#fff;border:1.5px solid var(--br);border-radius:10px;padding:11px 16px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:.76rem;font-weight:600;color:var(--t);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.google-btn:hover{background:var(--sky);border-color:var(--b)}
+.terms-box{background:var(--sky);border-radius:12px;padding:14px 16px;margin:16px 0}
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.check-row:last-child{margin-bottom:0}
+.check-row input[type=checkbox]{width:16px;height:16px;min-width:16px;margin-top:2px;cursor:pointer;accent-color:var(--b)}
+.check-label{font-size:.65rem;color:var(--tm);line-height:1.5;cursor:pointer}
+.check-label a{color:var(--b);font-weight:600;text-decoration:none}
+.check-label a:hover{text-decoration:underline}
+.btn-primary{width:100%;background:var(--g2);border:none;border-radius:11px;padding:13px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;box-shadow:0 4px 14px rgba(46,158,224,0.3);margin-top:6px}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,158,224,0.4)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{width:100%;background:var(--sky);border:1.5px solid var(--br);border-radius:11px;padding:12px;color:var(--tm);font-size:.76rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px}
+.already{text-align:center;font-size:.65rem;color:var(--tl);margin-top:14px}
+.already a{color:var(--b);font-weight:600;text-decoration:none}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--t);color:#fff;padding:12px 20px;border-radius:12px;font-size:.72rem;font-weight:600;z-index:2000;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.lang-sel{position:absolute;top:16px;right:16px;background:var(--sky);border:1px solid var(--br);border-radius:8px;padding:5px 10px;font-size:.62rem;color:var(--b2);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none}
+@media(max-width:600px){.card{padding:28px 22px}.field-row{flex-direction:column;gap:0}}
+</style>
+</head>
+<body>
+<div class="bc bc1"></div>
+<div class="bc bc2"></div>
+<div class="toast" id="toast"></div>
+
+<div class="card">
+  <select class="lang-sel" id="lang-sel" onchange="setLang(this.value)">
+    <option value="es">🇲🇽 Español</option>
+    <option value="en">🇺🇸 English</option>
+  </select>
+
+  <div class="logo">Life Tracker</div>
+  <div class="logo-tag" id="tag-line">Tu segundo cerebro · Gamificado y social</div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step" id="step1">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-lbl" id="lbl-step1">Tu info</div>
+    </div>
+    <div class="step" id="step2">
+      <div class="step-dot pending" id="dot2">2</div>
+      <div class="step-lbl" id="lbl-step2">Tu foto</div>
+    </div>
+    <div class="step" id="step3">
+      <div class="step-dot pending" id="dot3">3</div>
+      <div class="step-lbl" id="lbl-step3">Términos</div>
+    </div>
+  </div>
+
+  <!-- STEP 1: INFO -->
+  <div class="form-view on" id="view-1">
+    <div class="section-title" id="title-1">Crea tu cuenta</div>
+    <div class="section-sub" id="sub-1">Ingresa tus datos para comenzar</div>
+
+    <div class="google-btn" onclick="signInGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <span id="btn-google">Continuar con Google</span>
+    </div>
+
+    <div class="divider"><div class="divider-line"></div><div class="divider-text" id="or-text">o regístrate con email</div><div class="divider-line"></div></div>
+
+    <div class="field-row">
+      <div class="field"><label id="lbl-name">Nombre *</label><input type="text" id="f-name" placeholder="María"></div>
+      <div class="field"><label id="lbl-lastname">Apellido *</label><input type="text" id="f-lastname" placeholder="González"></div>
+    </div>
+    <div class="field"><label id="lbl-username">Nombre de usuario *</label><input type="text" id="f-username" placeholder="@maria_g" oninput="checkUsername(this)"><div class="input-hint" id="hint-username">Solo letras, números y guion bajo. Sin espacios.</div></div>
+    <div class="field"><label id="lbl-email">Email *</label><input type="email" id="f-email" placeholder="tu@email.com"></div>
+    <div class="field">
+      <label id="lbl-pass">Contraseña *</label>
+      <div class="pass-wrap">
+        <input type="password" id="f-pass" placeholder="Mínimo 8 caracteres" oninput="checkStrength(this.value)">
+        <button class="pass-toggle" onclick="togglePass('f-pass',this)" type="button">👁</button>
+      </div>
+      <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+      <div class="strength-text" id="strength-text"></div>
+    </div>
+    <div class="field"><label id="lbl-pass2">Confirmar contraseña *</label><div class="pass-wrap"><input type="password" id="f-pass2" placeholder="Repite tu contraseña"><button class="pass-toggle" onclick="togglePass('f-pass2',this)" type="button">👁</button></div></div>
+    <div class="field-row">
+      <div class="field"><label id="lbl-birth">Fecha de nacimiento *</label><input type="date" id="f-birth"></div>
+      <div class="field"><label id="lbl-gender">Género *</label>
+        <select id="f-gender">
+          <option value="" id="opt-select">Seleccionar</option>
+          <option value="f" id="opt-f">Femenino</option>
+          <option value="m" id="opt-m">Masculino</option>
+          <option value="nb" id="opt-nb">No binario</option>
+          <option value="nd" id="opt-nd">Prefiero no decir</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label id="lbl-country">País *</label>
+        <select id="f-country">
+          <option value="">Seleccionar</option>
+          <option value="MX">🇲🇽 México</option>
+          <option value="US">🇺🇸 Estados Unidos</option>
+          <option value="ES">🇪🇸 España</option>
+          <option value="AR">🇦🇷 Argentina</option>
+          <option value="CO">🇨🇴 Colombia</option>
+          <option value="CL">🇨🇱 Chile</option>
+          <option value="PE">🇵🇪 Perú</option>
+          <option value="VE">🇻🇪 Venezuela</option>
+          <option value="EC">🇪🇨 Ecuador</option>
+          <option value="GT">🇬🇹 Guatemala</option>
+          <option value="OTHER">🌍 Otro</option>
+        </select>
+      </div>
+      <div class="field"><label id="lbl-city">Ciudad *</label><input type="text" id="f-city" placeholder="Ciudad de México"></div>
+    </div>
+    <button class="btn-primary" onclick="goStep2()" id="btn-next1">Siguiente →</button>
+    <div class="already" id="already-text">¿Ya tienes cuenta? <a href="index.html" id="login-link">Iniciar sesión</a></div>
+  </div>
+
+  <!-- STEP 2: PHOTO -->
+  <div class="form-view" id="view-2">
+    <div class="section-title" id="title-2">Tu foto de perfil</div>
+    <div class="section-sub" id="sub-2">Es obligatoria · Usa una foto real tuya</div>
+    <div class="avatar-upload" id="avatar-upload" onclick="document.getElementById('avatar-input').click()">
+      <img class="avatar-preview" id="avatar-preview" src="" alt="Preview">
+      <div class="avatar-placeholder">
+        <div class="av-icon">📸</div>
+        <div class="av-text" id="av-text">Toca para agregar tu foto</div>
+        <div class="av-sub" id="av-sub">Toma una foto o sube desde tu galería</div>
+      </div>
+      <button class="av-change" id="av-change" onclick="document.getElementById('avatar-input').click()" type="button">Cambiar foto</button>
+    </div>
+    <input type="file" id="avatar-input" accept="image/*" capture="user" style="display:none" onchange="previewAvatar(this)">
+    <div class="input-hint" id="hint-photo" style="text-align:center;margin-top:8px">JPG o PNG · Máximo 5MB · Cuadrada recomendada</div>
+    <button class="btn-primary" onclick="goStep3()" id="btn-next2" disabled>Siguiente →</button>
+    <button class="btn-secondary" onclick="goView(1)" id="btn-back2">← Atrás</button>
+  </div>
+
+  <!-- STEP 3: TERMS -->
+  <div class="form-view" id="view-3">
+    <div class="section-title" id="title-3">Casi listo 🎉</div>
+    <div class="section-sub" id="sub-3">Acepta los términos para crear tu cuenta</div>
+    <div class="terms-box">
+      <div class="check-row">
+        <input type="checkbox" id="chk-privacy" onchange="checkTerms()">
+        <label class="check-label" for="chk-privacy" id="lbl-privacy">He leído y acepto el <a href="privacy.html" target="_blank">Aviso de Privacidad</a> de Life Tracker, incluyendo el tratamiento de mis datos personales.</label>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="chk-terms" onchange="checkTerms()">
+        <label class="check-label" for="chk-terms" id="lbl-terms">Acepto los <a href="privacy.html#s8" target="_blank">Términos y Condiciones</a> de uso de Life Tracker.</label>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="chk-age" onchange="checkTerms()">
+        <label class="check-label" for="chk-age" id="lbl-age">Confirmo que tengo al menos 13 años de edad.</label>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="chk-notif" onchange="checkTerms()">
+        <label class="check-label" for="chk-notif" id="lbl-notif">Acepto recibir notificaciones sobre mis hábitos y recordatorios de la app. (Puedes desactivarlas después)</label>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="createAccount()" id="btn-create" disabled>🚀 Crear mi cuenta</button>
+    <button class="btn-secondary" onclick="goView(2)" id="btn-back3">← Atrás</button>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-storage.js";
+
+const cfg = {
+  apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",
+  authDomain:"lifetracker26-30037.firebaseapp.com",
+  projectId:"lifetracker26-30037",
+  storageBucket:"lifetracker26-30037.firebasestorage.app",
+  messagingSenderId:"375272536562",
+  appId:"1:375272536562:web:33cfead324a6e3a049136b"
+};
+const app = initializeApp(cfg);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const provider = new GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/calendar.readonly');
+
+window._auth = auth;
+window._db = db;
+window._storage = storage;
+window._provider = provider;
+window._createUser = createUserWithEmailAndPassword;
+window._signInWithPopup = signInWithPopup;
+window._updateProfile = updateProfile;
+window._doc = doc;
+window._setDoc = setDoc;
+window._getDoc = getDoc;
+window._ref = ref;
+window._uploadBytes = uploadBytes;
+window._getDownloadURL = getDownloadURL;
+</script>
+
+<script>
+let currentLang = 'es';
+let avatarFile = null;
+let avatarBase64 = null;
+
+const txt = {
+  es: {
+    tagLine:'Tu segundo cerebro · Gamificado y social',
+    step1:'Tu info',step2:'Tu foto',step3:'Términos',
+    title1:'Crea tu cuenta',sub1:'Ingresa tus datos para comenzar',
+    title2:'Tu foto de perfil',sub2:'Es obligatoria · Usa una foto real tuya',
+    title3:'¡Casi listo! 🎉',sub3:'Acepta los términos para crear tu cuenta',
+    btnGoogle:'Continuar con Google',orText:'o regístrate con email',
+    lblName:'Nombre *',lblLastname:'Apellido *',
+    lblUsername:'Nombre de usuario *',lblEmail:'Email *',
+    lblPass:'Contraseña *',lblPass2:'Confirmar contraseña *',
+    lblBirth:'Fecha de nacimiento *',lblGender:'Género *',
+    lblCountry:'País *',lblCity:'Ciudad *',
+    optSelect:'Seleccionar',optF:'Femenino',optM:'Masculino',optNb:'No binario',optNd:'Prefiero no decir',
+    hintUsername:'Solo letras, números y guion bajo. Sin espacios.',
+    hintPhoto:'JPG o PNG · Máximo 5MB · Cuadrada recomendada',
+    avText:'Toca para agregar tu foto',avSub:'Toma una foto o sube desde tu galería',
+    avChange:'Cambiar foto',
+    lblPrivacy:'He leído y acepto el <a href="privacy.html" target="_blank">Aviso de Privacidad</a> de Life Tracker.',
+    lblTerms:'Acepto los <a href="privacy.html#s8" target="_blank">Términos y Condiciones</a> de uso.',
+    lblAge:'Confirmo que tengo al menos 13 años de edad.',
+    lblNotif:'Acepto recibir notificaciones de hábitos y recordatorios.',
+    btnNext:'Siguiente →',btnBack:'← Atrás',btnCreate:'🚀 Crear mi cuenta',
+    alreadyText:'¿Ya tienes cuenta?',loginLink:'Iniciar sesión',
+    errName:'Ingresa tu nombre',errLastname:'Ingresa tu apellido',
+    errUsername:'El nombre de usuario debe tener al menos 3 caracteres',
+    errEmail:'Ingresa un email válido',errPass:'La contraseña debe tener al menos 8 caracteres',
+    errPass2:'Las contraseñas no coinciden',errBirth:'Ingresa tu fecha de nacimiento',
+    errGender:'Selecciona tu género',errCountry:'Selecciona tu país',errCity:'Ingresa tu ciudad',
+    errPhoto:'La foto de perfil es obligatoria',
+    strWeak:'Débil',strFair:'Regular',strGood:'Buena',strStrong:'Muy segura',
+    creating:'Creando tu cuenta...',success:'¡Cuenta creada! Bienvenida a Life Tracker 🎉',
+    errExists:'Este email ya está registrado. ¿Quieres iniciar sesión?',
+    errGeneral:'Error al crear la cuenta. Intenta de nuevo.'
+  },
+  en: {
+    tagLine:'Your second brain · Gamified and social',
+    step1:'Your info',step2:'Your photo',step3:'Terms',
+    title1:'Create your account',sub1:'Enter your details to get started',
+    title2:'Your profile photo',sub2:'Required · Use a real photo of you',
+    title3:'Almost there! 🎉',sub3:'Accept the terms to create your account',
+    btnGoogle:'Continue with Google',orText:'or sign up with email',
+    lblName:'First name *',lblLastname:'Last name *',
+    lblUsername:'Username *',lblEmail:'Email *',
+    lblPass:'Password *',lblPass2:'Confirm password *',
+    lblBirth:'Date of birth *',lblGender:'Gender *',
+    lblCountry:'Country *',lblCity:'City *',
+    optSelect:'Select',optF:'Female',optM:'Male',optNb:'Non-binary',optNd:'Prefer not to say',
+    hintUsername:'Letters, numbers and underscores only. No spaces.',
+    hintPhoto:'JPG or PNG · Max 5MB · Square recommended',
+    avText:'Tap to add your photo',avSub:'Take a photo or upload from your gallery',
+    avChange:'Change photo',
+    lblPrivacy:'I have read and accept the <a href="privacy.html" target="_blank">Privacy Policy</a> of Life Tracker.',
+    lblTerms:'I accept the <a href="privacy.html#s8" target="_blank">Terms and Conditions</a> of use.',
+    lblAge:'I confirm I am at least 13 years old.',
+    lblNotif:'I accept to receive habit notifications and reminders.',
+    btnNext:'Next →',btnBack:'← Back',btnCreate:'🚀 Create my account',
+    alreadyText:'Already have an account?',loginLink:'Sign in',
+    errName:'Enter your first name',errLastname:'Enter your last name',
+    errUsername:'Username must be at least 3 characters',
+    errEmail:'Enter a valid email',errPass:'Password must be at least 8 characters',
+    errPass2:'Passwords do not match',errBirth:'Enter your date of birth',
+    errGender:'Select your gender',errCountry:'Select your country',errCity:'Enter your city',
+    errPhoto:'Profile photo is required',
+    strWeak:'Weak',strFair:'Fair',strGood:'Good',strStrong:'Very strong',
+    creating:'Creating your account...',success:'Account created! Welcome to Life Tracker 🎉',
+    errExists:'This email is already registered. Do you want to sign in?',
+    errGeneral:'Error creating account. Please try again.'
+  }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = txt[lang];
+  document.getElementById('tag-line').textContent = t.tagLine;
+  document.getElementById('lbl-step1').textContent = t.step1;
+  document.getElementById('lbl-step2').textContent = t.step2;
+  document.getElementById('lbl-step3').textContent = t.step3;
+  document.getElementById('title-1').textContent = t.title1;
+  document.getElementById('sub-1').textContent = t.sub1;
+  document.getElementById('title-2').textContent = t.title2;
+  document.getElementById('sub-2').textContent = t.sub2;
+  document.getElementById('title-3').textContent = t.title3;
+  document.getElementById('sub-3').textContent = t.sub3;
+  document.getElementById('btn-google').textContent = t.btnGoogle;
+  document.getElementById('or-text').textContent = t.orText;
+  document.getElementById('lbl-name').textContent = t.lblName;
+  document.getElementById('lbl-lastname').textContent = t.lblLastname;
+  document.getElementById('lbl-username').textContent = t.lblUsername;
+  document.getElementById('lbl-email').textContent = t.lblEmail;
+  document.getElementById('lbl-pass').textContent = t.lblPass;
+  document.getElementById('lbl-pass2').textContent = t.lblPass2;
+  document.getElementById('lbl-birth').textContent = t.lblBirth;
+  document.getElementById('lbl-gender').textContent = t.lblGender;
+  document.getElementById('lbl-country').textContent = t.lblCountry;
+  document.getElementById('lbl-city').textContent = t.lblCity;
+  document.getElementById('opt-select').textContent = t.optSelect;
+  document.getElementById('opt-f').textContent = t.optF;
+  document.getElementById('opt-m').textContent = t.optM;
+  document.getElementById('opt-nb').textContent = t.optNb;
+  document.getElementById('opt-nd').textContent = t.optNd;
+  document.getElementById('hint-username').textContent = t.hintUsername;
+  document.getElementById('hint-photo').textContent = t.hintPhoto;
+  document.getElementById('av-text').textContent = t.avText;
+  document.getElementById('av-sub').textContent = t.avSub;
+  document.getElementById('av-change').textContent = t.avChange;
+  document.getElementById('lbl-privacy').innerHTML = t.lblPrivacy;
+  document.getElementById('lbl-terms').innerHTML = t.lblTerms;
+  document.getElementById('lbl-age').textContent = t.lblAge;
+  document.getElementById('lbl-notif').textContent = t.lblNotif;
+  document.getElementById('btn-next1').textContent = t.btnNext;
+  document.getElementById('btn-next2').textContent = t.btnNext;
+  document.getElementById('btn-back2').textContent = t.btnBack;
+  document.getElementById('btn-back3').textContent = t.btnBack;
+  document.getElementById('btn-create').textContent = t.btnCreate;
+  document.getElementById('already-text').innerHTML = t.alreadyText + ' <a href="index.html" id="login-link">' + t.loginLink + '</a>';
+  document.documentElement.lang = lang;
+}
+
+function goView(n) {
+  document.querySelectorAll('.form-view').forEach(v => v.classList.remove('on'));
+  document.getElementById('view-'+n).classList.add('on');
+  ['dot1','dot2','dot3'].forEach((id,i) => {
+    const dot = document.getElementById(id);
+    dot.className = 'step-dot ' + (i+1 < n ? 'done' : i+1 === n ? 'active' : 'pending');
+    dot.textContent = i+1 < n ? '✓' : i+1;
+  });
+}
+
+function checkUsername(input) {
+  input.value = input.value.replace(/[^a-zA-Z0-9_]/g,'');
+  if(!input.value.startsWith('@') && input.value.length > 0) {
+    input.value = '@' + input.value.replace('@','');
+  }
+}
+
+function checkStrength(pass) {
+  const fill = document.getElementById('strength-fill');
+  const text = document.getElementById('strength-text');
+  const t = txt[currentLang];
+  let strength = 0;
+  if(pass.length >= 8) strength++;
+  if(/[A-Z]/.test(pass)) strength++;
+  if(/[0-9]/.test(pass)) strength++;
+  if(/[^A-Za-z0-9]/.test(pass)) strength++;
+  const colors = ['#E8547A','#F0B429','#7EC8F0','#2EAF7D'];
+  const widths = ['25%','50%','75%','100%'];
+  const labels = [t.strWeak, t.strFair, t.strGood, t.strStrong];
+  if(pass.length === 0) { fill.style.width='0'; text.textContent=''; return; }
+  const idx = Math.max(0, strength-1);
+  fill.style.background = colors[idx];
+  fill.style.width = widths[idx];
+  text.textContent = labels[idx];
+  text.style.color = colors[idx];
+}
+
+function togglePass(id, btn) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+function previewAvatar(input) {
+  if(input.files && input.files[0]) {
+    const file = input.files[0];
+    if(file.size > 5*1024*1024) { T(txt[currentLang].hintPhoto,'e'); return; }
+    avatarFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      avatarBase64 = e.target.result;
+      const preview = document.getElementById('avatar-preview');
+      preview.src = avatarBase64;
+      document.getElementById('avatar-upload').classList.add('has-img');
+      document.getElementById('btn-next2').disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function goStep2() {
+  const t = txt[currentLang];
+  const name = document.getElementById('f-name').value.trim();
+  const lastname = document.getElementById('f-lastname').value.trim();
+  const username = document.getElementById('f-username').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const pass = document.getElementById('f-pass').value;
+  const pass2 = document.getElementById('f-pass2').value;
+  const birth = document.getElementById('f-birth').value;
+  const gender = document.getElementById('f-gender').value;
+  const country = document.getElementById('f-country').value;
+  const city = document.getElementById('f-city').value.trim();
+  if(!name) { T(t.errName,'e'); return; }
+  if(!lastname) { T(t.errLastname,'e'); return; }
+  if(username.length < 4) { T(t.errUsername,'e'); return; }
+  if(!email || !email.includes('@')) { T(t.errEmail,'e'); return; }
+  if(pass.length < 8) { T(t.errPass,'e'); return; }
+  if(pass !== pass2) { T(t.errPass2,'e'); return; }
+  if(!birth) { T(t.errBirth,'e'); return; }
+  if(!gender) { T(t.errGender,'e'); return; }
+  if(!country) { T(t.errCountry,'e'); return; }
+  if(!city) { T(t.errCity,'e'); return; }
+  goView(2);
+}
+
+function goStep3() {
+  if(!avatarFile) { T(txt[currentLang].errPhoto,'e'); return; }
+  goView(3);
+}
+
+function checkTerms() {
+  const all = ['chk-privacy','chk-terms','chk-age','chk-notif'].every(id => document.getElementById(id).checked);
+  document.getElementById('btn-create').disabled = !all;
+}
+
+async function createAccount() {
+  const t = txt[currentLang];
+  const btn = document.getElementById('btn-create');
+  btn.disabled = true;
+  btn.textContent = t.creating;
+  const name = document.getElementById('f-name').value.trim();
+  const lastname = document.getElementById('f-lastname').value.trim();
+  const username = document.getElementById('f-username').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const pass = document.getElementById('f-pass').value;
+  const birth = document.getElementById('f-birth').value;
+  const gender = document.getElementById('f-gender').value;
+  const country = document.getElementById('f-country').value;
+  const city = document.getElementById('f-city').value.trim();
+  try {
+    const cred = await window._createUser(window._auth, email, pass);
+    const user = cred.user;
+    let photoURL = avatarBase64 || '';
+    try {
+      const storageRef = window._ref(window._storage, `avatars/${user.uid}`);
+      await window._uploadBytes(storageRef, avatarFile);
+      photoURL = await window._getDownloadURL(storageRef);
+    } catch(e) { console.log('Storage error, using base64'); }
+    await window._updateProfile(user, { displayName: name+' '+lastname, photoURL });
+    await window._setDoc(window._doc(window._db,'users',user.uid), {
+      name, lastname, username, email, birth, gender, country, city,
+      photoURL, pts:0, coins:0, streak:0, lang:currentLang,
+      createdAt: new Date().toISOString(), role:'beta'
+    });
+    sessionStorage.setItem('lt-beta','1');
+    T(t.success,'s');
+    setTimeout(() => window.location.href='onboarding.html', 1500);
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = t.btnCreate;
+    if(err.code === 'auth/email-already-in-use') T(t.errExists,'e');
+    else T(t.errGeneral,'e');
+  }
+}
+
+window.signInGoogle = async function() {
+  try {
+    const result = await window._signInWithPopup(window._auth, window._provider);
+    const user = result.user;
+    const snap = await window._getDoc(window._doc(window._db,'users',user.uid));
+    if(!snap.exists()) {
+      await window._setDoc(window._doc(window._db,'users',user.uid), {
+        name: user.displayName?.split(' ')[0] || '',
+        lastname: user.displayName?.split(' ').slice(1).join(' ') || '',
+        username: '@'+( user.displayName?.toLowerCase().replace(/ /g,'_') || 'user'),
+        email: user.email, photoURL: user.photoURL,
+        pts:0, coins:0, streak:0, lang:currentLang,
+        createdAt: new Date().toISOString(), role:'beta'
+      });
+    }
+    sessionStorage.setItem('lt-beta','1');
+    T(txt[currentLang].success,'s');
+    setTimeout(() => window.location.href='onboarding.html', 1500);
+  } catch(e) {
+    T(txt[currentLang].errGeneral,'e');
+    console.error(e);
+  }
+};
+
+function T(m,t='') {
+  const el=document.getElementById('toast');
+  el.textContent=m;
+  el.style.background=t==='s'?'#2EAF7D':t==='e'?'#E8547A':'#0D2137';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+if(!sessionStorage.getItem('lt-beta') && !sessionStorage.getItem('lt-admin')) {
+  window.location.href='index.html';
+}
+</script>
+</body>
+</html>

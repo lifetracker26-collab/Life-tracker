@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Tracker · Aviso de Privacidad y Términos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tm:#3A5570;--tl:#7A9AB8;--br:rgba(46,158,224,0.12);--g:linear-gradient(135deg,#7EC8F0,#2E9EE0);--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;color:var(--t);background:linear-gradient(160deg,#C8E4F5,#EAF5FF)}
+.topbar{background:#0D2137;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;background:var(--g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:5px 12px;font-size:.65rem;font-weight:600;color:rgba(255,255,255,.8);cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.back-btn:hover{background:rgba(255,255,255,.18)}
+.translate-bar{background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--br);padding:8px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.translate-lbl{font-size:.62rem;font-weight:600;color:var(--tl)}
+.lang-btn{background:var(--sky);border:1px solid var(--br);border-radius:7px;padding:4px 10px;font-size:.62rem;font-weight:600;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.lang-btn:hover,.lang-btn.on{background:var(--b);color:#fff;border-color:transparent}
+.wrap{max-width:800px;margin:0 auto;padding:32px 20px 60px}
+.hero{background:var(--g2);border-radius:20px;padding:32px 36px;margin-bottom:28px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%}
+.hero-tag{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:6px}
+.hero-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:#fff;margin-bottom:6px;position:relative;z-index:1}
+.hero-sub{font-size:.76rem;color:rgba(255,255,255,.75);line-height:1.6;position:relative;z-index:1}
+.hero-date{font-size:.58rem;color:rgba(255,255,255,.5);margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15)}
+.toc{background:rgba(255,255,255,.9);border-radius:16px;padding:20px 24px;margin-bottom:24px;border:1px solid var(--br)}
+.toc-title{font-size:.72rem;font-weight:700;color:var(--t);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.toc-list{display:flex;flex-direction:column;gap:6px}
+.toc-item{font-size:.7rem;color:var(--b);cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--br)}
+.toc-item:last-child{border-bottom:none}
+.toc-item:hover{color:var(--b2)}
+.toc-num{font-size:.6rem;font-weight:700;color:var(--tl);width:18px}
+.section{background:rgba(255,255,255,.92);border-radius:16px;padding:24px 28px;margin-bottom:16px;border:1px solid var(--br);scroll-margin-top:100px}
+.sec-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--br)}
+.sec-icon{width:36px;height:36px;border-radius:10px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.sec-num{font-size:.58rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:1px}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--t)}
+.sec-body{font-size:.74rem;color:var(--tm);line-height:1.75}
+.sec-body p{margin-bottom:10px}
+.sec-body p:last-child{margin-bottom:0}
+.sec-body ul{margin:8px 0 10px 16px;display:flex;flex-direction:column;gap:5px}
+.sec-body li{font-size:.72rem;color:var(--tm);line-height:1.6}
+.sec-body strong{color:var(--t);font-weight:600}
+.highlight{background:var(--sky);border-left:3px solid var(--b);border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;font-size:.72rem;color:var(--b2);font-weight:500}
+.footer-doc{background:#0D2137;border-radius:16px;padding:24px 28px;text-align:center;margin-top:24px}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;background:var(--g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.footer-text{font-size:.62rem;color:rgba(255,255,255,.5);line-height:1.6}
+.footer-contact{font-size:.65rem;color:rgba(255,255,255,.7);margin-top:10px}
+.footer-contact a{color:var(--b);text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">Life Tracker</div>
+  <a href="index.html" class="back-btn">← Volver</a>
+</div>
+
+<!-- TRANSLATE BAR -->
+<div class="translate-bar">
+  <span class="translate-lbl">🌐 Traducir al idioma:</span>
+  <button class="lang-btn on" onclick="translateTo('es',this)">🇲🇽 Español</button>
+  <button class="lang-btn" onclick="translateTo('en',this)">🇺🇸 English</button>
+  <button class="lang-btn" onclick="translateTo('fr',this)">🇫🇷 Français</button>
+  <button class="lang-btn" onclick="translateTo('pt',this)">🇧🇷 Português</button>
+  <button class="lang-btn" onclick="translateTo('de',this)">🇩🇪 Deutsch</button>
+  <button class="lang-btn" onclick="translateTo('it',this)">🇮🇹 Italiano</button>
+  <button class="lang-btn" onclick="translateTo('zh-CN',this)">🇨🇳 中文</button>
+  <button class="lang-btn" onclick="translateTo('ja',this)">🇯🇵 日本語</button>
+  <button class="lang-btn" onclick="translateTo('ar',this)">🇸🇦 العربية</button>
+</div>
+
+<div class="wrap" id="content">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Documentos legales · Life Tracker App</div>
+    <div class="hero-title" id="doc-title">Aviso de Privacidad y Términos de Uso</div>
+    <div class="hero-sub" id="doc-sub">Este documento describe cómo Life Tracker recopila, usa y protege tu información personal. Al crear una cuenta aceptas estos términos. Por favor léelos con atención.</div>
+    <div class="hero-date" id="doc-date">Última actualización: 1 de junio de 2026 · Versión 1.0</div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <div class="toc-title" id="toc-title">Índice de contenidos</div>
+    <div class="toc-list">
+      <a class="toc-item" href="#s1"><span class="toc-num">01</span>Información que recopilamos</a>
+      <a class="toc-item" href="#s2"><span class="toc-num">02</span>Cómo usamos tu información</a>
+      <a class="toc-item" href="#s3"><span class="toc-num">03</span>Datos de salud y actividad física</a>
+      <a class="toc-item" href="#s4"><span class="toc-num">04</span>Compartir información con terceros</a>
+      <a class="toc-item" href="#s5"><span class="toc-num">05</span>Seguridad de tus datos</a>
+      <a class="toc-item" href="#s6"><span class="toc-num">06</span>Tus derechos (ARCO)</a>
+      <a class="toc-item" href="#s7"><span class="toc-num">07</span>Cookies y tecnologías similares</a>
+      <a class="toc-item" href="#s8"><span class="toc-num">08</span>Términos de uso</a>
+      <a class="toc-item" href="#s9"><span class="toc-num">09</span>Conducta del usuario</a>
+      <a class="toc-item" href="#s10"><span class="toc-num">10</span>Sistema de puntos y Life Coins</a>
+      <a class="toc-item" href="#s11"><span class="toc-num">11</span>Cancelación y eliminación de cuenta</a>
+      <a class="toc-item" href="#s12"><span class="toc-num">12</span>Contacto</a>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section" id="s1">
+    <div class="sec-header">
+      <div class="sec-icon">📋</div>
+      <div><div class="sec-num">Sección 01</div><div class="sec-title">Información que recopilamos</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Life Tracker recopila la siguiente información cuando creas una cuenta y usas la aplicación:</p>
+      <ul>
+        <li><strong>Datos de identidad:</strong> nombre, apellido, nombre de usuario (@), fecha de nacimiento, género y foto de perfil.</li>
+        <li><strong>Datos de contacto:</strong> dirección de correo electrónico y país de residencia.</li>
+        <li><strong>Datos de uso:</strong> hábitos creados, tareas completadas, puntos acumulados, días de racha y actividad dentro de la app.</li>
+        <li><strong>Datos de dispositivo:</strong> tipo de dispositivo, sistema operativo, versión de la app y dirección IP.</li>
+        <li><strong>Datos de redes sociales:</strong> links a perfiles de Instagram, TikTok, Twitter/X y Facebook que tú decidas agregar voluntariamente.</li>
+        <li><strong>Contenido generado:</strong> publicaciones en el timeline, notas, recordatorios y mensajes directos.</li>
+      </ul>
+      <div class="highlight">Si inicias sesión con Google, obtenemos tu nombre, email y foto de perfil directamente de tu cuenta Google con tu autorización expresa.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section" id="s2">
+    <div class="sec-header">
+      <div class="sec-icon">🎯</div>
+      <div><div class="sec-num">Sección 02</div><div class="sec-title">Cómo usamos tu información</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Usamos tu información exclusivamente para los siguientes fines:</p>
+      <ul>
+        <li>Crear y administrar tu cuenta de usuario.</li>
+        <li>Personalizar tu experiencia dentro de la app basándonos en tus hábitos y preferencias.</li>
+        <li>Calcular y mostrar tu sistema de puntos, Life Coins y rachas.</li>
+        <li>Enviar notificaciones sobre recordatorios de hábitos y eventos de tu calendario.</li>
+        <li>Mostrar tu perfil y actividad en el timeline social de la app si decides hacerlos públicos.</li>
+        <li>Mejorar la aplicación mediante análisis de uso agregado y anónimo.</li>
+        <li>Comunicarnos contigo sobre actualizaciones importantes de la app.</li>
+      </ul>
+      <p><strong>Life Tracker nunca vende tu información personal a terceros.</strong></p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section" id="s3">
+    <div class="sec-header">
+      <div class="sec-icon">❤️</div>
+      <div><div class="sec-num">Sección 03</div><div class="sec-title">Datos de salud y actividad física</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Life Tracker puede conectarse con dispositivos de salud como Apple Watch para obtener los siguientes datos de actividad física:</p>
+      <ul>
+        <li>Frecuencia cardíaca (latidos por minuto)</li>
+        <li>Calorías quemadas</li>
+        <li>Pasos diarios</li>
+        <li>Distancia recorrida</li>
+        <li>Kilómetros caminados o corridos</li>
+        <li>Horas y calidad de sueño</li>
+      </ul>
+      <div class="highlight">⚠️ Estos datos son de actividad física y bienestar general. Life Tracker NO es una aplicación médica, NO proporciona diagnósticos y NO reemplaza la consulta con profesionales de salud.</div>
+      <p>La conexión con Apple Watch y Google Fit es completamente <strong>opcional y voluntaria</strong>. Puedes revocar este acceso en cualquier momento desde la configuración de tu dispositivo.</p>
+      <p>Tus datos de salud se almacenan de forma encriptada y solo tú puedes acceder a ellos. No se comparten con terceros bajo ninguna circunstancia.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section" id="s4">
+    <div class="sec-header">
+      <div class="sec-icon">🤝</div>
+      <div><div class="sec-num">Sección 04</div><div class="sec-title">Compartir información con terceros</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Life Tracker utiliza los siguientes servicios de terceros para operar:</p>
+      <ul>
+        <li><strong>Firebase (Google):</strong> autenticación de usuarios y almacenamiento de datos.</li>
+        <li><strong>Google Calendar API:</strong> sincronización de eventos con tu calendario personal.</li>
+        <li><strong>Netlify:</strong> hospedaje y publicación de la aplicación web.</li>
+        <li><strong>Google Analytics:</strong> análisis de uso anónimo para mejorar la app.</li>
+      </ul>
+      <p>Cada uno de estos proveedores tiene sus propias políticas de privacidad y cumple con estándares internacionales de seguridad.</p>
+      <p><strong>No compartimos tu información personal identificable con anunciantes, empresas de marketing o cualquier tercero con fines comerciales.</strong></p>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section" id="s5">
+    <div class="sec-header">
+      <div class="sec-icon">🔒</div>
+      <div><div class="sec-num">Sección 05</div><div class="sec-title">Seguridad de tus datos</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Implementamos las siguientes medidas de seguridad para proteger tu información:</p>
+      <ul>
+        <li><strong>Encriptación en tránsito:</strong> toda la comunicación entre tu dispositivo y nuestros servidores usa HTTPS/TLS.</li>
+        <li><strong>Contraseñas encriptadas:</strong> nunca guardamos tu contraseña en texto plano. Firebase la encripta automáticamente.</li>
+        <li><strong>Acceso restringido:</strong> solo tú puedes acceder a tus datos personales mediante reglas de seguridad en Firestore.</li>
+        <li><strong>Autenticación segura:</strong> usamos Firebase Authentication, el estándar de Google para login seguro.</li>
+        <li><strong>Sesiones protegidas:</strong> las sesiones expiran automáticamente por inactividad.</li>
+      </ul>
+      <div class="highlight">Aunque implementamos medidas de seguridad robustas, ningún sistema es 100% invulnerable. Te recomendamos usar una contraseña fuerte y no compartirla con nadie.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section" id="s6">
+    <div class="sec-header">
+      <div class="sec-icon">⚖️</div>
+      <div><div class="sec-num">Sección 06</div><div class="sec-title">Tus derechos (ARCO)</div></div>
+    </div>
+    <div class="sec-body">
+      <p>De acuerdo con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP) de México, tienes los siguientes derechos sobre tus datos personales:</p>
+      <ul>
+        <li><strong>Acceso:</strong> conocer qué datos personales tenemos sobre ti.</li>
+        <li><strong>Rectificación:</strong> corregir datos inexactos o incompletos.</li>
+        <li><strong>Cancelación:</strong> solicitar la eliminación de tus datos.</li>
+        <li><strong>Oposición:</strong> oponerte al uso de tus datos para fines específicos.</li>
+      </ul>
+      <p>Para ejercer cualquiera de estos derechos envía un correo a <strong>lifetracker26@gmail.com</strong> con el asunto "Derechos ARCO" y te responderemos en un plazo máximo de 20 días hábiles.</p>
+      <p>También puedes eliminar tu cuenta directamente desde la configuración de la app, lo que eliminará todos tus datos de nuestros sistemas en un plazo de 30 días.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section" id="s7">
+    <div class="sec-header">
+      <div class="sec-icon">🍪</div>
+      <div><div class="sec-num">Sección 07</div><div class="sec-title">Cookies y tecnologías similares</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Life Tracker usa las siguientes tecnologías de almacenamiento local:</p>
+      <ul>
+        <li><strong>Session Storage:</strong> para mantener tu sesión activa mientras usas la app.</li>
+        <li><strong>Local Storage:</strong> para guardar preferencias de idioma y tema de color.</li>
+        <li><strong>Cookies de Firebase:</strong> para autenticación segura.</li>
+        <li><strong>Google Analytics:</strong> cookies anónimas para analizar el uso general de la app.</li>
+      </ul>
+      <p>Puedes configurar tu navegador para rechazar cookies, aunque esto puede afectar el funcionamiento de algunas funciones de la app.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="section" id="s8">
+    <div class="sec-header">
+      <div class="sec-icon">📜</div>
+      <div><div class="sec-num">Sección 08</div><div class="sec-title">Términos de uso</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Al crear una cuenta en Life Tracker aceptas los siguientes términos:</p>
+      <ul>
+        <li>Debes tener al menos <strong>13 años de edad</strong> para usar la app.</li>
+        <li>Eres responsable de mantener la confidencialidad de tu contraseña.</li>
+        <li>La app se proporciona "tal como está" durante la fase beta sin garantías de disponibilidad continua.</li>
+        <li>Life Tracker puede modificar, suspender o descontinuar cualquier función en cualquier momento durante la beta.</li>
+        <li>No puedes crear cuentas falsas, suplantar a otras personas o usar la app para actividades ilegales.</li>
+        <li>El contenido que publicas en el timeline es de tu responsabilidad.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="section" id="s9">
+    <div class="sec-header">
+      <div class="sec-icon">🤝</div>
+      <div><div class="sec-num">Sección 09</div><div class="sec-title">Conducta del usuario</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Al usar Life Tracker te comprometes a NO:</p>
+      <ul>
+        <li>Publicar contenido ofensivo, discriminatorio, violento o inapropiado.</li>
+        <li>Acosar, intimidar o amenazar a otros usuarios.</li>
+        <li>Compartir información falsa sobre tu salud o actividad física.</li>
+        <li>Intentar hackear, vulnerar o explotar la aplicación.</li>
+        <li>Usar la app para spam, publicidad no solicitada o actividades comerciales sin autorización.</li>
+        <li>Compartir el código de acceso beta con personas no autorizadas.</li>
+      </ul>
+      <p>El incumplimiento de estas normas puede resultar en la <strong>suspensión o eliminación permanente de tu cuenta</strong> sin previo aviso.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="section" id="s10">
+    <div class="sec-header">
+      <div class="sec-icon">🪙</div>
+      <div><div class="sec-num">Sección 10</div><div class="sec-title">Sistema de puntos y Life Coins</div></div>
+    </div>
+    <div class="sec-body">
+      <p>El sistema de puntos y Life Coins de Life Tracker funciona bajo las siguientes condiciones:</p>
+      <ul>
+        <li>Los puntos y Life Coins son <strong>virtuales y no tienen valor monetario real</strong> a menos que se indique expresamente.</li>
+        <li>Life Tracker se reserva el derecho de modificar el valor, la obtención o el uso de puntos y coins en cualquier momento.</li>
+        <li>Los puntos y coins acumulados no son transferibles entre cuentas.</li>
+        <li>En caso de cancelación de cuenta, los puntos y coins acumulados se perderán sin derecho a compensación.</li>
+        <li>Cualquier intento de manipular artificialmente el sistema de puntos resultará en la suspensión de la cuenta.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 11 -->
+  <div class="section" id="s11">
+    <div class="sec-header">
+      <div class="sec-icon">🚪</div>
+      <div><div class="sec-num">Sección 11</div><div class="sec-title">Cancelación y eliminación de cuenta</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Puedes cancelar tu cuenta en cualquier momento desde la configuración de la app o enviando un correo a lifetracker26@gmail.com.</p>
+      <ul>
+        <li>Al eliminar tu cuenta, todos tus datos personales serán borrados de nuestros sistemas en un plazo de <strong>30 días</strong>.</li>
+        <li>El contenido que hayas publicado en el timeline puede permanecer de forma anónima por razones técnicas.</li>
+        <li>Los puntos y Life Coins acumulados se perderán sin posibilidad de recuperación.</li>
+        <li>Durante la fase beta, Life Tracker también puede cancelar cuentas que violen estos términos.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 12 -->
+  <div class="section" id="s12">
+    <div class="sec-header">
+      <div class="sec-icon">📬</div>
+      <div><div class="sec-num">Sección 12</div><div class="sec-title">Contacto</div></div>
+    </div>
+    <div class="sec-body">
+      <p>Para cualquier pregunta sobre este aviso de privacidad o tus datos personales, contáctanos:</p>
+      <ul>
+        <li><strong>Email:</strong> lifetracker26@gmail.com</li>
+        <li><strong>Asunto:</strong> Privacidad / Privacy / Derechos ARCO</li>
+        <li><strong>Tiempo de respuesta:</strong> máximo 20 días hábiles</li>
+      </ul>
+      <div class="highlight">Este aviso de privacidad puede actualizarse periódicamente. Te notificaremos por email sobre cambios importantes. El uso continuo de la app después de cambios implica aceptación de los nuevos términos.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-doc">
+    <div class="footer-logo">Life Tracker</div>
+    <div class="footer-text">© 2026 Life Tracker · Todos los derechos reservados<br>Versión Beta · Documentos sujetos a cambios durante la fase de desarrollo</div>
+    <div class="footer-contact">Contacto: <a href="mailto:lifetracker26@gmail.com">lifetracker26@gmail.com</a></div>
+  </div>
+
+</div>
+
+<script>
+const translations = {
+  es: {
+    docTitle: 'Aviso de Privacidad y Términos de Uso',
+    docSub: 'Este documento describe cómo Life Tracker recopila, usa y protege tu información personal. Al crear una cuenta aceptas estos términos. Por favor léelos con atención.',
+    docDate: 'Última actualización: 1 de junio de 2026 · Versión 1.0',
+    tocTitle: 'Índice de contenidos'
+  },
+  en: {
+    docTitle: 'Privacy Policy and Terms of Use',
+    docSub: 'This document describes how Life Tracker collects, uses and protects your personal information. By creating an account you accept these terms. Please read them carefully.',
+    docDate: 'Last updated: June 1, 2026 · Version 1.0',
+    tocTitle: 'Table of contents'
+  }
+};
+
+function translateTo(lang, btn) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+
+  if(lang === 'es') {
+    document.getElementById('doc-title').textContent = translations.es.docTitle;
+    document.getElementById('doc-sub').textContent = translations.es.docSub;
+    document.getElementById('doc-date').textContent = translations.es.docDate;
+    document.getElementById('toc-title').textContent = translations.es.tocTitle;
+    document.documentElement.lang = 'es';
+    return;
+  }
+
+  if(lang === 'en') {
+    document.getElementById('doc-title').textContent = translations.en.docTitle;
+    document.getElementById('doc-sub').textContent = translations.en.docSub;
+    document.getElementById('doc-date').textContent = translations.en.docDate;
+    document.getElementById('toc-title').textContent = translations.en.tocTitle;
+  }
+
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=${lang}&dt=t&q=`;
+  const content = document.getElementById('content');
+  const originalHTML = content.innerHTML;
+
+  const textNodes = [];
+  function getTextNodes(node) {
+    if(node.nodeType === 3 && node.textContent.trim()) {
+      textNodes.push(node);
+    } else {
+      node.childNodes.forEach(getTextNodes);
+    }
+  }
+  getTextNodes(content);
+
+  document.documentElement.lang = lang;
+
+  const googleUrl = `https://translate.google.com/translate?sl=es&tl=${lang}&u=${encodeURIComponent(window.location.href)}`;
+  if(lang !== 'es' && lang !== 'en') {
+    window.open(googleUrl, '_blank');
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+    document.querySelector('.lang-btn').classList.add('on');
+  }
+}
+
+document.querySelectorAll('a.toc-item').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+</script>
+
+<!-- GOOGLE TRANSLATE WIDGET -->
+<div id="google_translate_element" style="display:none"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'es',
+    includedLanguages: 'en,es,fr,pt,de,it,zh-CN,ja,ar,ko,ru',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+  }, 'google_translate_element');
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
