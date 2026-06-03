@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Life Tracker · Tu mejor versión</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Life Tracker">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --b: #2E9EE0;
+  --b2: #1470A8;
+  --b3: #0D5A8E;
+  --sky: #EAF5FF;
+  --t: #0D2137;
+  --tm: #3A5570;
+  --tl: #7A9AB8;
+  --gr: #2EAF7D;
+  --pk: #E8547A;
+  --br: rgba(46,158,224,0.15);
+  --g: linear-gradient(135deg,#7EC8F0,#2E9EE0);
+  --g2: linear-gradient(135deg,#2E9EE0,#1470A8);
+  --g3: linear-gradient(160deg,#0D2137,#1470A8,#0D5A8E);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background: var(--g3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── BACKGROUND EFFECTS ── */
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+}
+.orb1 { width: 500px; height: 500px; background: rgba(46,158,224,0.2); top: -200px; right: -150px; animation: float 8s ease-in-out infinite; }
+.orb2 { width: 400px; height: 400px; background: rgba(20,112,168,0.15); bottom: -150px; left: -100px; animation: float 10s ease-in-out infinite reverse; }
+.orb3 { width: 250px; height: 250px; background: rgba(46,158,224,0.1); top: 40%; left: 30%; animation: float 6s ease-in-out infinite 2s; }
+
+@keyframes float {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+/* Grid de puntos sutil */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* ── CARD PRINCIPAL ── */
+.card {
+  background: rgba(255,255,255,0.97);
+  border-radius: 28px;
+  box-shadow: 0 40px 80px rgba(13,33,55,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  animation: cardIn .6s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(30px) scale(0.97); }
+  to { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* TOP BANNER */
+.card-banner {
+  background: var(--g3);
+  padding: 36px 36px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.card-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 28px;
+  background: rgba(255,255,255,0.97);
+  border-radius: 28px 28px 0 0;
+}
+.banner-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+}
+.bo1 { width: 200px; height: 200px; background: rgba(46,158,224,0.3); top: -80px; right: -60px; }
+.bo2 { width: 150px; height: 150px; background: rgba(46,158,224,0.2); bottom: -60px; left: -40px; }
+
+.logo-wrap {
+  width: 72px; height: 72px;
+  background: var(--g2);
+  border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: 0 12px 32px rgba(46,158,224,0.5);
+  font-size: 2rem;
+  position: relative;
+  z-index: 1;
+  animation: logoIn .8s cubic-bezier(0.16,1,0.3,1) .2s both;
+}
+@keyframes logoIn {
+  from { opacity:0; transform: scale(0.5) rotate(-10deg); }
+  to { opacity:1; transform: scale(1) rotate(0); }
+}
+
+.app-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.5px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .6s .3s both;
+}
+.app-tagline {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .6s .4s both;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(12px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* CARD BODY */
+.card-body {
+  padding: 28px 32px 32px;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  background: var(--sky);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 24px;
+  animation: fadeUp .5s .5s both;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 9px;
+  border-radius: 10px;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--tl);
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+.tab.active {
+  background: #fff;
+  color: var(--b2);
+  box-shadow: 0 2px 10px rgba(46,158,224,0.15);
+}
+
+/* FORMS */
+.form { display: none; }
+.form.show { display: block; animation: fadeUp .3s ease both; }
+
+/* GOOGLE BTN */
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 13px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--t);
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 18px;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-google:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.btn-google svg { flex-shrink: 0; }
+
+/* DIVIDER */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.divider-line { flex: 1; height: 1px; background: #e2e8f0; }
+.divider-text { font-size: .65rem; font-weight: 600; color: var(--tl); white-space: nowrap; }
+
+/* INPUTS */
+.input-group { margin-bottom: 14px; }
+.input-label {
+  display: block;
+  font-size: .65rem;
+  font-weight: 700;
+  color: var(--tm);
+  margin-bottom: 5px;
+  letter-spacing: .3px;
+}
+.input-field {
+  width: 100%;
+  background: var(--sky);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: .8rem;
+  color: var(--t);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: all .2s;
+}
+.input-field::placeholder { color: var(--tl); }
+.input-field:focus { border-color: var(--b); background: #fff; box-shadow: 0 0 0 3px rgba(46,158,224,0.1); }
+
+/* PASSWORD WRAP */
+.pw-wrap { position: relative; }
+.pw-toggle {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--tl);
+  font-size: .8rem;
+  padding: 4px;
+}
+
+/* MAIN BUTTON */
+.btn-main {
+  width: 100%;
+  background: var(--g2);
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+  margin-top: 6px;
+  letter-spacing: .3px;
+  box-shadow: 0 6px 20px rgba(46,158,224,0.35);
+}
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(46,158,224,0.45); }
+.btn-main:active { transform: translateY(0); }
+.btn-main:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* FORGOT */
+.forgot {
+  text-align: right;
+  margin-bottom: 16px;
+}
+.forgot a {
+  font-size: .65rem;
+  color: var(--b);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* TÉRMINOS */
+.terms {
+  text-align: center;
+  font-size: .6rem;
+  color: var(--tl);
+  line-height: 1.6;
+  margin-top: 16px;
+  animation: fadeUp .5s .6s both;
+}
+.terms a { color: var(--b); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+/* PERMISOS INFO */
+.permisos-info {
+  background: var(--sky);
+  border: 1px solid var(--br);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 16px;
+  animation: fadeUp .5s .7s both;
+}
+.permisos-info p {
+  font-size: .62rem;
+  color: var(--tm);
+  line-height: 1.6;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.permisos-info p + p { margin-top: 5px; }
+
+/* ERROR / SUCCESS */
+.msg {
+  border-radius: 10px;
+  padding: 10px 13px;
+  font-size: .68rem;
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: none;
+  animation: fadeUp .3s ease both;
+}
+.msg.error { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; display: block; }
+.msg.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; display: block; }
+
+/* LOADING */
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MODAL PRIVACIDAD */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,33,55,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: #fff;
+  border-radius: 22px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(13,33,55,0.25);
+  transform: translateY(20px);
+  transition: transform .2s;
+}
+.modal-overlay.show .modal { transform: translateY(0); }
+.modal-header {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  z-index: 1;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--t);
+}
+.modal-close {
+  width: 32px; height: 32px;
+  background: var(--sky);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--tm);
+  transition: all .15s;
+}
+.modal-close:hover { background: #e2e8f0; }
+.modal-body { padding: 20px 24px 24px; }
+.modal-body h3 {
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--t);
+  margin: 16px 0 6px;
+}
+.modal-body h3:first-child { margin-top: 0; }
+.modal-body p {
+  font-size: .72rem;
+  color: var(--tm);
+  line-height: 1.7;
+}
+.modal-body ul {
+  padding-left: 16px;
+  margin-top: 6px;
+}
+.modal-body ul li {
+  font-size: .72rem;
+  color: var(--tm);
+  line-height: 1.7;
+  margin-bottom: 3px;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--t);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: .72rem;
+  font-weight: 600;
+  z-index: 200;
+  opacity: 0;
+  transition: all .3s;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(13,33,55,0.3);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* PILLS FEATURES */
+.features {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 22px;
+  animation: fadeUp .5s .45s both;
+}
+.feature-pill {
+  background: var(--sky);
+  border: 1px solid var(--br);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: .6rem;
+  font-weight: 600;
+  color: var(--b2);
+}
+
+/* PRIVATE BADGE */
+.private-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(232,84,122,0.1);
+  border: 1px solid rgba(232,84,122,0.2);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: .58rem;
+  font-weight: 700;
+  color: var(--pk);
+  margin-bottom: 20px;
+  animation: fadeUp .5s .35s both;
+}
+
+@media (max-width: 480px) {
+  .card-body { padding: 22px 20px 24px; }
+  .card-banner { padding: 28px 24px 22px; }
+}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-grid"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL PRIVACIDAD -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔒 Aviso de Privacidad</div>
+      <button class="modal-close" onclick="closeModal('modal-privacy')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>¿Quiénes somos?</h3>
+      <p>Life Tracker es una aplicación personal de productividad y bienestar. Actualmente en fase de desarrollo privado.</p>
+
+      <h3>¿Qué datos recopilamos?</h3>
+      <ul>
+        <li>Nombre y correo electrónico (al registrarte)</li>
+        <li>Foto de perfil (si usas Google)</li>
+        <li>Hábitos, tareas y notas que tú mismo registras</li>
+        <li>Fecha y hora de uso de la app</li>
+      </ul>
+
+      <h3>¿Para qué usamos tus datos?</h3>
+      <ul>
+        <li>Para crear y gestionar tu cuenta personal</li>
+        <li>Para mostrarte tu progreso y estadísticas</li>
+        <li>Para enviarte recordatorios y notificaciones que tú configures</li>
+        <li>Para mejorar la app con datos anónimos de uso</li>
+      </ul>
+
+      <h3>¿Compartimos tus datos?</h3>
+      <p>No. Tus datos personales no se venden ni se comparten con terceros. Solo se usan dentro de Life Tracker.</p>
+
+      <h3>¿Cómo protegemos tus datos?</h3>
+      <ul>
+        <li>Conexión segura HTTPS en todo momento</li>
+        <li>Autenticación segura mediante Google o contraseña cifrada</li>
+        <li>Acceso restringido — solo tú puedes ver tu información</li>
+      </ul>
+
+      <h3>¿Puedo eliminar mi cuenta?</h3>
+      <p>Sí. En cualquier momento puedes solicitar la eliminación de tu cuenta y todos tus datos desde la configuración de tu perfil.</p>
+
+      <h3>Notificaciones</h3>
+      <p>Si aceptas recibir notificaciones, solo te enviaremos los recordatorios que tú mismo hayas configurado. Puedes desactivarlas en cualquier momento.</p>
+
+      <h3>Cambios a este aviso</h3>
+      <p>Te notificaremos dentro de la app si este aviso de privacidad cambia de forma significativa.</p>
+
+      <h3>Contacto</h3>
+      <p>¿Preguntas? Escríbenos a: <strong>hola@lifetracker.app</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TÉRMINOS -->
+<div class="modal-overlay" id="modal-terms">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📋 Términos de Uso</div>
+      <button class="modal-close" onclick="closeModal('modal-terms')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>Aceptación</h3>
+      <p>Al crear una cuenta en Life Tracker, aceptas estos términos de uso. Si no estás de acuerdo, no uses la app.</p>
+
+      <h3>Uso permitido</h3>
+      <ul>
+        <li>Life Tracker es para uso personal — seguimiento de hábitos, tareas y productividad</li>
+        <li>Debes tener al menos 13 años para usar la app</li>
+        <li>Eres responsable de mantener tu contraseña segura</li>
+      </ul>
+
+      <h3>Uso no permitido</h3>
+      <ul>
+        <li>No puedes usar la app para actividades ilegales</li>
+        <li>No puedes intentar acceder a cuentas de otros usuarios</li>
+        <li>No puedes copiar o redistribuir el código de la app</li>
+      </ul>
+
+      <h3>Fase Beta privada</h3>
+      <p>Actualmente la app está en desarrollo privado. El acceso está limitado al equipo de pruebas. No compartas tu acceso con terceros.</p>
+
+      <h3>Disponibilidad</h3>
+      <p>Hacemos nuestro mejor esfuerzo para que la app esté disponible siempre, pero no garantizamos disponibilidad ininterrumpida durante la fase de desarrollo.</p>
+
+      <h3>Modificaciones</h3>
+      <p>Podemos actualizar estos términos. Te avisaremos dentro de la app cuando haya cambios importantes.</p>
+
+      <h3>Contacto</h3>
+      <p>¿Preguntas? Escríbenos a: <strong>hola@lifetracker.app</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- CARD PRINCIPAL -->
+<div class="card">
+
+  <!-- BANNER -->
+  <div class="card-banner">
+    <div class="banner-orb bo1"></div>
+    <div class="banner-orb bo2"></div>
+    <div class="logo-wrap">✨</div>
+    <div class="app-name">Life Tracker</div>
+    <div class="app-tagline">Disciplina · Constancia · Paciencia</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="card-body">
+
+    <!-- Badge privado -->
+    <div style="text-align:center;">
+      <div class="private-badge">🔒 Acceso privado · Solo equipo interno</div>
+    </div>
+
+    <!-- Features pills -->
+    <div class="features">
+      <div class="feature-pill">📅 Calendario</div>
+      <div class="feature-pill">🎯 Hábitos</div>
+      <div class="feature-pill">✅ Tareas</div>
+      <div class="feature-pill">🤖 IA Personal</div>
+      <div class="feature-pill">💰 Finanzas</div>
+      <div class="feature-pill">🗒️ Notas</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs" style="animation: fadeUp .5s .5s both;">
+      <div class="tab active" onclick="switchTab('login')">Iniciar sesión</div>
+      <div class="tab" onclick="switchTab('register')">Crear cuenta</div>
+    </div>
+
+    <!-- ── FORM LOGIN ── -->
+    <div class="form show" id="form-login">
+
+      <div class="msg" id="msg-login"></div>
+
+      <!-- Google -->
+      <button class="btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+        Continuar con Google
+      </button>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-text">o con tu email</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Correo electrónico</label>
+        <input class="input-field" type="email" id="login-email" placeholder="tu@email.com">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Contraseña</label>
+        <div class="pw-wrap">
+          <input class="input-field" type="password" id="login-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+          <button class="pw-toggle" onclick="togglePw('login-pw',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+
+      <div class="forgot"><a onclick="showForgot()">¿Olvidaste tu contraseña?</a></div>
+
+      <button class="btn-main" onclick="doLogin()" id="btn-login">Iniciar sesión →</button>
+
+    </div>
+
+    <!-- ── FORM REGISTER ── -->
+    <div class="form" id="form-register">
+
+      <div class="msg" id="msg-register"></div>
+
+      <!-- Google -->
+      <button class="btn-google" onclick="registerGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+        Registrarse con Google
+      </button>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-text">o con tu email</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Nombre completo</label>
+        <input class="input-field" type="text" id="reg-name" placeholder="Tu nombre">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Correo electrónico</label>
+        <input class="input-field" type="email" id="reg-email" placeholder="tu@email.com">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Contraseña</label>
+        <div class="pw-wrap">
+          <input class="input-field" type="password" id="reg-pw" placeholder="Mínimo 8 caracteres">
+          <button class="pw-toggle" onclick="togglePw('reg-pw',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-main" onclick="doRegister()" id="btn-register">Crear cuenta →</button>
+
+      <!-- Permisos -->
+      <div class="permisos-info" style="margin-top:14px;">
+        <p>🔔 <span>La app solicitará permiso para enviarte <strong>notificaciones</strong> — solo los recordatorios que tú configures.</span></p>
+        <p>📍 <span>No recopilamos tu ubicación ni accedemos a tu cámara sin tu permiso explícito.</span></p>
+      </div>
+
+    </div>
+
+    <!-- TÉRMINOS -->
+    <div class="terms">
+      Al continuar aceptas nuestros
+      <a onclick="openModal('modal-terms')">Términos de Uso</a>
+      y el
+      <a onclick="openModal('modal-privacy')">Aviso de Privacidad</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const cfg = {
+  apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",
+  authDomain:"lifetracker26-30037.firebaseapp.com",
+  projectId:"lifetracker26-30037",
+  storageBucket:"lifetracker26-30037.firebasestorage.app",
+  messagingSenderId:"375272536562",
+  appId:"1:375272536562:web:33cfead324a6e3a049136b"
+};
+
+const app = initializeApp(cfg);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// Email autorizado — solo tú por ahora
+const ALLOWED_EMAILS = ['javi.figueroa.a@gmail.com'];
+
+// Verificar si usuario ya está logueado
+onAuthStateChanged(auth, user => {
+  if(user) {
+    if(isAllowed(user.email)) {
+      window.location.href = 'dashboard.html';
+    } else {
+      auth.signOut();
+    }
+  }
+});
+
+function isAllowed(email) {
+  return ALLOWED_EMAILS.includes(email.toLowerCase());
+}
+
+// ── LOGIN GOOGLE ──
+window.loginGoogle = async () => {
+  try {
+    setLoading('btn-login', true, 'Conectando con Google...');
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    if(!isAllowed(user.email)) {
+      await auth.signOut();
+      showMsg('msg-login', '🔒 Acceso privado. Esta app no está disponible al público aún.', 'error');
+      setLoading('btn-login', false, 'Iniciar sesión →');
+      return;
+    }
+    await registerUserIfNew(user);
+    showToast('✓ Bienvenida ' + user.displayName.split(' ')[0] + '!', 's');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  } catch(e) {
+    setLoading('btn-login', false, 'Iniciar sesión →');
+    if(e.code !== 'auth/popup-closed-by-user') showMsg('msg-login', '❌ Error al conectar con Google. Intenta de nuevo.', 'error');
+  }
+};
+
+// ── REGISTER GOOGLE ──
+window.registerGoogle = async () => {
+  try {
+    setLoading('btn-register', true, 'Conectando con Google...');
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    if(!isAllowed(user.email)) {
+      await auth.signOut();
+      showMsg('msg-register', '🔒 Registro cerrado. La app está en desarrollo privado.', 'error');
+      setLoading('btn-register', false, 'Crear cuenta →');
+      return;
+    }
+    await registerUserIfNew(user);
+    showToast('🎉 ¡Cuenta creada! Bienvenida ' + user.displayName.split(' ')[0], 's');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  } catch(e) {
+    setLoading('btn-register', false, 'Crear cuenta →');
+    if(e.code !== 'auth/popup-closed-by-user') showMsg('msg-register', '❌ Error al conectar con Google.', 'error');
+  }
+};
+
+// ── LOGIN EMAIL ──
+window.doLogin = async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  if(!email || !pw) { showMsg('msg-login','⚠️ Completa todos los campos.','error'); return; }
+  if(!isAllowed(email)) { showMsg('msg-login','🔒 Acceso privado. Esta app no está disponible al público aún.','error'); return; }
+  try {
+    setLoading('btn-login', true, 'Entrando...');
+    await signInWithEmailAndPassword(auth, email, pw);
+    showToast('✓ Bienvenida de vuelta!', 's');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  } catch(e) {
+    setLoading('btn-login', false, 'Iniciar sesión →');
+    const msgs = { 'auth/user-not-found':'No encontramos esa cuenta.', 'auth/wrong-password':'Contraseña incorrecta.', 'auth/invalid-credential':'Email o contraseña incorrectos.', 'auth/too-many-requests':'Demasiados intentos. Espera un momento.' };
+    showMsg('msg-login', '❌ ' + (msgs[e.code] || 'Error al iniciar sesión.'), 'error');
+  }
+};
+
+// ── REGISTER EMAIL ──
+window.doRegister = async () => {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  if(!name || !email || !pw) { showMsg('msg-register','⚠️ Completa todos los campos.','error'); return; }
+  if(pw.length < 8) { showMsg('msg-register','⚠️ La contraseña debe tener al menos 8 caracteres.','error'); return; }
+  if(!isAllowed(email)) { showMsg('msg-register','🔒 Registro cerrado. La app está en desarrollo privado.','error'); return; }
+  try {
+    setLoading('btn-register', true, 'Creando cuenta...');
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    await updateProfile(cred.user, { displayName: name });
+    await registerUserIfNew(cred.user, name);
+    showToast('🎉 ¡Cuenta creada! Bienvenida ' + name.split(' ')[0], 's');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  } catch(e) {
+    setLoading('btn-register', false, 'Crear cuenta →');
+    const msgs = { 'auth/email-already-in-use':'Ya existe una cuenta con ese email.', 'auth/invalid-email':'Email no válido.', 'auth/weak-password':'Contraseña muy débil.' };
+    showMsg('msg-register', '❌ ' + (msgs[e.code] || 'Error al crear cuenta.'), 'error');
+  }
+};
+
+// ── FORGOT PASSWORD ──
+window.showForgot = async () => {
+  const email = document.getElementById('login-email').value.trim();
+  if(!email) { showMsg('msg-login','⚠️ Escribe tu email primero.','error'); return; }
+  if(!isAllowed(email)) { showMsg('msg-login','🔒 Email no autorizado.','error'); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showMsg('msg-login','✓ Te enviamos un email para restablecer tu contraseña.','success');
+  } catch(e) {
+    showMsg('msg-login','❌ No encontramos esa cuenta.','error');
+  }
+};
+
+// ── REGISTER USER IN FIRESTORE ──
+async function registerUserIfNew(user, displayName) {
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()) {
+    await setDoc(ref, {
+      uid: user.uid,
+      name: displayName || user.displayName || '',
+      email: user.email,
+      photo: user.photoURL || '',
+      coins: 50,
+      role: 'user',
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+      notificationsEnabled: false,
+      onboardingDone: false
+    });
+  } else {
+    await setDoc(ref, { lastLogin: serverTimestamp() }, { merge: true });
+  }
+}
+
+// ── HELPERS ──
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading ? `<span class="spinner"></span>${text}` : text;
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = type === 's' ? '#2EAF7D' : '#E8547A';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+
+<script>
+// ── UI HELPERS ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form').forEach(f => f.classList.remove('show'));
+  const idx = tab === 'login' ? 0 : 1;
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('form-' + tab).classList.add('show');
+  // Limpiar mensajes
+  document.querySelectorAll('.msg').forEach(m => m.className = 'msg');
+}
+
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  if(input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁'; }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Cerrar modal al tocar fondo
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if(e.target === this) closeModal(this.id);
+  });
+});
+</script>
+
+<script>
+// ── REGISTRO DEL SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('✅ Life Tracker SW registrado:', reg.scope);
+        // Solicitar permiso de notificaciones al cargar
+        if ('Notification' in window && Notification.permission === 'default') {
+          // Lo pedimos cuando el usuario hace login, no aquí
+        }
+      })
+      .catch(err => console.log('SW no disponible (desarrollo local):', err));
+  });
+}
+</script>
+</body>
+</html>

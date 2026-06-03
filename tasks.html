@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Life Tracker · Tareas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tm:#3A5570;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--am:#F59E0B;--br:rgba(46,158,224,0.15);--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;min-height:100vh;color:var(--t)}
+.app{max-width:430px;margin:0 auto;background:#f0f7ff;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.08)}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.header-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--t)}
+.header-title span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.date-chip{display:inline-flex;align-items:center;gap:5px;background:var(--sky);border:1px solid var(--br);border-radius:20px;padding:4px 12px;font-size:.62rem;font-weight:600;color:var(--b2)}
+.add-btn{background:var(--g2);border:none;border-radius:12px;padding:8px 16px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(46,158,224,0.3)}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+.section-card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 16px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.08)}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-title{font-size:.75rem;font-weight:700;color:var(--t);display:flex;align-items:center;gap:6px}
+.section-count{background:var(--sky);border-radius:10px;padding:2px 8px;font-size:.6rem;font-weight:700;color:var(--b2)}
+.task-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(46,158,224,0.06);cursor:pointer;transition:all .15s}
+.task-item:last-child{border-bottom:none;padding-bottom:0}
+.task-item:hover{background:rgba(46,158,224,0.02)}
+.check{width:22px;height:22px;border-radius:50%;border:2px solid var(--br);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}
+.check.done{background:var(--gr);border-color:var(--gr);color:#fff;font-size:.6rem}
+.task-info{flex:1}
+.task-text{font-size:.75rem;color:var(--t);font-weight:500;line-height:1.3}
+.task-text.done{text-decoration:line-through;color:var(--tl)}
+.task-meta{display:flex;gap:6px;margin-top:3px}
+.task-tag{font-size:.55rem;font-weight:600;padding:1px 6px;border-radius:6px}
+.task-time-badge{background:var(--sky);color:var(--b2)}
+.task-urgent{background:rgba(232,84,122,0.1);color:var(--pk)}
+.task-delete{background:none;border:none;color:var(--tl);font-size:.8rem;cursor:pointer;padding:4px;opacity:0;transition:all .15s}
+.task-item:hover .task-delete{opacity:1}
+.add-inline{display:flex;gap:8px;margin-top:10px}
+.add-input{flex:1;background:var(--sky);border:1.5px solid transparent;border-radius:10px;padding:9px 12px;font-size:.72rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none}
+.add-input:focus{border-color:var(--b)}
+.add-inline-btn{background:var(--g2);border:none;border-radius:10px;padding:9px 16px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer}
+.empty-state{text-align:center;padding:20px 0;color:var(--tl);font-size:.72rem}
+/* RUTINAS */
+.routine-card{background:var(--g2);border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(46,158,224,0.25)}
+.routine-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.routine-title{font-size:.75rem;font-weight:700;color:#fff}
+.routine-badge{background:rgba(255,255,255,.2);border-radius:10px;padding:2px 8px;font-size:.6rem;font-weight:700;color:#fff}
+.routine-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.routine-item:last-child{border-bottom:none;padding-bottom:0}
+.routine-check{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}
+.routine-check.done{background:rgba(255,255,255,.9);border-color:transparent;color:var(--b2);font-size:.6rem}
+.routine-text{font-size:.72rem;color:rgba(255,255,255,.9);font-weight:500;flex:1}
+.routine-text.done{opacity:.5;text-decoration:line-through}
+/* TABS */
+.tabs{display:flex;background:var(--sky);border-radius:12px;padding:3px;margin-bottom:16px}
+.tab{flex:1;text-align:center;padding:8px;border-radius:9px;font-size:.65rem;font-weight:700;color:var(--tl);cursor:pointer;transition:all .2s}
+.tab.active{background:#fff;color:var(--b2);box-shadow:0 2px 8px rgba(46,158,224,0.12)}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,33,55,.5);display:flex;align-items:flex-end;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px)}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--t);margin-bottom:16px}
+.modal-input{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px}
+.modal-input:focus{border-color:var(--b)}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.modal-label{font-size:.62rem;font-weight:700;color:var(--tm);margin-bottom:4px}
+.modal-save{width:100%;background:var(--g2);border:none;border-radius:14px;padding:13px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 6px 20px rgba(46,158,224,0.3)}
+.modal-cancel{width:100%;background:transparent;border:none;padding:10px;color:var(--tl);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 10px 24px;display:flex;justify-content:space-around;z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:14px;cursor:pointer;text-decoration:none}
+.nav-item.active{background:var(--sky)}
+.nav-icon{font-size:1.2rem}
+.nav-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.nav-item.active .nav-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 18px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:200;opacity:0;transition:all .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll>*{animation:fadeUp .3s ease both}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="header-title">Mis <span>Tareas</span></div>
+      <button class="add-btn" onclick="openModal()">＋ Nueva tarea</button>
+    </div>
+    <div class="date-chip" id="today-chip">📅 Hoy</div>
+  </div>
+
+  <div class="scroll">
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('today')">Hoy</div>
+      <div class="tab" onclick="switchTab('week')">Esta semana</div>
+      <div class="tab" onclick="switchTab('done')">Completadas</div>
+    </div>
+
+    <!-- RUTINA MAÑANA -->
+    <div class="routine-card" id="routine-card">
+      <div class="routine-header">
+        <div class="routine-title">🌅 Rutina matutina</div>
+        <div class="routine-badge" id="routine-badge">0/0</div>
+      </div>
+      <div id="routine-items">
+        <div class="empty-state" style="color:rgba(255,255,255,.6)">Sin rutina configurada</div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <input style="flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 12px;font-size:.7rem;color:#fff;font-family:'DM Sans',sans-serif;outline:none" id="routine-input" placeholder="Agregar a rutina..." onkeydown="if(event.key==='Enter')addRoutineItem()">
+        <button style="background:rgba(255,255,255,.2);border:none;border-radius:10px;padding:8px 14px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer" onclick="addRoutineItem()">+</button>
+      </div>
+    </div>
+
+    <!-- TAREAS -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">📋 Pendientes <span class="section-count" id="pending-count">0</span></div>
+      </div>
+      <div id="tasks-container">
+        <div class="empty-state">Sin tareas pendientes 🎉</div>
+      </div>
+      <div class="add-inline">
+        <input class="add-input" id="quick-input" placeholder="Agregar tarea..." onkeydown="if(event.key==='Enter')quickAdd()">
+        <button class="add-inline-btn" onclick="quickAdd()">+</button>
+      </div>
+    </div>
+
+    <!-- COMPLETADAS HOY -->
+    <div class="section-card" id="done-section" style="display:none">
+      <div class="section-header">
+        <div class="section-title">✅ Completadas <span class="section-count" id="done-count">0</span></div>
+      </div>
+      <div id="done-container">
+        <div class="empty-state">Nada completado aún</div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="nav">
+    <a class="nav-item" href="dashboard.html"><div class="nav-icon">🏠</div><div class="nav-label">Inicio</div></a>
+    <a class="nav-item" href="calendar.html"><div class="nav-icon">📅</div><div class="nav-label">Calendario</div></a>
+    <a class="nav-item active" href="tasks.html"><div class="nav-icon">✅</div><div class="nav-label">Tareas</div></a>
+    <a class="nav-item" href="notes.html"><div class="nav-icon">🗒️</div><div class="nav-label">Notas</div></a>
+    <a class="nav-item" href="profile.html"><div class="nav-icon">👤</div><div class="nav-label">Perfil</div></a>
+  </nav>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <div class="modal-title">✅ Nueva tarea</div>
+    <input class="modal-input" id="t-text" placeholder="¿Qué necesitas hacer?">
+    <div class="modal-row">
+      <div>
+        <div class="modal-label">Fecha</div>
+        <input class="modal-input" type="date" id="t-date" style="margin-bottom:0">
+      </div>
+      <div>
+        <div class="modal-label">Hora</div>
+        <input class="modal-input" type="time" id="t-time" style="margin-bottom:0">
+      </div>
+    </div>
+    <div style="margin:10px 0">
+      <div class="modal-label">Recordatorio</div>
+      <select class="modal-input" id="t-reminder">
+        <option value="0">Sin recordatorio</option>
+        <option value="5">5 minutos antes</option>
+        <option value="10">10 minutos antes</option>
+        <option value="15" selected>15 minutos antes</option>
+        <option value="30">30 minutos antes</option>
+        <option value="60">1 hora antes</option>
+        <option value="1440">1 día antes</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="modal-label">Prioridad</div>
+      <div style="display:flex;gap:8px">
+        <div class="priority-btn active" data-p="normal" onclick="setPriority('normal',this)" style="flex:1;text-align:center;padding:8px;border-radius:10px;background:var(--sky);border:1.5px solid var(--br);font-size:.65rem;font-weight:700;color:var(--b2);cursor:pointer">Normal</div>
+        <div class="priority-btn" data-p="urgent" onclick="setPriority('urgent',this)" style="flex:1;text-align:center;padding:8px;border-radius:10px;background:rgba(232,84,122,0.08);border:1.5px solid rgba(232,84,122,0.2);font-size:.65rem;font-weight:700;color:var(--pk);cursor:pointer">🔥 Urgente</div>
+      </div>
+    </div>
+    <button class="modal-save" onclick="saveTask()">Guardar tarea →</button>
+    <button class="modal-cancel" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,collection,addDoc,getDocs,query,where,deleteDoc,doc,updateDoc,serverTimestamp,orderBy,setDoc,getDoc}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const cfg={apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let currentUser=null,tasks=[],currentTab='today',currentPriority='normal';
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='index.html';return;}
+  currentUser=user;
+  // Date chip
+  const d=new Date();
+  const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  document.getElementById('today-chip').textContent=`📅 ${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+  document.getElementById('t-date').value=d.toISOString().split('T')[0];
+  await loadRoutine();
+  await loadTasks();
+});
+
+// ── TASKS ──
+async function loadTasks(){
+  if(!currentUser)return;
+  const q=query(collection(db,'tasks'),where('uid','==',currentUser.uid),orderBy('createdAt','desc'));
+  const snap=await getDocs(q);
+  tasks=[];
+  snap.forEach(d=>tasks.push({id:d.id,...d.data()}));
+  renderTasks();
+}
+
+function renderTasks(){
+  const today=new Date().toISOString().split('T')[0];
+  let filtered=tasks;
+  if(currentTab==='today')filtered=tasks.filter(t=>t.date===today&&!t.done);
+  else if(currentTab==='week'){
+    const end=new Date();end.setDate(end.getDate()+7);
+    filtered=tasks.filter(t=>!t.done&&t.date>=today&&t.date<=end.toISOString().split('T')[0]);
+  }
+  else if(currentTab==='done')filtered=tasks.filter(t=>t.done);
+  const pending=filtered.filter(t=>!t.done);
+  const done=filtered.filter(t=>t.done);
+  document.getElementById('pending-count').textContent=pending.length;
+  document.getElementById('done-count').textContent=done.length;
+  const cont=document.getElementById('tasks-container');
+  if(pending.length===0){cont.innerHTML='<div class="empty-state">Sin tareas pendientes 🎉</div>';return;}
+  cont.innerHTML=pending.map(t=>`
+    <div class="task-item" id="task-${t.id}">
+      <div class="check ${t.done?'done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
+      <div class="task-info">
+        <div class="task-text ${t.done?'done':''}">${t.text}</div>
+        <div class="task-meta">
+          ${t.time?`<span class="task-tag task-time-badge">⏰ ${t.time}</span>`:''}
+          ${t.priority==='urgent'?'<span class="task-tag task-urgent">🔥 Urgente</span>':''}
+        </div>
+      </div>
+      <button class="task-delete" onclick="deleteTask('${t.id}')">🗑</button>
+    </div>`).join('');
+  if(currentTab==='done'||done.length>0){
+    document.getElementById('done-section').style.display='block';
+    document.getElementById('done-container').innerHTML=done.length===0?'<div class="empty-state">Nada completado aún</div>':done.map(t=>`
+      <div class="task-item">
+        <div class="check done">✓</div>
+        <div class="task-info"><div class="task-text done">${t.text}</div></div>
+        <button class="task-delete" onclick="deleteTask('${t.id}')">🗑</button>
+      </div>`).join('');
+  }
+}
+
+window.switchTab=function(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['today','week','done'][i]===tab));
+  document.getElementById('done-section').style.display=tab==='done'?'block':'none';
+  renderTasks();
+};
+
+window.toggleTask=async function(id){
+  const t=tasks.find(t=>t.id===id);
+  if(!t)return;
+  await updateDoc(doc(db,'tasks',id),{done:!t.done,doneAt:serverTimestamp()});
+  t.done=!t.done;
+  renderTasks();
+  if(t.done)showToast('✅ ¡Tarea completada!','s');
+};
+
+window.deleteTask=async function(id){
+  await deleteDoc(doc(db,'tasks',id));
+  tasks=tasks.filter(t=>t.id!==id);
+  renderTasks();
+  showToast('🗑 Tarea eliminada','');
+};
+
+window.quickAdd=async function(){
+  const input=document.getElementById('quick-input');
+  const text=input.value.trim();
+  if(!text)return;
+  const today=new Date().toISOString().split('T')[0];
+  const ref=await addDoc(collection(db,'tasks'),{uid:currentUser.uid,text,date:today,done:false,priority:'normal',createdAt:serverTimestamp()});
+  tasks.unshift({id:ref.id,uid:currentUser.uid,text,date:today,done:false,priority:'normal'});
+  input.value='';
+  renderTasks();
+  showToast('✅ Tarea agregada','s');
+};
+
+window.setPriority=function(p,el){
+  currentPriority=p;
+  document.querySelectorAll('.priority-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+};
+
+window.openModal=function(){document.getElementById('task-modal').classList.add('show');};
+window.closeModal=function(){document.getElementById('task-modal').classList.remove('show');};
+document.getElementById('task-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+window.saveTask=async function(){
+  const text=document.getElementById('t-text').value.trim();
+  const date=document.getElementById('t-date').value;
+  const time=document.getElementById('t-time').value;
+  const reminder=parseInt(document.getElementById('t-reminder').value);
+  if(!text){showToast('⚠️ Escribe la tarea','e');return;}
+  const ref=await addDoc(collection(db,'tasks'),{uid:currentUser.uid,text,date:date||new Date().toISOString().split('T')[0],time:time||null,done:false,priority:currentPriority,reminder,createdAt:serverTimestamp()});
+  tasks.unshift({id:ref.id,uid:currentUser.uid,text,date,time,done:false,priority:currentPriority});
+  if(reminder>0&&time&&date)scheduleNotification(text,date,time,reminder);
+  closeModal();
+  document.getElementById('t-text').value='';
+  renderTasks();
+  showToast('✅ Tarea guardada','s');
+};
+
+// ── ROUTINE ──
+async function loadRoutine(){
+  if(!currentUser)return;
+  const today=new Date().toISOString().split('T')[0];
+  const ref=doc(db,'routines',`${currentUser.uid}_morning`);
+  const snap=await getDoc(ref);
+  const items=snap.exists()?snap.data().items:[];
+  const doneRef=doc(db,'routine_done',`${currentUser.uid}_${today}`);
+  const doneSnap=await getDoc(doneRef);
+  const doneItems=doneSnap.exists()?doneSnap.data().done:[];
+  renderRoutine(items,doneItems);
+  window._routineItems=items;
+  window._routineDone=doneItems;
+}
+
+function renderRoutine(items,doneItems){
+  const count=doneItems.length,total=items.length;
+  document.getElementById('routine-badge').textContent=`${count}/${total}`;
+  if(items.length===0){document.getElementById('routine-items').innerHTML='<div class="empty-state" style="color:rgba(255,255,255,.6)">Agrega elementos a tu rutina</div>';return;}
+  document.getElementById('routine-items').innerHTML=items.map((item,i)=>{
+    const done=doneItems.includes(i);
+    return`<div class="routine-item"><div class="routine-check ${done?'done':''}" onclick="toggleRoutine(${i})">${done?'✓':''}</div><div class="routine-text ${done?'done':''}">${item}</div></div>`;
+  }).join('');
+}
+
+window.toggleRoutine=async function(idx){
+  if(!currentUser)return;
+  const today=new Date().toISOString().split('T')[0];
+  const done=window._routineDone||[];
+  const newDone=done.includes(idx)?done.filter(i=>i!==idx):[...done,idx];
+  await setDoc(doc(db,'routine_done',`${currentUser.uid}_${today}`),{uid:currentUser.uid,date:today,done:newDone});
+  window._routineDone=newDone;
+  renderRoutine(window._routineItems||[],newDone);
+};
+
+window.addRoutineItem=async function(){
+  const input=document.getElementById('routine-input');
+  const text=input.value.trim();
+  if(!text)return;
+  const items=[...(window._routineItems||[]),text];
+  await setDoc(doc(db,'routines',`${currentUser.uid}_morning`),{uid:currentUser.uid,items,updatedAt:serverTimestamp()});
+  window._routineItems=items;
+  renderRoutine(items,window._routineDone||[]);
+  input.value='';
+  showToast('🌅 Agregado a tu rutina','s');
+};
+
+// ── NOTIFICATIONS ──
+function scheduleNotification(title,date,time,minBefore){
+  if(!('Notification'in window))return;
+  Notification.requestPermission().then(p=>{
+    if(p!=='granted')return;
+    const t=new Date(`${date}T${time}`);
+    const notifTime=new Date(t.getTime()-minBefore*60000);
+    const delay=notifTime-new Date();
+    if(delay>0)setTimeout(()=>new Notification('⏰ Life Tracker',{body:`En ${minBefore} min: ${title}`}),delay);
+  });
+}
+
+function showToast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.background=type==='s'?'#2EAF7D':type==='e'?'#E8547A':'#0D2137';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW activo:', reg.scope))
+      .catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

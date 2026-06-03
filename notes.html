@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Life Tracker · Notas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tm:#3A5570;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--am:#F59E0B;--pu:#8B5CF6;--br:rgba(46,158,224,0.15);--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;min-height:100vh;color:var(--t)}
+.app{max-width:430px;margin:0 auto;background:#f0f7ff;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.08)}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+.header-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--t)}
+.header-title span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.add-btn{background:var(--g2);border:none;border-radius:12px;padding:8px 16px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(46,158,224,0.3)}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+/* GOALS */
+.goals-section{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 16px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.08)}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.section-title{font-size:.75rem;font-weight:700;color:var(--t)}
+.section-sub{font-size:.6rem;color:var(--tl)}
+.goal-card{background:var(--sky);border-radius:14px;padding:12px;margin-bottom:10px;border:1px solid var(--br);cursor:pointer;transition:all .2s}
+.goal-card:last-child{margin-bottom:0}
+.goal-card:hover{background:rgba(46,158,224,0.1)}
+.goal-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.goal-emoji{font-size:1.2rem}
+.goal-name{font-size:.75rem;font-weight:700;color:var(--t);flex:1}
+.goal-pct{font-size:.65rem;font-weight:700;color:var(--b2)}
+.goal-bar{height:5px;background:rgba(46,158,224,0.15);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.goal-fill{height:100%;background:var(--g2);border-radius:3px;transition:width .6s ease}
+.goal-sub{font-size:.6rem;color:var(--tl)}
+.add-goal-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:1.5px dashed var(--br);border-radius:14px;padding:12px;width:100%;font-size:.68rem;font-weight:600;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-top:10px}
+.add-goal-btn:hover{background:var(--sky)}
+/* NOTES GRID */
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 3px 12px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.08);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.note-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+.note-card:active{transform:scale(.97)}
+.note-title{font-size:.72rem;font-weight:700;color:var(--t);margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note-preview{font-size:.62rem;color:var(--tl);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.note-date{font-size:.55rem;color:var(--tl);margin-top:8px}
+.note-delete{position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;font-size:.7rem;opacity:0;transition:all .15s;color:var(--tl)}
+.note-card:hover .note-delete{opacity:1}
+.empty-notes{text-align:center;padding:24px;background:#fff;border-radius:20px;box-shadow:0 4px 12px rgba(46,158,224,0.06)}
+.empty-icon{font-size:2rem;margin-bottom:8px}
+.empty-text{font-size:.72rem;color:var(--tl);margin-bottom:12px}
+/* MODAL NOTE */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,33,55,.5);display:flex;align-items:flex-end;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px)}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);max-height:85vh;overflow-y:auto}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--t);margin-bottom:16px}
+.modal-input{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px}
+.modal-input:focus{border-color:var(--b)}
+.modal-textarea{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.78rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;resize:none;min-height:140px;line-height:1.6}
+.modal-textarea:focus{border-color:var(--b)}
+.color-row{display:flex;gap:8px;margin-bottom:16px}
+.clr{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.clr.sel{border-color:#fff;box-shadow:0 0 0 2px var(--t);transform:scale(1.1)}
+.modal-label{font-size:.62rem;font-weight:700;color:var(--tm);margin-bottom:6px}
+.modal-save{width:100%;background:var(--g2);border:none;border-radius:14px;padding:13px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 6px 20px rgba(46,158,224,0.3)}
+.modal-cancel{width:100%;background:transparent;border:none;padding:10px;color:var(--tl);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px}
+/* GOAL MODAL */
+.slider{width:100%;margin:8px 0}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 10px 24px;display:flex;justify-content:space-around;z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:14px;cursor:pointer;text-decoration:none}
+.nav-item.active{background:var(--sky)}
+.nav-icon{font-size:1.2rem}
+.nav-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.nav-item.active .nav-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 18px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:200;opacity:0;transition:all .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll>*{animation:fadeUp .35s ease both}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="header-title">Notas y <span>Metas</span></div>
+      <button class="add-btn" onclick="openNoteModal()">＋ Nota</button>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <!-- METAS DEL MES -->
+    <div class="goals-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🎯 Metas del mes</div>
+          <div class="section-sub">Máximo 3 metas enfocadas</div>
+        </div>
+      </div>
+      <div id="goals-container"></div>
+      <button class="add-goal-btn" id="add-goal-btn" onclick="openGoalModal()">＋ Agregar meta</button>
+    </div>
+
+    <!-- NOTAS -->
+    <div>
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tl);margin-bottom:10px;padding-left:2px">Notas rápidas</div>
+      <div id="notes-container">
+        <div class="empty-notes">
+          <div class="empty-icon">🗒️</div>
+          <div class="empty-text">Sin notas aún</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a class="nav-item" href="dashboard.html"><div class="nav-icon">🏠</div><div class="nav-label">Inicio</div></a>
+    <a class="nav-item" href="calendar.html"><div class="nav-icon">📅</div><div class="nav-label">Calendario</div></a>
+    <a class="nav-item" href="tasks.html"><div class="nav-icon">✅</div><div class="nav-label">Tareas</div></a>
+    <a class="nav-item active" href="notes.html"><div class="nav-icon">🗒️</div><div class="nav-label">Notas</div></a>
+    <a class="nav-item" href="profile.html"><div class="nav-icon">👤</div><div class="nav-label">Perfil</div></a>
+  </nav>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal">
+    <div class="modal-title" id="note-modal-title">🗒️ Nueva nota</div>
+    <input class="modal-input" id="n-title" placeholder="Título de la nota">
+    <textarea class="modal-textarea" id="n-content" placeholder="Escribe tu nota aquí..."></textarea>
+    <div class="modal-label" style="margin-top:10px">Color</div>
+    <div class="color-row">
+      <div class="clr sel" style="background:#2E9EE0" onclick="selectNoteColor('#2E9EE0',this)"></div>
+      <div class="clr" style="background:#2EAF7D" onclick="selectNoteColor('#2EAF7D',this)"></div>
+      <div class="clr" style="background:#E8547A" onclick="selectNoteColor('#E8547A',this)"></div>
+      <div class="clr" style="background:#F59E0B" onclick="selectNoteColor('#F59E0B',this)"></div>
+      <div class="clr" style="background:#8B5CF6" onclick="selectNoteColor('#8B5CF6',this)"></div>
+    </div>
+    <button class="modal-save" onclick="saveNote()">Guardar nota →</button>
+    <button class="modal-cancel" onclick="closeNoteModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="modal-overlay" id="goal-modal">
+  <div class="modal">
+    <div class="modal-title">🎯 Nueva meta</div>
+    <input class="modal-input" id="g-name" placeholder="¿Cuál es tu meta?">
+    <div class="modal-label">Ícono</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <div class="ep-btn sel" data-e="🎯" onclick="selectGoalEmoji('🎯',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid var(--b);cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">🎯</div>
+      <div class="ep-btn" data-e="💪" onclick="selectGoalEmoji('💪',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">💪</div>
+      <div class="ep-btn" data-e="💰" onclick="selectGoalEmoji('💰',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">💰</div>
+      <div class="ep-btn" data-e="📚" onclick="selectGoalEmoji('📚',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">📚</div>
+      <div class="ep-btn" data-e="✈️" onclick="selectGoalEmoji('✈️',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">✈️</div>
+      <div class="ep-btn" data-e="🏠" onclick="selectGoalEmoji('🏠',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">🏠</div>
+      <div class="ep-btn" data-e="❤️" onclick="selectGoalEmoji('❤️',this)" style="font-size:1.3rem;width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky)">❤️</div>
+    </div>
+    <div class="modal-label">Progreso inicial: <span id="prog-val">0</span>%</div>
+    <input type="range" class="slider modal-input" id="g-progress" min="0" max="100" value="0" oninput="document.getElementById('prog-val').textContent=this.value" style="padding:4px 0;background:transparent;border:none">
+    <button class="modal-save" onclick="saveGoal()">Crear meta →</button>
+    <button class="modal-cancel" onclick="closeGoalModal()">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,collection,addDoc,getDocs,query,where,deleteDoc,doc,updateDoc,serverTimestamp,orderBy}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const cfg={apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"};
+const app=initializeApp(cfg);const auth=getAuth(app);const db=getFirestore(app);
+let currentUser=null,notes=[],goals=[],noteColor='#2E9EE0',goalEmoji='🎯',editNoteId=null;
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){window.location.href='index.html';return;}
+  currentUser=user;
+  await Promise.all([loadNotes(),loadGoals()]);
+});
+
+async function loadNotes(){
+  const q=query(collection(db,'quick_notes'),where('uid','==',currentUser.uid),orderBy('createdAt','desc'));
+  const snap=await getDocs(q);
+  notes=[];snap.forEach(d=>notes.push({id:d.id,...d.data()}));
+  renderNotes();
+}
+
+async function loadGoals(){
+  const q=query(collection(db,'goals'),where('uid','==',currentUser.uid));
+  const snap=await getDocs(q);
+  goals=[];snap.forEach(d=>goals.push({id:d.id,...d.data()}));
+  renderGoals();
+}
+
+function renderNotes(){
+  const cont=document.getElementById('notes-container');
+  if(notes.length===0){cont.innerHTML='<div class="empty-notes"><div class="empty-icon">🗒️</div><div class="empty-text">Sin notas aún</div></div>';return;}
+  cont.innerHTML=`<div class="notes-grid">${notes.map(n=>`
+    <div class="note-card" onclick="editNote('${n.id}')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:${n.color||'#2E9EE0'}"></div>
+      <button class="note-delete" onclick="event.stopPropagation();deleteNote('${n.id}')">🗑</button>
+      <div class="note-title">${n.title||'Sin título'}</div>
+      <div class="note-preview">${n.content||''}</div>
+      <div class="note-date">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleDateString('es-MX',{day:'2-digit',month:'short'}):''}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderGoals(){
+  const cont=document.getElementById('goals-container');
+  const btn=document.getElementById('add-goal-btn');
+  if(goals.length>=3)btn.style.display='none';
+  else btn.style.display='flex';
+  if(goals.length===0){cont.innerHTML='';return;}
+  cont.innerHTML=goals.map(g=>`
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-emoji">${g.emoji||'🎯'}</div>
+        <div class="goal-name">${g.name}</div>
+        <div class="goal-pct">${g.progress||0}%</div>
+      </div>
+      <div class="goal-bar"><div class="goal-fill" style="width:${g.progress||0}%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="goal-sub">Progreso del mes</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="updateGoalProgress('${g.id}',${Math.max(0,(g.progress||0)-10)})" style="background:var(--sky);border:none;border-radius:6px;padding:3px 8px;font-size:.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--tm)">-10%</button>
+          <button onclick="updateGoalProgress('${g.id}',${Math.min(100,(g.progress||0)+10)})" style="background:var(--g2);border:none;border-radius:6px;padding:3px 8px;font-size:.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:#fff">+10%</button>
+          <button onclick="deleteGoal('${g.id}')" style="background:none;border:none;color:var(--tl);cursor:pointer;font-size:.7rem">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+window.updateGoalProgress=async function(id,pct){
+  await updateDoc(doc(db,'goals',id),{progress:pct,updatedAt:serverTimestamp()});
+  const g=goals.find(g=>g.id===id);if(g)g.progress=pct;
+  renderGoals();
+  if(pct===100)showToast('🎉 ¡Meta completada!','s');
+};
+
+window.deleteGoal=async function(id){
+  await deleteDoc(doc(db,'goals',id));
+  goals=goals.filter(g=>g.id!==id);
+  renderGoals();showToast('🗑 Meta eliminada','');
+};
+
+window.deleteNote=async function(id){
+  await deleteDoc(doc(db,'quick_notes',id));
+  notes=notes.filter(n=>n.id!==id);
+  renderNotes();showToast('🗑 Nota eliminada','');
+};
+
+window.editNote=function(id){
+  const n=notes.find(n=>n.id===id);if(!n)return;
+  editNoteId=id;
+  document.getElementById('n-title').value=n.title||'';
+  document.getElementById('n-content').value=n.content||'';
+  document.getElementById('note-modal-title').textContent='✏️ Editar nota';
+  openNoteModal();
+};
+
+window.openNoteModal=function(){editNoteId=null;document.getElementById('note-modal').classList.add('show');};
+window.closeNoteModal=function(){document.getElementById('note-modal').classList.remove('show');editNoteId=null;document.getElementById('n-title').value='';document.getElementById('n-content').value='';document.getElementById('note-modal-title').textContent='🗒️ Nueva nota';};
+document.getElementById('note-modal').addEventListener('click',function(e){if(e.target===this)closeNoteModal();});
+
+window.saveNote=async function(){
+  const title=document.getElementById('n-title').value.trim();
+  const content=document.getElementById('n-content').value.trim();
+  if(!title&&!content){showToast('⚠️ Escribe algo','e');return;}
+  if(editNoteId){
+    await updateDoc(doc(db,'quick_notes',editNoteId),{title,content,color:noteColor,updatedAt:serverTimestamp()});
+    const n=notes.find(n=>n.id===editNoteId);if(n){n.title=title;n.content=content;n.color=noteColor;}
+  }else{
+    const ref=await addDoc(collection(db,'quick_notes'),{uid:currentUser.uid,title,content,color:noteColor,createdAt:serverTimestamp()});
+    notes.unshift({id:ref.id,uid:currentUser.uid,title,content,color:noteColor});
+  }
+  closeNoteModal();renderNotes();showToast('📝 Nota guardada','s');
+};
+
+window.selectNoteColor=function(c,el){noteColor=c;document.querySelectorAll('#note-modal .clr').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');};
+
+window.openGoalModal=function(){
+  if(goals.length>=3){showToast('⚠️ Máximo 3 metas por mes','e');return;}
+  document.getElementById('goal-modal').classList.add('show');
+};
+window.closeGoalModal=function(){document.getElementById('goal-modal').classList.remove('show');};
+document.getElementById('goal-modal').addEventListener('click',function(e){if(e.target===this)closeGoalModal();});
+
+window.selectGoalEmoji=function(e,el){
+  goalEmoji=e;
+  document.querySelectorAll('.ep-btn').forEach(b=>{b.style.borderColor='transparent';});
+  el.style.borderColor='var(--b)';
+};
+
+window.saveGoal=async function(){
+  const name=document.getElementById('g-name').value.trim();
+  const progress=parseInt(document.getElementById('g-progress').value);
+  if(!name){showToast('⚠️ Escribe la meta','e');return;}
+  const ref=await addDoc(collection(db,'goals'),{uid:currentUser.uid,name,emoji:goalEmoji,progress,createdAt:serverTimestamp()});
+  goals.push({id:ref.id,uid:currentUser.uid,name,emoji:goalEmoji,progress});
+  closeGoalModal();renderGoals();
+  document.getElementById('g-name').value='';document.getElementById('g-progress').value=0;document.getElementById('prog-val').textContent='0';
+  showToast('🎯 ¡Meta creada!','s');
+};
+
+function showToast(msg,type){
+  const el=document.getElementById('toast');el.textContent=msg;
+  el.style.background=type==='s'?'#2EAF7D':type==='e'?'#E8547A':'#0D2137';
+  el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW activo:', reg.scope))
+      .catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
