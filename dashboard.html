@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Life Tracker · Inicio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.1)}
+.hrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.greeting{font-size:.65rem;color:var(--tl);font-weight:500}
+.hname{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700}
+.hname span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.avatar{width:42px;height:42px;border-radius:50%;border:2px solid var(--b);overflow:hidden;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;flex-shrink:0}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.hchips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--sky);border:1px solid rgba(46,158,224,0.2);border-radius:20px;padding:4px 10px;font-size:.62rem;font-weight:600;color:var(--b2)}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
+.clabel{font-size:.58rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tl);margin-bottom:10px}
+.mood-row{display:flex;justify-content:space-between;gap:4px}
+.mb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:12px;cursor:pointer;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.mb.sel{background:var(--sky);border-color:var(--b)}
+.mb-e{font-size:1.4rem}
+.mb-l{font-size:.5rem;font-weight:600;color:var(--tl)}
+.streak{background:var(--g2);border-radius:20px;padding:18px;cursor:pointer;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.streak::after{content:'🔥';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:.18}
+.sl{font-size:.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:4px}
+.st{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:10px}
+.sbar{height:5px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.sfill{height:100%;background:rgba(255,255,255,.85);border-radius:3px}
+.ss{font-size:.6rem;color:rgba(255,255,255,.65)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gc{background:#fff;border-radius:18px;padding:14px;box-shadow:0 4px 12px rgba(46,158,224,0.07);border:1px solid rgba(46,158,224,0.07);text-decoration:none;display:block;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.gc:active{opacity:.75}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0}
+.gc.c1::before{background:#2E9EE0}.gc.c2::before{background:#2EAF7D}
+.gc.c3::before{background:#F59E0B}.gc.c4::before{background:#8B5CF6}
+.gc.c5::before{background:#E8547A}.gc.c6::before{background:var(--g2)}
+.gc-icon{font-size:1.4rem;margin-bottom:6px}
+.gc-title{font-size:.72rem;font-weight:700;color:var(--t);margin-bottom:2px}
+.gc-sub{font-size:.6rem;color:var(--tl)}
+.gc-badge{position:absolute;top:10px;right:10px;background:var(--b);color:#fff;font-size:.5rem;font-weight:700;border-radius:10px;padding:2px 6px}
+.shdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.stitle{font-size:.73rem;font-weight:700}
+.slink{font-size:.62rem;color:var(--b);font-weight:600;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.titem{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(46,158,224,0.06)}
+.titem:last-child{border-bottom:none}
+.tchk{width:22px;height:22px;border-radius:50%;border:2px solid rgba(46,158,224,0.25);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;background:#fff;-webkit-tap-highlight-color:transparent}
+.tchk.done{background:var(--gr);border-color:var(--gr);color:#fff;font-size:.65rem}
+.ttxt{flex:1;font-size:.73rem;color:var(--t);font-weight:500}
+.ttxt.done{text-decoration:line-through;color:var(--tl)}
+.empty{text-align:center;padding:16px;font-size:.7rem;color:var(--tl)}
+.qarow{display:flex;gap:8px;margin-top:10px}
+.qainput{flex:1;background:var(--sky);border:1.5px solid transparent;border-radius:10px;padding:9px 12px;font-size:.73rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+.qainput:focus{border-color:var(--b);background:#fff}
+.qabtn{background:var(--g2);border:none;border-radius:10px;padding:9px 18px;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.ni.active{background:var(--sky)}
+.ni-icon{font-size:1.2rem}
+.ni-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.ni.active .ni-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 20px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:300;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hrow">
+      <div>
+        <div class="greeting" id="greeting">Cargando...</div>
+        <div class="hname">Hola, <span id="hname">...</span></div>
+      </div>
+      <div class="avatar" id="avatar" onclick="location.href='profile.html'">👩🏻</div>
+    </div>
+    <div class="hchips">
+      <div class="chip">📅 <span id="hdate"></span></div>
+      <div class="chip">🪙 <span id="hcoins">0</span></div>
+      <div class="chip" id="htask-chip">✅ ...</div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="card">
+      <div class="clabel">¿Cómo estás hoy?</div>
+      <div class="mood-row">
+        <div class="mb" id="mood-5" onclick="saveMood(5)"><div class="mb-e">😴</div><div class="mb-l">Cansada</div></div>
+        <div class="mb" id="mood-4" onclick="saveMood(4)"><div class="mb-e">😔</div><div class="mb-l">Bajo</div></div>
+        <div class="mb" id="mood-3" onclick="saveMood(3)"><div class="mb-e">😐</div><div class="mb-l">Normal</div></div>
+        <div class="mb" id="mood-2" onclick="saveMood(2)"><div class="mb-e">😊</div><div class="mb-l">Bien</div></div>
+        <div class="mb" id="mood-1" onclick="saveMood(1)"><div class="mb-e">🔥</div><div class="mb-l">Increíble</div></div>
+      </div>
+    </div>
+    <div class="streak" onclick="location.href='habits.html'">
+      <div class="sl">🔥 Racha activa</div>
+      <div class="st" id="streak-title">Toca para ver tus hábitos</div>
+      <div class="sbar"><div class="sfill" id="streak-fill" style="width:0%"></div></div>
+      <div class="ss" id="streak-sub">Crea hábitos para ver tu racha</div>
+    </div>
+    <div>
+      <div class="clabel" style="margin-bottom:10px">Accesos rápidos</div>
+      <div class="grid">
+        <a class="gc c1" href="calendar.html"><div class="gc-icon">📅</div><div class="gc-title">Calendario</div><div class="gc-sub">Mi semana</div></a>
+        <a class="gc c2" href="tasks.html"><div class="gc-badge" id="tasks-badge">0</div><div class="gc-icon">✅</div><div class="gc-title">Tareas</div><div class="gc-sub" id="tasks-sub">0 pendientes</div></a>
+        <a class="gc c3" href="habits.html"><div class="gc-icon">🎯</div><div class="gc-title">Hábitos</div><div class="gc-sub" id="habits-sub">Ver hábitos</div></a>
+        <a class="gc c4" href="finance.html"><div class="gc-icon">💰</div><div class="gc-title">Finanzas</div><div class="gc-sub">Ver resumen</div></a>
+        <a class="gc c5" href="notes.html"><div class="gc-icon">🗒️</div><div class="gc-title">Notas</div><div class="gc-sub">Mis notas</div></a>
+        <a class="gc c6" href="assistant.html"><div class="gc-icon">🤖</div><div class="gc-title">Asistente IA</div><div class="gc-sub">Chatear</div></a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="shdr">
+        <div class="stitle">Tareas de hoy</div>
+        <a class="slink" href="tasks.html">Ver todas →</a>
+      </div>
+      <div id="tasks-preview"><div class="empty">Cargando...</div></div>
+      <div class="qarow">
+        <input class="qainput" id="qa-input" placeholder="Agregar tarea rápida..." onkeydown="if(event.key==='Enter')quickAdd()">
+        <button class="qabtn" onclick="quickAdd()">+</button>
+      </div>
+    </div>
+  </div>
+  <nav class="nav">
+    <a class="ni active" href="dashboard.html"><div class="ni-icon">🏠</div><div class="ni-label">Inicio</div></a>
+    <a class="ni" href="calendar.html"><div class="ni-icon">📅</div><div class="ni-label">Calendario</div></a>
+    <a class="ni" href="tasks.html"><div class="ni-icon">✅</div><div class="ni-label">Tareas</div></a>
+    <a class="ni" href="notes.html"><div class="ni-icon">🗒️</div><div class="ni-label">Notas</div></a>
+    <a class="ni" href="profile.html"><div class="ni-icon">👤</div><div class="ni-label">Perfil</div></a>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,updateDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const FB={apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"};
+const app=initializeApp(FB);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const today=new Date().toISOString().split('T')[0];
+let uid=null;
+
+// Fecha y saludo
+const d=new Date();
+const dias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+document.getElementById('hdate').textContent=dias[d.getDay()]+' '+d.getDate()+' '+meses[d.getMonth()];
+const h=d.getHours();
+document.getElementById('greeting').textContent=h<12?'Buenos días ☀️':h<18?'Buenas tardes 🌤️':'Buenas noches 🌙';
+
+function showToast(msg,color){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.style.background=color||'#0D2137';
+  el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href='index.html';return;}
+  uid=user.uid;
+  const name=(user.displayName||user.email||'').split(' ')[0];
+  document.getElementById('hname').textContent=name;
+  const saved=localStorage.getItem('lt_av_'+uid);
+  if(saved) document.getElementById('avatar').innerHTML='<img src="'+saved+'">';
+  else if(user.photoURL) document.getElementById('avatar').innerHTML='<img src="'+user.photoURL+'">';
+  loadMood();
+  loadTasks();
+  loadHabits();
+  try{
+    const snap=await getDoc(doc(db,'users',uid));
+    if(snap.exists()) document.getElementById('hcoins').textContent=snap.data().coins||0;
+  }catch(e){}
+});
+
+async function loadMood(){
+  try{
+    const snap=await getDoc(doc(db,'moods',uid+'_'+today));
+    if(snap.exists()){
+      const m=snap.data().mood;
+      document.querySelectorAll('.mb').forEach(b=>b.classList.remove('sel'));
+      const el=document.getElementById('mood-'+m);
+      if(el) el.classList.add('sel');
+    }
+  }catch(e){}
+}
+
+async function loadTasks(){
+  try{
+    const snap=await getDocs(query(collection(db,'tasks'),where('uid','==',uid),where('date','==',today)));
+    const all=[];
+    snap.forEach(d=>all.push({id:d.id,...d.data()}));
+    const pending=all.filter(t=>!t.done);
+    document.getElementById('tasks-badge').textContent=pending.length;
+    document.getElementById('tasks-sub').textContent=pending.length+' pendiente'+(pending.length!==1?'s':'');
+    document.getElementById('htask-chip').textContent='✅ '+pending.length+' tarea'+(pending.length!==1?'s':'');
+    const el=document.getElementById('tasks-preview');
+    if(!pending.length){el.innerHTML='<div class="empty">Sin tareas pendientes 🎉</div>';return;}
+    el.innerHTML=pending.slice(0,3).map(t=>`<div class="titem" id="ti-${t.id}"><div class="tchk" onclick="doneTask('${t.id}')"></div><div class="ttxt">${t.text}</div></div>`).join('');
+  }catch(e){
+    document.getElementById('tasks-preview').innerHTML='<div class="empty">Sin tareas por ahora</div>';
+  }
+}
+
+async function loadHabits(){
+  try{
+    const snap=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
+    let best=null,bestS=0,total=0,done=0;
+    snap.forEach(d=>{
+      const h=d.data(); total++;
+      if((h.streak||0)>bestS){bestS=h.streak||0;best=h;}
+      if((h.completedDates||[]).includes(today)) done++;
+    });
+    document.getElementById('habits-sub').textContent=done+' de '+total+' hoy';
+    if(best&&bestS>0){
+      document.getElementById('streak-title').textContent=best.name+' · '+bestS+' días';
+      document.getElementById('streak-fill').style.width=Math.min((bestS/30)*100,100)+'%';
+      document.getElementById('streak-sub').textContent=bestS+' de 30 días · ¡Sigue así!';
+    }
+  }catch(e){}
+}
+
+// FUNCIONES GLOBALES para onclick del HTML
+window.saveMood=async function(m){
+  document.querySelectorAll('.mb').forEach(b=>b.classList.remove('sel'));
+  const el=document.getElementById('mood-'+m);
+  if(el) el.classList.add('sel');
+  try{
+    await setDoc(doc(db,'moods',uid+'_'+today),{uid,mood:m,date:today,ts:serverTimestamp()});
+    showToast('Estado guardado 😊','#2EAF7D');
+  }catch(e){showToast('Error al guardar','#E8547A');}
+};
+
+window.doneTask=async function(id){
+  try{
+    await updateDoc(doc(db,'tasks',id),{done:true,doneAt:serverTimestamp()});
+    const row=document.getElementById('ti-'+id);
+    if(row){
+      row.querySelector('.tchk').classList.add('done');
+      row.querySelector('.tchk').textContent='✓';
+      row.querySelector('.ttxt').classList.add('done');
+    }
+    showToast('✅ ¡Completada!','#2EAF7D');
+  }catch(e){showToast('Error','#E8547A');}
+};
+
+window.quickAdd=async function(){
+  const inp=document.getElementById('qa-input');
+  const text=inp.value.trim();
+  if(!text)return;
+  inp.value='';
+  try{
+    await addDoc(collection(db,'tasks'),{uid,text,date:today,done:false,priority:'normal',createdAt:serverTimestamp()});
+    showToast('Tarea agregada ✅','#2EAF7D');
+    loadTasks();
+  }catch(e){showToast('Error al guardar','#E8547A');}
+};
+</script>
+</body>
+</html>

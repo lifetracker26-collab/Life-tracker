@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Life Tracker · Hábitos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--am:#F59E0B;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.1)}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+.htitle{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700}
+.htitle span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.addbtn{background:var(--g2);border:none;border-radius:12px;padding:9px 18px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc{background:#fff;border-radius:16px;padding:12px;text-align:center;box-shadow:0 4px 12px rgba(46,158,224,0.07);border:1px solid rgba(46,158,224,0.07)}
+.sn{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700}
+.sl{font-size:.58rem;font-weight:600;color:var(--tl);margin-top:2px}
+.hcard{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
+.hcard-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.hicon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.hinfo{flex:1}
+.hname{font-size:.8rem;font-weight:700;margin-bottom:2px}
+.hstreak{font-size:.65rem;font-weight:700;color:var(--am)}
+.hbtn{width:44px;height:44px;border-radius:50%;border:2px solid rgba(46,158,224,0.2);background:var(--sky);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.hbtn.done{background:var(--gr);border-color:var(--gr);color:#fff;font-size:.9rem}
+.hprog{height:5px;background:var(--sky);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.hfill{height:100%;border-radius:3px;transition:width .5s ease}
+.wdots{display:flex;gap:4px;justify-content:space-between}
+.wd{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.wdl{font-size:.48rem;font-weight:600;color:var(--tl);text-transform:uppercase}
+.wdd{width:100%;aspect-ratio:1;border-radius:50%;background:var(--sky);max-width:22px}
+.wdd.done{background:var(--gr)}
+.wdd.today{border:2px solid var(--b)}
+.empty-state{text-align:center;background:#fff;border-radius:20px;padding:28px 20px;box-shadow:0 4px 14px rgba(46,158,224,0.07)}
+.empty-icon{font-size:2.2rem;margin-bottom:8px}
+.empty-text{font-size:.73rem;color:var(--tl);margin-bottom:14px}
+.empty-btn{background:var(--g2);border:none;border-radius:12px;padding:10px 22px;color:#fff;font-size:.73rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.overlay{position:fixed;inset:0;background:rgba(13,33,55,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 44px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);max-height:85vh;overflow-y:auto}
+.overlay.show .modal{transform:translateY(0)}
+.mtitle{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:16px}
+.mlbl{font-size:.62rem;font-weight:700;color:#3A5570;margin-bottom:6px}
+.emojis{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.ep{font-size:1.35rem;width:42px;height:42px;border-radius:10px;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sky);-webkit-tap-highlight-color:transparent}
+.ep.sel{border-color:var(--b);background:rgba(46,158,224,0.1)}
+.min{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;-webkit-appearance:none;display:block}
+.min:focus{border-color:var(--b)}
+.colors{display:flex;gap:10px;margin-bottom:18px}
+.cl{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.cl.sel{border-color:#fff;box-shadow:0 0 0 2.5px var(--t);transform:scale(1.1)}
+.msave{width:100%;background:var(--g2);border:none;border-radius:14px;padding:14px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px}
+.mcancel{width:100%;background:transparent;border:none;padding:10px;color:var(--tl);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.ni.active{background:var(--sky)}
+.ni-icon{font-size:1.2rem}
+.ni-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.ni.active .ni-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 20px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:300;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hrow">
+      <div class="htitle">Mis <span>Hábitos</span></div>
+      <button class="addbtn" onclick="openModal()">＋ Nuevo</button>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="stats">
+      <div class="sc"><div class="sn" id="st">0</div><div class="sl">Hábitos</div></div>
+      <div class="sc"><div class="sn" id="sd">0</div><div class="sl">Hoy ✅</div></div>
+      <div class="sc"><div class="sn" id="ss">0</div><div class="sl">🔥 Racha</div></div>
+    </div>
+    <div id="hcont">
+      <div class="empty-state"><div class="empty-icon">🎯</div><div class="empty-text">¡Crea tu primer hábito!</div><button class="empty-btn" onclick="openModal()">＋ Crear hábito</button></div>
+    </div>
+  </div>
+  <nav class="nav">
+    <a class="ni" href="dashboard.html"><div class="ni-icon">🏠</div><div class="ni-label">Inicio</div></a>
+    <a class="ni" href="calendar.html"><div class="ni-icon">📅</div><div class="ni-label">Calendario</div></a>
+    <a class="ni" href="tasks.html"><div class="ni-icon">✅</div><div class="ni-label">Tareas</div></a>
+    <a class="ni" href="notes.html"><div class="ni-icon">🗒️</div><div class="ni-label">Notas</div></a>
+    <a class="ni" href="profile.html"><div class="ni-icon">👤</div><div class="ni-label">Perfil</div></a>
+  </nav>
+</div>
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="mtitle">🎯 Nuevo hábito</div>
+    <div class="mlbl">Ícono</div>
+    <div class="emojis">
+      <div class="ep sel" id="ep0" onclick="selE('🏃',0)">🏃</div>
+      <div class="ep" id="ep1" onclick="selE('💪',1)">💪</div>
+      <div class="ep" id="ep2" onclick="selE('📚',2)">📚</div>
+      <div class="ep" id="ep3" onclick="selE('🧘',3)">🧘</div>
+      <div class="ep" id="ep4" onclick="selE('💧',4)">💧</div>
+      <div class="ep" id="ep5" onclick="selE('🥗',5)">🥗</div>
+      <div class="ep" id="ep6" onclick="selE('😴',6)">😴</div>
+      <div class="ep" id="ep7" onclick="selE('✍️',7)">✍️</div>
+      <div class="ep" id="ep8" onclick="selE('🎵',8)">🎵</div>
+      <div class="ep" id="ep9" onclick="selE('🌿',9)">🌿</div>
+    </div>
+    <div class="mlbl">Nombre</div>
+    <input class="min" id="m-name" placeholder="Ej: Ejercicio 30 min">
+    <div class="mlbl">Color</div>
+    <div class="colors">
+      <div class="cl sel" id="cl0" style="background:#2E9EE0" onclick="selC('#2E9EE0',0)"></div>
+      <div class="cl" id="cl1" style="background:#2EAF7D" onclick="selC('#2EAF7D',1)"></div>
+      <div class="cl" id="cl2" style="background:#E8547A" onclick="selC('#E8547A',2)"></div>
+      <div class="cl" id="cl3" style="background:#F59E0B" onclick="selC('#F59E0B',3)"></div>
+      <div class="cl" id="cl4" style="background:#8B5CF6" onclick="selC('#8B5CF6',4)"></div>
+    </div>
+    <button class="msave" onclick="saveHabit()">Crear hábito →</button>
+    <button class="mcancel" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,doc,collection,getDocs,addDoc,updateDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
+const auth=getAuth(app),db=getFirestore(app);
+const today=new Date().toISOString().split('T')[0];
+const DAYS=['L','M','M','J','V','S','D'];
+let uid=null,habits=[],selEmoji='🏃',selColor='#2E9EE0';
+
+function showToast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+
+function getWeek(){const d=new Date(),day=d.getDay(),diff=d.getDate()-(day===0?6:day-1),mon=new Date(d.setDate(diff));return Array.from({length:7},(_,i)=>{const x=new Date(mon);x.setDate(mon.getDate()+i);return x.toISOString().split('T')[0];});}
+
+function calcStreak(dates){if(!dates?.length)return 0;let s=0,check=today;for(let i=0;i<365;i++){if(dates.includes(check))s++;else if(s>0)break;const d=new Date(check);d.setDate(d.getDate()-1);check=d.toISOString().split('T')[0];}return s;}
+
+onAuthStateChanged(auth,async user=>{if(!user){location.href='index.html';return;}uid=user.uid;loadHabits();});
+
+async function loadHabits(){
+  try{
+    const snap=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
+    habits=[];snap.forEach(d=>habits.push({id:d.id,...d.data()}));
+    renderHabits();
+  }catch(e){showToast('Error cargando','#E8547A');}
+}
+
+function renderHabits(){
+  const week=getWeek();
+  const todayDone=habits.filter(h=>(h.completedDates||[]).includes(today)).length;
+  const best=habits.reduce((m,h)=>Math.max(m,h.streak||0),0);
+  document.getElementById('st').textContent=habits.length;
+  document.getElementById('sd').textContent=todayDone;
+  document.getElementById('ss').textContent=best;
+  const cont=document.getElementById('hcont');
+  if(!habits.length){cont.innerHTML='<div class="empty-state"><div class="empty-icon">🎯</div><div class="empty-text">¡Crea tu primer hábito!</div><button class="empty-btn" onclick="openModal()">＋ Crear hábito</button></div>';return;}
+  cont.innerHTML=habits.map(h=>{
+    const dates=h.completedDates||[],streak=h.streak||0,isDone=dates.includes(today),pct=Math.min((streak/30)*100,100);
+    const dots=week.map((d,i)=>`<div class="wd"><div class="wdl">${DAYS[i]}</div><div class="wdd${dates.includes(d)?' done':''}${d===today?' today':''}"></div></div>`).join('');
+    return`<div class="hcard"><div class="hcard-top"><div class="hicon" style="background:${h.color||'#2E9EE0'}20">${h.emoji||'🎯'}</div><div class="hinfo"><div class="hname">${h.name}</div><div class="hstreak">🔥 ${streak} días</div></div><div class="hbtn ${isDone?'done':''}" onclick="toggleHabit('${h.id}')">${isDone?'✓':'○'}</div></div><div class="hprog"><div class="hfill" style="width:${pct}%;background:${h.color||'#2E9EE0'}"></div></div><div class="wdots">${dots}</div></div>`;
+  }).join('');
+}
+
+window.toggleHabit=async function(id){
+  const h=habits.find(h=>h.id===id);if(!h)return;
+  const dates=[...(h.completedDates||[])];
+  const idx=dates.indexOf(today);
+  if(idx>=0)dates.splice(idx,1);else dates.push(today);
+  const newStreak=calcStreak(dates);
+  try{
+    await updateDoc(doc(db,'habits',id),{completedDates:dates,streak:newStreak,updatedAt:serverTimestamp()});
+    h.completedDates=dates;h.streak=newStreak;
+    renderHabits();
+    if(idx<0)showToast('🔥 ¡Hábito completado!','#2EAF7D');
+  }catch(e){showToast('Error','#E8547A');}
+};
+
+window.selE=function(e,i){selEmoji=e;for(let j=0;j<10;j++){const el=document.getElementById('ep'+j);if(el)el.classList.remove('sel');}document.getElementById('ep'+i)?.classList.add('sel');};
+window.selC=function(c,i){selColor=c;for(let j=0;j<5;j++){const el=document.getElementById('cl'+j);if(el)el.classList.remove('sel');}document.getElementById('cl'+i)?.classList.add('sel');};
+window.openModal=function(){document.getElementById('modal').classList.add('show');};
+window.closeModal=function(){document.getElementById('modal').classList.remove('show');};
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)window.closeModal();});
+window.saveHabit=async function(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){showToast('⚠️ Escribe el nombre','#E8547A');return;}
+  try{
+    const ref=await addDoc(collection(db,'habits'),{uid,name,emoji:selEmoji,color:selColor,streak:0,completedDates:[],createdAt:serverTimestamp()});
+    habits.push({id:ref.id,uid,name,emoji:selEmoji,color:selColor,streak:0,completedDates:[]});
+    window.closeModal();document.getElementById('m-name').value='';
+    renderHabits();showToast('🎯 ¡Hábito creado!','#2EAF7D');
+  }catch(e){showToast('Error: '+e.message,'#E8547A');}
+};
+</script>
+</body>
+</html>
