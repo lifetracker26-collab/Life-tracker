@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Life Tracker · Notas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--am:#F59E0B;--pu:#8B5CF6;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.1)}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+.htitle{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700}
+.htitle span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.addbtn{background:var(--g2);border:none;border-radius:12px;padding:9px 18px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
+.ctitle{font-size:.73rem;font-weight:700;color:var(--t);margin-bottom:12px}
+/* GOALS */
+.goal-card{background:var(--sky);border-radius:14px;padding:12px;margin-bottom:10px;border:1px solid rgba(46,158,224,0.15);cursor:pointer}
+.goal-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.goal-emoji{font-size:1.2rem}
+.goal-name{font-size:.75rem;font-weight:700;flex:1}
+.goal-pct{font-size:.65rem;font-weight:700;color:var(--b2)}
+.goal-bar{height:5px;background:rgba(46,158,224,0.15);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.goal-fill{height:100%;background:var(--g2);border-radius:3px}
+.goal-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.goal-btn{background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:8px;padding:4px 10px;font-size:.62rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif}
+.goal-btn.plus{background:var(--g2);border-color:transparent;color:#fff}
+.goal-del{background:none;border:none;color:var(--tl);font-size:.75rem;cursor:pointer;padding:2px 6px}
+.add-goal-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:1.5px dashed rgba(46,158,224,0.25);border-radius:14px;padding:12px;width:100%;font-size:.68rem;font-weight:600;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px}
+/* NOTES */
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 3px 12px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.08);cursor:pointer;position:relative;overflow:hidden}
+.note-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+.note-title{font-size:.72rem;font-weight:700;color:var(--t);margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note-preview{font-size:.62rem;color:var(--tl);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.note-date{font-size:.55rem;color:var(--tl);margin-top:8px}
+.note-del{position:absolute;top:8px;right:8px;background:rgba(232,84,122,0.1);border:none;border-radius:6px;padding:3px 6px;cursor:pointer;font-size:.65rem;color:var(--pk)}
+.empty{text-align:center;padding:24px;background:#fff;border-radius:20px}
+.empty-icon{font-size:2rem;margin-bottom:8px}
+.empty-text{font-size:.72rem;color:var(--tl)}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(13,33,55,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 44px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);max-height:90vh;overflow-y:auto}
+.overlay.show .modal{transform:translateY(0)}
+.mtitle{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:16px}
+.min{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;-webkit-appearance:none;display:block}
+.min:focus{border-color:var(--b)}
+.mta{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.78rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;resize:none;min-height:140px;line-height:1.6;margin-bottom:10px;display:block;-webkit-appearance:none}
+.mta:focus{border-color:var(--b)}
+.mlbl{font-size:.62rem;font-weight:700;color:#3A5570;margin-bottom:6px}
+.clrs{display:flex;gap:8px;margin-bottom:16px}
+.clr{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+.clr.sel{border-color:#fff;box-shadow:0 0 0 2.5px var(--t);transform:scale(1.1)}
+.msave{width:100%;background:var(--g2);border:none;border-radius:14px;padding:14px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px;display:block}
+.mcancel{width:100%;background:transparent;border:none;padding:10px;color:var(--tl);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:block}
+/* SLIDER */
+.slider{width:100%;margin:8px 0;accent-color:var(--b)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none}
+.ni.active{background:var(--sky)}
+.ni-icon{font-size:1.2rem}
+.ni-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.ni.active .ni-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 20px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:300;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hrow">
+      <div class="htitle">Notas y <span>Metas</span></div>
+      <button class="addbtn" id="btn-new-note">＋ Nota</button>
+    </div>
+  </div>
+  <div class="scroll">
+    <!-- METAS -->
+    <div class="card">
+      <div class="ctitle">🎯 Metas del mes</div>
+      <div id="goals-container"></div>
+      <button class="add-goal-btn" id="btn-new-goal">＋ Agregar meta (máx. 3)</button>
+    </div>
+    <!-- NOTAS -->
+    <div>
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tl);margin-bottom:10px">Notas rápidas</div>
+      <div id="notes-container">
+        <div class="empty"><div class="empty-icon">🗒️</div><div class="empty-text">Sin notas aún</div></div>
+      </div>
+    </div>
+  </div>
+  <nav class="nav">
+    <a class="ni" href="dashboard.html"><div class="ni-icon">🏠</div><div class="ni-label">Inicio</div></a>
+    <a class="ni" href="calendar.html"><div class="ni-icon">📅</div><div class="ni-label">Calendario</div></a>
+    <a class="ni" href="tasks.html"><div class="ni-icon">✅</div><div class="ni-label">Tareas</div></a>
+    <a class="ni active" href="notes.html"><div class="ni-icon">🗒️</div><div class="ni-label">Notas</div></a>
+    <a class="ni" href="profile.html"><div class="ni-icon">👤</div><div class="ni-label">Perfil</div></a>
+  </nav>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="overlay" id="note-modal">
+  <div class="modal">
+    <div class="mtitle" id="note-modal-title">🗒️ Nueva nota</div>
+    <input class="min" id="n-title" placeholder="Título de la nota">
+    <textarea class="mta" id="n-content" placeholder="Escribe aquí..."></textarea>
+    <div class="mlbl">Color</div>
+    <div class="clrs" id="note-colors">
+      <div class="clr sel" data-color="#2E9EE0" style="background:#2E9EE0"></div>
+      <div class="clr" data-color="#2EAF7D" style="background:#2EAF7D"></div>
+      <div class="clr" data-color="#E8547A" style="background:#E8547A"></div>
+      <div class="clr" data-color="#F59E0B" style="background:#F59E0B"></div>
+      <div class="clr" data-color="#8B5CF6" style="background:#8B5CF6"></div>
+    </div>
+    <button class="msave" id="btn-save-note">Guardar nota →</button>
+    <button class="mcancel" id="btn-cancel-note">Cancelar</button>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="overlay" id="goal-modal">
+  <div class="modal">
+    <div class="mtitle">🎯 Nueva meta</div>
+    <div class="mlbl">Nombre de la meta</div>
+    <input class="min" id="g-name" placeholder="¿Cuál es tu meta?">
+    <div class="mlbl">Ícono</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px" id="goal-emojis">
+      <div class="clr sel" data-emoji="🎯" style="background:var(--sky);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid var(--b)">🎯</div>
+      <div class="clr" data-emoji="💪" style="background:var(--sky);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">💪</div>
+      <div class="clr" data-emoji="💰" style="background:var(--sky);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">💰</div>
+      <div class="clr" data-emoji="📚" style="background:var(--sky);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">📚</div>
+      <div class="clr" data-emoji="✈️" style="background:var(--sky);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">✈️</div>
+      <div class="clr" data-emoji="🏠" style="background:var(--sky);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">🏠</div>
+    </div>
+    <div class="mlbl">Progreso inicial: <span id="prog-val">0</span>%</div>
+    <input type="range" class="slider" id="g-prog" min="0" max="100" value="0">
+    <button class="msave" id="btn-save-goal">Crear meta →</button>
+    <button class="mcancel" id="btn-cancel-goal">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,doc,collection,getDocs,addDoc,updateDoc,deleteDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
+const auth=getAuth(app),db=getFirestore(app);
+let uid=null,notes=[],goals=[],noteColor='#2E9EE0',goalEmoji='🎯',editNoteId=null;
+
+function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+
+// Color pickers (no necesitan Firebase, funcionan desde el inicio)
+document.getElementById('note-colors').addEventListener('click',e=>{
+  const cl=e.target.closest('.clr');if(!cl)return;
+  noteColor=cl.dataset.color;
+  document.querySelectorAll('#note-colors .clr').forEach(b=>b.classList.remove('sel'));
+  cl.classList.add('sel');
+});
+document.getElementById('goal-emojis').addEventListener('click',e=>{
+  const cl=e.target.closest('[data-emoji]');if(!cl)return;
+  goalEmoji=cl.dataset.emoji;
+  document.querySelectorAll('#goal-emojis [data-emoji]').forEach(b=>{b.style.border='2px solid transparent';});
+  cl.style.border='2px solid var(--b)';
+});
+document.getElementById('g-prog').addEventListener('input',e=>{document.getElementById('prog-val').textContent=e.target.value;});
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href='index.html';return;}
+  uid=user.uid;
+  await Promise.all([loadNotes(),loadGoals()]);
+
+  // EVENT DELEGATION - permanente, sobrevive a re-renders
+  document.getElementById('notes-container').addEventListener('click',async e=>{
+    const del=e.target.closest('.note-del');
+    const card=e.target.closest('.note-card');
+    if(del&&del.dataset.del){
+      e.stopPropagation();
+      try{await deleteDoc(doc(db,'quick_notes',del.dataset.del));notes=notes.filter(n=>n.id!==del.dataset.del);renderNotes();toast('🗑 Eliminada','#0D2137');}
+      catch(err){toast('Error','#E8547A');}
+      return;
+    }
+    if(card&&card.dataset.id) openNoteModal(card.dataset.id);
+  });
+  document.getElementById('goals-container').addEventListener('click',async e=>{
+    const minus=e.target.closest('[data-minus]');
+    const plus=e.target.closest('[data-plus]');
+    const del=e.target.closest('.goal-del');
+    if(minus){
+      const id=minus.dataset.minus;const pct=parseInt(minus.dataset.val);
+      try{await updateDoc(doc(db,'goals',id),{progress:pct,updatedAt:serverTimestamp()});const g=goals.find(g=>g.id===id);if(g)g.progress=pct;renderGoals();}
+      catch(err){toast('Error','#E8547A');}
+    }
+    if(plus){
+      const id=plus.dataset.plus;const pct=parseInt(plus.dataset.val);
+      try{await updateDoc(doc(db,'goals',id),{progress:pct,updatedAt:serverTimestamp()});const g=goals.find(g=>g.id===id);if(g)g.progress=pct;renderGoals();if(pct===100)toast('🎉 ¡Meta completada!','#2EAF7D');}
+      catch(err){toast('Error','#E8547A');}
+    }
+    if(del){
+      try{await deleteDoc(doc(db,'goals',del.dataset.del));goals=goals.filter(g=>g.id!==del.dataset.del);renderGoals();toast('🗑 Meta eliminada','#0D2137');}
+      catch(err){toast('Error','#E8547A');}
+    }
+  });
+
+  // BOTONES
+  document.getElementById('btn-new-note').addEventListener('click',()=>openNoteModal());
+  document.getElementById('btn-new-goal').addEventListener('click',openGoalModal);
+  document.getElementById('btn-cancel-note').addEventListener('click',closeNoteModal);
+  document.getElementById('btn-cancel-goal').addEventListener('click',closeGoalModal);
+  document.getElementById('note-modal').addEventListener('click',e=>{if(e.target===document.getElementById('note-modal'))closeNoteModal();});
+  document.getElementById('goal-modal').addEventListener('click',e=>{if(e.target===document.getElementById('goal-modal'))closeGoalModal();});
+
+  document.getElementById('btn-save-note').addEventListener('click',async()=>{
+    const title=document.getElementById('n-title').value.trim();
+    const content=document.getElementById('n-content').value.trim();
+    if(!title&&!content){toast('⚠️ Escribe algo','#E8547A');return;}
+    try{
+      if(editNoteId){
+        await updateDoc(doc(db,'quick_notes',editNoteId),{title,content,color:noteColor,updatedAt:serverTimestamp()});
+        const n=notes.find(n=>n.id===editNoteId);if(n){n.title=title;n.content=content;n.color=noteColor;}
+      }else{
+        const ref=await addDoc(collection(db,'quick_notes'),{uid,title,content,color:noteColor,createdAt:serverTimestamp()});
+        notes.unshift({id:ref.id,uid,title,content,color:noteColor});
+      }
+      closeNoteModal();renderNotes();toast('📝 Nota guardada','#2EAF7D');
+    }catch(e){toast('Error: '+e.message,'#E8547A');}
+  });
+
+  document.getElementById('btn-save-goal').addEventListener('click',async()=>{
+    if(goals.length>=3){toast('⚠️ Máximo 3 metas','#E8547A');return;}
+    const name=document.getElementById('g-name').value.trim();
+    const progress=parseInt(document.getElementById('g-prog').value);
+    if(!name){toast('⚠️ Escribe la meta','#E8547A');return;}
+    try{
+      const ref=await addDoc(collection(db,'goals'),{uid,name,emoji:goalEmoji,progress,createdAt:serverTimestamp()});
+      goals.push({id:ref.id,uid,name,emoji:goalEmoji,progress});
+      closeGoalModal();renderGoals();toast('🎯 ¡Meta creada!','#2EAF7D');
+    }catch(e){toast('Error: '+e.message,'#E8547A');}
+  });
+});
+
+function openNoteModal(id){
+  editNoteId=id||null;
+  if(id){
+    const n=notes.find(n=>n.id===id);
+    if(n){document.getElementById('n-title').value=n.title||'';document.getElementById('n-content').value=n.content||'';}
+    document.getElementById('note-modal-title').textContent='✏️ Editar nota';
+  }else{
+    document.getElementById('n-title').value='';document.getElementById('n-content').value='';
+    document.getElementById('note-modal-title').textContent='🗒️ Nueva nota';
+  }
+  document.getElementById('note-modal').classList.add('show');
+}
+function closeNoteModal(){document.getElementById('note-modal').classList.remove('show');editNoteId=null;}
+function openGoalModal(){
+  if(goals.length>=3){toast('⚠️ Máximo 3 metas por mes','#E8547A');return;}
+  document.getElementById('g-name').value='';document.getElementById('g-prog').value=0;document.getElementById('prog-val').textContent='0';
+  document.getElementById('goal-modal').classList.add('show');
+}
+function closeGoalModal(){document.getElementById('goal-modal').classList.remove('show');}
+
+async function loadNotes(){
+  try{const snap=await getDocs(query(collection(db,'quick_notes'),where('uid','==',uid)));notes=[];snap.forEach(d=>notes.push({id:d.id,...d.data()}));renderNotes();}catch(e){}
+}
+async function loadGoals(){
+  try{const snap=await getDocs(query(collection(db,'goals'),where('uid','==',uid)));goals=[];snap.forEach(d=>goals.push({id:d.id,...d.data()}));renderGoals();}catch(e){}
+}
+
+function renderNotes(){
+  const cont=document.getElementById('notes-container');
+  if(!notes.length){cont.innerHTML='<div class="empty"><div class="empty-icon">🗒️</div><div class="empty-text">Sin notas aún</div></div>';return;}
+  cont.innerHTML=`<div class="notes-grid">${notes.map(n=>`
+    <div class="note-card" data-id="${n.id}">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:${n.color||'#2E9EE0'}"></div>
+      <button class="note-del" data-del="${n.id}">🗑</button>
+      <div class="note-title">${n.title||'Sin título'}</div>
+      <div class="note-preview">${n.content||''}</div>
+      <div class="note-date">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleDateString('es-MX',{day:'2-digit',month:'short'}):''}</div>
+    </div>`).join('')}</div>`;
+
+}
+
+function renderGoals(){
+  const cont=document.getElementById('goals-container');
+  const btn=document.getElementById('btn-new-goal');
+  btn.style.display=goals.length>=3?'none':'flex';
+  if(!goals.length){cont.innerHTML='';return;}
+  cont.innerHTML=goals.map(g=>`
+    <div class="goal-card">
+      <div class="goal-top"><div class="goal-emoji">${g.emoji||'🎯'}</div><div class="goal-name">${g.name}</div><div class="goal-pct">${g.progress||0}%</div></div>
+      <div class="goal-bar"><div class="goal-fill" style="width:${g.progress||0}%"></div></div>
+      <div class="goal-actions">
+        <button class="goal-btn" data-minus="${g.id}" data-val="${Math.max(0,(g.progress||0)-10)}">-10%</button>
+        <button class="goal-btn plus" data-plus="${g.id}" data-val="${Math.min(100,(g.progress||0)+10)}">+10%</button>
+        <button class="goal-del" data-del="${g.id}">🗑</button>
+      </div>
+    </div>`).join('');
+
+}
+</script>
+</body>
+</html>

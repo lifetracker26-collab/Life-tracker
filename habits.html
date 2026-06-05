@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Life Tracker · Hábitos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--am:#F59E0B;--pu:#8B5CF6;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.1)}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+.htitle{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700}
+.htitle span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.addbtn{background:var(--g2);border:none;border-radius:12px;padding:9px 16px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc{background:#fff;border-radius:16px;padding:12px;text-align:center;box-shadow:0 4px 12px rgba(46,158,224,0.07);border:1px solid rgba(46,158,224,0.07)}
+.sn{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700}
+.sl{font-size:.58rem;font-weight:600;color:var(--tl);margin-top:2px}
+/* GRUPO */
+.group-card{background:#fff;border-radius:20px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07);overflow:hidden}
+.group-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer}
+.group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.group-name{font-size:.8rem;font-weight:700;flex:1}
+.group-sub{font-size:.6rem;color:var(--tl)}
+.group-arrow{font-size:.7rem;color:var(--tl);transition:transform .2s}
+.group-arrow.open{transform:rotate(180deg)}
+.group-body{padding:0 16px}
+.group-body.hidden{display:none}
+/* HÁBITO */
+.hitem{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(46,158,224,0.06)}
+.hitem:last-child{border-bottom:none}
+.hbtn{width:28px;height:28px;border-radius:50%;border:2px solid rgba(46,158,224,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:.7rem;transition:all .2s;background:#fff}
+.hbtn.done{background:var(--gr);border-color:var(--gr);color:#fff}
+.hinfo{flex:1;min-width:0}
+.hname{font-size:.75rem;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.badge{background:linear-gradient(135deg,#F59E0B,#ef4444);color:#fff;font-size:.5rem;font-weight:700;padding:2px 6px;border-radius:8px}
+.hstreak{font-size:.6rem;font-weight:700;color:var(--am)}
+/* 15 puntos */
+.dots15{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
+.dot15{width:7px;height:7px;border-radius:50%;background:rgba(46,158,224,.12);transition:all .2s}
+.dot15.done{background:var(--gr)}
+.dot15.today{border:1.5px solid var(--b)}
+.dot15.today.done{background:var(--b);border-color:var(--b)}
+/* Progreso */
+.hprog{height:3px;background:rgba(46,158,224,.1);border-radius:2px;overflow:hidden;margin-top:5px}
+.hprog-fill{height:100%;border-radius:2px;transition:width .5s}
+/* Agregar hábito en grupo */
+.add-in-group{display:flex;gap:8px;padding:10px 0 14px}
+.gin{flex:1;background:var(--sky);border:1.5px solid transparent;border-radius:10px;padding:8px 12px;font-size:.72rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+.gin:focus{border-color:var(--b)}
+.gbtn{background:var(--g2);border:none;border-radius:10px;padding:8px 14px;color:#fff;font-size:.8rem;cursor:pointer}
+/* EMPTY */
+.empty-group{padding:14px 0;text-align:center;font-size:.7rem;color:var(--tl)}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(13,33,55,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 44px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.overlay.show .modal{transform:translateY(0)}
+.mtitle{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:16px}
+.mlbl{font-size:.62rem;font-weight:700;color:#3A5570;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.min{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;-webkit-appearance:none;display:block}
+.min:focus{border-color:var(--b)}
+.colors{display:flex;gap:10px;margin-bottom:16px}
+.cl{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.cl.sel{border-color:#fff;box-shadow:0 0 0 2.5px var(--t);transform:scale(1.1)}
+.msave{width:100%;background:var(--g2);border:none;border-radius:14px;padding:13px;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:block;margin-bottom:8px}
+.mcancel{width:100%;background:transparent;border:none;padding:10px;color:var(--tl);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:block}
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none}
+.ni.active{background:var(--sky)}
+.ni-icon{font-size:1.2rem}
+.ni-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.ni.active .ni-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 20px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:300;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hrow">
+      <div class="htitle">Mis <span>Hábitos</span></div>
+      <button class="addbtn" id="btn-new-group">＋ Grupo</button>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="stats">
+      <div class="sc"><div class="sn" id="st-t">0</div><div class="sl">Hábitos</div></div>
+      <div class="sc"><div class="sn" id="st-d">0</div><div class="sl">Hoy ✅</div></div>
+      <div class="sc"><div class="sn" id="st-s">0</div><div class="sl">🔥 Mejor</div></div>
+    </div>
+    <div id="groups-container">
+      <div style="text-align:center;padding:28px;background:#fff;border-radius:20px;font-size:.75rem;color:var(--tl)">
+        Toca "＋ Grupo" para crear tu primer grupo de hábitos
+      </div>
+    </div>
+  </div>
+  <nav class="nav">
+    <a class="ni" href="dashboard.html"><div class="ni-icon">🏠</div><div class="ni-label">Inicio</div></a>
+    <a class="ni" href="calendar.html"><div class="ni-icon">📅</div><div class="ni-label">Calendario</div></a>
+    <a class="ni active" href="habits.html"><div class="ni-icon">🎯</div><div class="ni-label">Hábitos</div></a>
+    <a class="ni" href="notes.html"><div class="ni-icon">🗒️</div><div class="ni-label">Notas</div></a>
+    <a class="ni" href="profile.html"><div class="ni-icon">👤</div><div class="ni-label">Perfil</div></a>
+  </nav>
+</div>
+<!-- MODAL GRUPO -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="mtitle">Nuevo grupo</div>
+    <div class="mlbl">Nombre del grupo</div>
+    <input class="min" id="g-name" placeholder="Ej: Salud, Trabajo, Personal...">
+    <div class="mlbl">Color</div>
+    <div class="colors" id="color-grid">
+      <div class="cl sel" data-color="#2E9EE0" style="background:#2E9EE0"></div>
+      <div class="cl" data-color="#2EAF7D" style="background:#2EAF7D"></div>
+      <div class="cl" data-color="#8B5CF6" style="background:#8B5CF6"></div>
+      <div class="cl" data-color="#F59E0B" style="background:#F59E0B"></div>
+      <div class="cl" data-color="#E8547A" style="background:#E8547A"></div>
+    </div>
+    <button class="msave" id="btn-save-group">Crear grupo →</button>
+    <button class="mcancel" id="btn-cancel-group">Cancelar</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,doc,collection,getDocs,addDoc,updateDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
+const auth=getAuth(app),db=getFirestore(app);
+const today=new Date().toISOString().split('T')[0];
+const MIN=15;
+let uid=null,groups=[],habits=[],selColor='#2E9EE0';
+
+function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+
+function getLast15(){
+  return Array.from({length:MIN},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(MIN-1-i));return d.toISOString().split('T')[0];});
+}
+function calcStreak(dates){
+  if(!dates?.length)return 0;
+  let s=0,check=today;
+  for(let i=0;i<365;i++){if(dates.includes(check))s++;else if(s>0)break;const d=new Date(check);d.setDate(d.getDate()-1);check=d.toISOString().split('T')[0];}
+  return s;
+}
+
+document.getElementById('color-grid').addEventListener('click',e=>{
+  const cl=e.target.closest('.cl');if(!cl)return;
+  selColor=cl.dataset.color;
+  document.querySelectorAll('#color-grid .cl').forEach(b=>b.classList.remove('sel'));
+  cl.classList.add('sel');
+});
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href='index.html';return;}
+  uid=user.uid;
+  await loadData();
+
+  document.getElementById('btn-new-group').addEventListener('click',()=>{
+    document.getElementById('g-name').value='';
+    document.getElementById('modal').classList.add('show');
+  });
+  document.getElementById('btn-cancel-group').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('show');});
+
+  document.getElementById('btn-save-group').addEventListener('click',async()=>{
+    const name=document.getElementById('g-name').value.trim();
+    if(!name){toast('⚠️ Escribe un nombre','#E8547A');return;}
+    try{
+      const ref=await addDoc(collection(db,'habit_groups'),{uid,name,color:selColor,createdAt:serverTimestamp()});
+      groups.push({id:ref.id,uid,name,color:selColor});
+      document.getElementById('modal').classList.remove('show');
+      render();toast('Grupo creado ✓','#2EAF7D');
+    }catch(e){toast('Error: '+e.message,'#E8547A');}
+  });
+
+  // Delegation en groups-container
+  document.getElementById('groups-container').addEventListener('click',async e=>{
+    // Toggle hábito
+    const hbtn=e.target.closest('.hbtn');
+    if(hbtn&&hbtn.dataset.id){
+      const h=habits.find(h=>h.id===hbtn.dataset.id);if(!h)return;
+      const dates=[...(h.completedDates||[])];
+      const idx=dates.indexOf(today);
+      if(idx>=0)dates.splice(idx,1);else dates.push(today);
+      const streak=calcStreak(dates);
+      try{
+        await updateDoc(doc(db,'habits',hbtn.dataset.id),{completedDates:dates,streak,updatedAt:serverTimestamp()});
+        h.completedDates=dates;h.streak=streak;
+        render();
+        if(idx<0){
+          if(streak===MIN)toast('🏆 ¡15 días! ¡Hábito formado!','#F59E0B');
+          else toast('🔥 +1 día · racha: '+streak,'#2EAF7D');
+        }
+      }catch(err){toast('Error','#E8547A');}
+      return;
+    }
+    // Agregar hábito
+    const gbtn=e.target.closest('.gbtn');
+    if(gbtn&&gbtn.dataset.group){
+      const inp=document.querySelector(`.gin[data-group="${gbtn.dataset.group}"]`);
+      if(!inp)return;
+      const name=inp.value.trim();if(!name)return;
+      try{
+        const ref=await addDoc(collection(db,'habits'),{uid,name,groupId:gbtn.dataset.group,completedDates:[],streak:0,createdAt:serverTimestamp()});
+        habits.push({id:ref.id,uid,name,groupId:gbtn.dataset.group,completedDates:[],streak:0});
+        inp.value='';render();toast('Hábito agregado ✓','#2EAF7D');
+      }catch(err){toast('Error: '+err.message,'#E8547A');}
+      return;
+    }
+    // Toggle expandir grupo
+    const gh=e.target.closest('.group-header');
+    if(gh){
+      const body=gh.nextElementSibling;
+      const arrow=gh.querySelector('.group-arrow');
+      if(body){body.classList.toggle('hidden');if(arrow)arrow.classList.toggle('open',!body.classList.contains('hidden'));}
+    }
+  });
+
+  document.getElementById('groups-container').addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;
+    const inp=e.target.closest('.gin');
+    if(!inp)return;
+    const btn=document.querySelector(`.gbtn[data-group="${inp.dataset.group}"]`);
+    if(btn)btn.click();
+  });
+});
+
+async function loadData(){
+  try{
+    const gs=await getDocs(query(collection(db,'habit_groups'),where('uid','==',uid)));
+    groups=[];gs.forEach(d=>groups.push({id:d.id,...d.data()}));
+    const hs=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
+    habits=[];hs.forEach(d=>habits.push({id:d.id,...d.data()}));
+    render();
+  }catch(e){toast('Error cargando','#E8547A');}
+}
+
+function render(){
+  const last15=getLast15();
+  const totalH=habits.length;
+  const doneT=habits.filter(h=>(h.completedDates||[]).includes(today)).length;
+  const best=habits.reduce((m,h)=>Math.max(m,h.streak||0),0);
+  document.getElementById('st-t').textContent=totalH;
+  document.getElementById('st-d').textContent=doneT;
+  document.getElementById('st-s').textContent=best;
+
+  const cont=document.getElementById('groups-container');
+  if(!groups.length){
+    cont.innerHTML='<div style="text-align:center;padding:28px;background:#fff;border-radius:20px;font-size:.75rem;color:var(--tl)">Toca "＋ Grupo" para crear tu primer grupo</div>';
+    return;
+  }
+  cont.innerHTML=groups.map(g=>{
+    const gHabits=habits.filter(h=>h.groupId===g.id);
+    const gDone=gHabits.filter(h=>(h.completedDates||[]).includes(today)).length;
+    const habitsHTML=gHabits.length
+      ?gHabits.map(h=>{
+        const dates=h.completedDates||[];
+        const streak=h.streak||0;
+        const isDone=dates.includes(today);
+        const pct=Math.min((streak/MIN)*100,100);
+        const formed=streak>=MIN;
+        const dots=last15.map(d=>`<div class="dot15 ${dates.includes(d)?'done':''} ${d===today?'today':''}"></div>`).join('');
+        return`<div class="hitem">
+          <div class="hbtn ${isDone?'done':''}" data-id="${h.id}">${isDone?'✓':'○'}</div>
+          <div class="hinfo">
+            <div class="hname">${h.name}${formed?' <span class="badge">✓ Hábito</span>':''}</div>
+            <div class="hstreak">${streak>0?'🔥 '+streak+' días seguidos':'Sin racha aún'}</div>
+            <div class="dots15">${dots}</div>
+            <div class="hprog"><div class="hprog-fill" style="width:${pct}%;background:${g.color}"></div></div>
+          </div>
+        </div>`;
+      }).join('')
+      :'<div class="empty-group">Agrega tu primer hábito ↓</div>';
+    return`<div class="group-card">
+      <div class="group-header">
+        <div class="group-dot" style="background:${g.color}"></div>
+        <div class="group-name">${g.name}</div>
+        <div class="group-sub">${gDone}/${gHabits.length} hoy</div>
+        <div class="group-arrow open">▾</div>
+      </div>
+      <div class="group-body">
+        ${habitsHTML}
+        <div class="add-in-group">
+          <input class="gin" data-group="${g.id}" placeholder="Agregar hábito...">
+          <button class="gbtn" data-group="${g.id}">＋</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

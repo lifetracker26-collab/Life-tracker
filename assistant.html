@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Life Tracker · Asistente IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
+.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column}
+.header{background:#fff;padding:50px 20px 14px;border-bottom:1px solid rgba(46,158,224,0.1);flex-shrink:0}
+.hrow{display:flex;align-items:center;gap:12px}
+.ai-av{width:44px;height:44px;background:var(--g2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ai-info{flex:1}
+.ai-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
+.ai-status{font-size:.6rem;color:var(--gr);font-weight:600}
+.clear-btn{background:var(--sky);border:1px solid rgba(46,158,224,0.2);border-radius:10px;padding:6px 12px;font-size:.62rem;font-weight:600;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif}
+.sugs{padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.sugs::-webkit-scrollbar{display:none}
+.sug{background:#fff;border:1px solid rgba(46,158,224,0.2);border-radius:20px;padding:7px 14px;font-size:.62rem;font-weight:600;color:var(--b2);white-space:nowrap;cursor:pointer;flex-shrink:0}
+.chat{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.chat::-webkit-scrollbar{display:none}
+.msg{display:flex;gap:8px;align-items:flex-end}
+.msg.user{flex-direction:row-reverse}
+.bubble{max-width:78%;padding:10px 13px;border-radius:18px;font-size:.73rem;line-height:1.55}
+.msg.ai .bubble{background:#fff;color:var(--t);border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.08)}
+.msg.user .bubble{background:var(--g2);color:#fff;border-bottom-right-radius:4px}
+.msg-av{width:26px;height:26px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+.typing{display:flex;gap:3px;padding:10px 13px;background:#fff;border-radius:18px;border-bottom-left-radius:4px;width:fit-content;box-shadow:0 2px 8px rgba(46,158,224,0.08)}
+.typing span{width:5px;height:5px;background:var(--tl);border-radius:50%;animation:bounce .8s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.input-bar{background:#fff;border-top:1px solid rgba(46,158,224,0.08);padding:10px 14px 28px;display:flex;gap:8px;align-items:center;flex-shrink:0}
+.input-field{flex:1;background:var(--sky);border:1.5px solid transparent;border-radius:22px;padding:10px 16px;font-size:.75rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;resize:none;max-height:100px;line-height:1.4;-webkit-appearance:none}
+.input-field:focus{border-color:var(--b);background:#fff}
+.mic-btn{width:40px;height:40px;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0}
+.mic-btn.listening{background:var(--pk);border-color:var(--pk)}
+.send-btn{width:40px;height:40px;background:var(--g2);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;flex-shrink:0;color:#fff}
+.send-btn:disabled{opacity:.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hrow">
+      <div class="ai-av">✨</div>
+      <div class="ai-info">
+        <div class="ai-name">Life AI</div>
+        <div class="ai-status" id="ai-status">En línea</div>
+      </div>
+      <button class="clear-btn" id="btn-clear">Limpiar</button>
+    </div>
+  </div>
+  <div class="sugs" id="sugs-row">
+    <div class="sug" data-text="¿Cómo voy con mis hábitos?">📊 ¿Cómo voy?</div>
+    <div class="sug" data-text="Dame un resumen de mi semana">📋 Mi resumen</div>
+    <div class="sug" data-text="Necesito motivación para hoy">💪 Motivación</div>
+    <div class="sug" data-text="Ayúdame a organizar mi día">🗓️ Organizar día</div>
+    <div class="sug" data-text="Dame un consejo de productividad">🧠 Consejo</div>
+  </div>
+  <div class="chat" id="chat"></div>
+  <div class="input-bar">
+    <textarea class="input-field" id="msg-input" placeholder="Escribe o usa el micrófono..." rows="1"></textarea>
+    <div class="mic-btn" id="mic-btn">🎙️</div>
+    <button class="send-btn" id="send-btn" disabled>➤</button>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,query,where}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
+const auth=getAuth(app),db=getFirestore(app);
+let uid=null,messages=[],isListening=false,recognition=null,sysPrompt='Eres Life AI, asistente personal. Hablas en español, eres cálido y conciso.';
+const today=new Date().toISOString().split('T')[0];
+
+// Mensaje de bienvenida
+addMsg('Hola 👋 Soy tu asistente personal. ¿En qué te ayudo hoy?','ai',true);
+
+// Input resize
+const inp=document.getElementById('msg-input');
+inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,100)+'px';document.getElementById('send-btn').disabled=!inp.value.trim();});
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+document.getElementById('send-btn').addEventListener('click',sendMsg);
+
+// Sugerencias
+document.getElementById('sugs-row').addEventListener('click',e=>{
+  const sug=e.target.closest('.sug');if(!sug)return;
+  sendText(sug.dataset.text);
+});
+
+// Limpiar
+document.getElementById('btn-clear').addEventListener('click',()=>{
+  messages=[];document.getElementById('chat').innerHTML='';
+  addMsg('Chat limpiado. ¿En qué te ayudo? 😊','ai',true);
+});
+
+// Micrófono
+document.getElementById('mic-btn').addEventListener('click',()=>{
+  if(!('webkitSpeechRecognition'in window||'SpeechRecognition'in window)){alert('Tu navegador no soporta voz. Usa Chrome.');return;}
+  if(isListening){if(recognition)recognition.stop();return;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();recognition.lang='es-MX';recognition.interimResults=false;
+  recognition.onstart=()=>{isListening=true;document.getElementById('mic-btn').classList.add('listening');document.getElementById('ai-status').textContent='Escuchando...';};
+  recognition.onresult=e=>{inp.value=e.results[0][0].transcript;document.getElementById('send-btn').disabled=false;stopListening();sendMsg();};
+  recognition.onerror=()=>stopListening();
+  recognition.onend=()=>stopListening();
+  recognition.start();
+});
+
+function stopListening(){isListening=false;document.getElementById('mic-btn').classList.remove('listening');document.getElementById('ai-status').textContent='En línea';}
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href='index.html';return;}
+  uid=user.uid;
+  const name=(user.displayName||user.email||'').split(' ')[0];
+  try{
+    const hsnap=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
+    const habits=[];hsnap.forEach(d=>habits.push(d.data().name+' ('+( d.data().streak||0)+' días)'));
+    const tsnap=await getDocs(query(collection(db,'tasks'),where('uid','==',uid),where('date','==',today),where('done','==',false)));
+    const tasks=[];tsnap.forEach(d=>tasks.push(d.data().text));
+    sysPrompt=`Eres Life AI, asistente personal de Life Tracker para ${name}. Hablas en español, eres cálido, motivador y conciso (máx 3 oraciones). Fecha: ${today}. Tareas hoy: ${tasks.join(', ')||'ninguna'}. Hábitos: ${habits.join(', ')||'ninguno'}.`;
+  }catch(e){}
+});
+
+function addMsg(text,role,skipHistory=false){
+  const time=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  if(!skipHistory) messages.push({role:role==='ai'?'assistant':'user',content:text});
+  const chat=document.getElementById('chat');
+  const div=document.createElement('div');
+  div.className=`msg ${role}`;
+  if(role==='ai') div.innerHTML=`<div class="msg-av">✨</div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  else div.innerHTML=`<div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function sendMsg(){
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';inp.style.height='auto';
+  document.getElementById('send-btn').disabled=true;
+  sendText(text);
+}
+
+async function sendText(text){
+  addMsg(text,'user');
+  document.getElementById('ai-status').textContent='Escribiendo...';
+  // Typing indicator
+  const chat=document.getElementById('chat');
+  const typing=document.createElement('div');
+  typing.className='msg ai';typing.id='typing';
+  typing.innerHTML='<div class="msg-av">✨</div><div class="typing"><span></span><span></span><span></span></div>';
+  chat.appendChild(typing);chat.scrollTop=chat.scrollHeight;
+  try{
+    const history=messages.slice(-10).map(m=>({role:m.role,content:m.content}));
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:sysPrompt,messages:history})
+    });
+    const data=await res.json();
+    document.getElementById('typing')?.remove();
+    const reply=data.content?.[0]?.text||'Lo siento, no pude responder. Intenta de nuevo.';
+    addMsg(reply,'ai');
+  }catch(e){
+    document.getElementById('typing')?.remove();
+    addMsg('Error de conexión. Verifica tu internet.','ai');
+  }
+  document.getElementById('ai-status').textContent='En línea';
+}
+</script>
+</body>
+</html>

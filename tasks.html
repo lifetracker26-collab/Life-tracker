@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E9EE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Life Tracker · Tareas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--am:#F59E0B;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
+body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+.header{background:#fff;padding:50px 20px 16px;border-bottom:1px solid rgba(46,158,224,0.1)}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+.htitle{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700}
+.htitle span{background:var(--g2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc{background:#fff;border-radius:16px;padding:12px;text-align:center;box-shadow:0 4px 12px rgba(46,158,224,0.07);border:1px solid rgba(46,158,224,0.07)}
+.sn{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--t)}
+.sn.red{color:var(--pk)}
+.sl{font-size:.58rem;font-weight:600;color:var(--tl);margin-top:2px}
+/* QUICK ADD */
+.qa-card{background:#fff;border-radius:20px;padding:14px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
+.qa-row{display:flex;gap:8px}
+.qa-input{flex:1;background:var(--sky);border:1.5px solid transparent;border-radius:10px;padding:10px 14px;font-size:.78rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+.qa-input:focus{border-color:var(--b);background:#fff}
+.qa-btn{background:var(--g2);border:none;border-radius:10px;padding:10px 18px;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer}
+/* SECCIONES */
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
+.card-title{font-size:.72rem;font-weight:700;color:var(--t);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.cnt{background:var(--sky);border-radius:10px;padding:2px 8px;font-size:.6rem;font-weight:700;color:var(--b2)}
+.cnt.red{background:rgba(232,84,122,0.1);color:var(--pk)}
+/* TAREA */
+.titem{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(46,158,224,0.06)}
+.titem:last-child{border-bottom:none;padding-bottom:0}
+.tchk{width:22px;height:22px;border-radius:50%;border:2px solid rgba(46,158,224,0.25);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;background:#fff;transition:all .2s}
+.tchk.done{background:var(--gr);border-color:var(--gr);color:#fff;font-size:.65rem}
+.tinfo{flex:1;min-width:0}
+.ttext{font-size:.75rem;font-weight:500;color:var(--t)}
+.ttext.done{text-decoration:line-through;color:var(--tl)}
+.ttext.overdue{color:var(--pk)}
+.tdays{font-size:.58rem;color:var(--pk);font-weight:600;margin-top:2px}
+.tdel{background:none;border:none;color:var(--tl);font-size:.8rem;cursor:pointer;padding:4px;flex-shrink:0}
+.empty{text-align:center;padding:20px;font-size:.72rem;color:var(--tl)}
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none}
+.ni.active{background:var(--sky)}
+.ni-icon{font-size:1.2rem}
+.ni-label{font-size:.52rem;font-weight:600;color:var(--tl)}
+.ni.active .ni-label{color:var(--b2)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t);color:#fff;padding:10px 20px;border-radius:12px;font-size:.7rem;font-weight:600;z-index:300;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hrow">
+      <div class="htitle">Mis <span>Tareas</span></div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="stats-row">
+      <div class="sc"><div class="sn" id="st-hoy">0</div><div class="sl">Hoy</div></div>
+      <div class="sc"><div class="sn red" id="st-venc">0</div><div class="sl">⚠️ Vencidas</div></div>
+      <div class="sc"><div class="sn" id="st-done">0</div><div class="sl">✅ Hechas</div></div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-row">
+        <input class="qa-input" id="qa-input" placeholder="¿Qué necesitas recordar?">
+        <button class="qa-btn" id="btn-qa">＋</button>
+      </div>
+    </div>
+    <!-- VENCIDAS -->
+    <div class="card" id="card-venc" style="display:none">
+      <div class="card-title">⚠️ De días anteriores <span class="cnt red" id="cnt-venc">0</span></div>
+      <div id="list-venc"></div>
+    </div>
+    <!-- HOY -->
+    <div class="card">
+      <div class="card-title">📋 Hoy <span class="cnt" id="cnt-hoy">0</span></div>
+      <div id="list-hoy"><div class="empty">Agrega tu primer recordatorio ↑</div></div>
+    </div>
+    <!-- COMPLETADAS -->
+    <div class="card" id="card-done" style="display:none">
+      <div class="card-title">✅ Completadas hoy <span class="cnt" id="cnt-done">0</span></div>
+      <div id="list-done"></div>
+    </div>
+  </div>
+  <nav class="nav">
+    <a class="ni" href="dashboard.html"><div class="ni-icon">🏠</div><div class="ni-label">Inicio</div></a>
+    <a class="ni" href="calendar.html"><div class="ni-icon">📅</div><div class="ni-label">Calendario</div></a>
+    <a class="ni active" href="tasks.html"><div class="ni-icon">✅</div><div class="ni-label">Tareas</div></a>
+    <a class="ni" href="notes.html"><div class="ni-icon">🗒️</div><div class="ni-label">Notas</div></a>
+    <a class="ni" href="profile.html"><div class="ni-icon">👤</div><div class="ni-label">Perfil</div></a>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,addDoc,updateDoc,deleteDoc,doc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
+const auth=getAuth(app),db=getFirestore(app);
+const today=new Date().toISOString().split('T')[0];
+let uid=null,tasks=[];
+function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+function daysDiff(d){return Math.round((new Date(today)-new Date(d))/(86400000));}
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href='index.html';return;}
+  uid=user.uid;
+  await loadTasks();
+  document.getElementById('btn-qa').addEventListener('click',quickAdd);
+  document.getElementById('qa-input').addEventListener('keydown',e=>{if(e.key==='Enter')quickAdd();});
+  // Delegation para check y delete en las 3 listas
+  ['list-venc','list-hoy','list-done'].forEach(lid=>{
+    document.getElementById(lid).addEventListener('click',async e=>{
+      const chk=e.target.closest('.tchk');
+      const del=e.target.closest('.tdel');
+      if(chk&&chk.dataset.id){
+        const t=tasks.find(t=>t.id===chk.dataset.id);if(!t)return;
+        const newDone=!t.done;
+        try{
+          await updateDoc(doc(db,'tasks',chk.dataset.id),{done:newDone,date:today,doneAt:newDone?serverTimestamp():null});
+          t.done=newDone;t.date=today;
+          render();
+          if(newDone)toast('✅ Completada','#2EAF7D');
+        }catch(err){toast('Error','#E8547A');}
+      }
+      if(del&&del.dataset.id){
+        try{
+          await deleteDoc(doc(db,'tasks',del.dataset.id));
+          tasks=tasks.filter(t=>t.id!==del.dataset.id);
+          render();toast('Eliminada','#0D2137');
+        }catch(err){toast('Error','#E8547A');}
+      }
+    });
+  });
+});
+async function loadTasks(){
+  try{
+    const snap=await getDocs(query(collection(db,'tasks'),where('uid','==',uid)));
+    tasks=[];snap.forEach(d=>tasks.push({id:d.id,...d.data()}));
+    // Pasar vencidas a hoy (no completadas de días anteriores)
+    for(const t of tasks.filter(t=>!t.done&&t.date&&t.date<today)){
+      await updateDoc(doc(db,'tasks',t.id),{date:today});
+      t.date=today;
+    }
+    render();
+  }catch(e){toast('Error cargando','#E8547A');}
+}
+function render(){
+  const venc=tasks.filter(t=>!t.done&&t.date<today);
+  const hoy=tasks.filter(t=>!t.done&&t.date===today);
+  const done=tasks.filter(t=>t.done&&t.date===today);
+  document.getElementById('st-hoy').textContent=hoy.length;
+  document.getElementById('st-venc').textContent=venc.length;
+  document.getElementById('st-done').textContent=done.length;
+  document.getElementById('cnt-hoy').textContent=hoy.length;
+  document.getElementById('cnt-venc').textContent=venc.length;
+  document.getElementById('cnt-done').textContent=done.length;
+  // Vencidas
+  const cv=document.getElementById('card-venc');
+  cv.style.display=venc.length?'block':'none';
+  document.getElementById('list-venc').innerHTML=venc.length
+    ?venc.map(t=>`<div class="titem"><div class="tchk" data-id="${t.id}"></div><div class="tinfo"><div class="ttext overdue">${t.text}</div><div class="tdays">${daysDiff(t.date)} día${daysDiff(t.date)>1?'s':''} pendiente</div></div><button class="tdel" data-id="${t.id}">🗑</button></div>`).join('')
+    :'';
+  // Hoy
+  document.getElementById('list-hoy').innerHTML=hoy.length
+    ?hoy.map(t=>`<div class="titem"><div class="tchk" data-id="${t.id}"></div><div class="tinfo"><div class="ttext">${t.text}</div></div><button class="tdel" data-id="${t.id}">🗑</button></div>`).join('')
+    :'<div class="empty">Sin tareas pendientes 🎉</div>';
+  // Done
+  const cd=document.getElementById('card-done');
+  cd.style.display=done.length?'block':'none';
+  document.getElementById('list-done').innerHTML=done.map(t=>`<div class="titem"><div class="tchk done">✓</div><div class="tinfo"><div class="ttext done">${t.text}</div></div><button class="tdel" data-id="${t.id}">🗑</button></div>`).join('');
+}
+async function quickAdd(){
+  const inp=document.getElementById('qa-input');
+  const text=inp.value.trim();if(!text)return;inp.value='';
+  try{
+    const ref=await addDoc(collection(db,'tasks'),{uid,text,date:today,done:false,createdAt:serverTimestamp()});
+    tasks.unshift({id:ref.id,uid,text,date:today,done:false});
+    render();toast('Tarea agregada ✅','#2EAF7D');
+  }catch(e){toast('Error: '+e.message,'#E8547A');}
+}
+</script>
+</body>
+</html>
