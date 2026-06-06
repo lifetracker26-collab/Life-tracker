@@ -227,7 +227,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,query,where,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
@@ -372,6 +372,12 @@ onAuthStateChanged(auth,async user=>{
   if(!user){location.href='index.html';return;}
   uid=user.uid;
 
+  // Nombre inmediato mientras carga Firestore
+  const initName=user.displayName||user.email||'';
+  document.getElementById('phn').textContent=initName;
+  document.getElementById('phe').textContent=user.email||'';
+  userName=initName;
+
   // Cargar datos
   try{
     const snap=await getDoc(doc(db,'users',uid));
@@ -394,8 +400,8 @@ onAuthStateChanged(auth,async user=>{
     }
     userName=name;
     document.getElementById('phn').textContent=name;
-    document.getElementById('phe').textContent=user.email||'';
-  }catch(e){document.getElementById('phn').textContent=user.displayName||user.email||'';}
+    userName=name;
+  }catch(e){}
 
   loadStats();
   loadPosts();
