@@ -13,79 +13,95 @@
 :root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
 body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 .app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
-.ph{padding:50px 20px 32px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0D2137,#1470A8);transition:background .3s}
-.ph-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .3s}
-.ph-bg.active{opacity:1}
-.ph-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.38);pointer-events:none}
-.ph::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:#f0f7ff;border-radius:30px 30px 0 0}
-.orb{position:absolute;border-radius:50%;filter:blur(50px);pointer-events:none}
-.o1{width:200px;height:200px;background:rgba(255,255,255,0.1);top:-80px;right:-60px}
-.o2{width:150px;height:150px;background:rgba(255,255,255,0.07);bottom:-40px;left:-40px}
-.ph-in{position:relative;z-index:2;text-align:center}
-.avw{position:relative;width:84px;margin:0 auto 12px;cursor:pointer}
-.av{width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.45);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+/* ── COVER / PORTADA ── */
+.cover{position:relative;height:160px;background:linear-gradient(160deg,#0D2137,#1470A8);overflow:hidden}
+.cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .3s}
+.cover-bg.active{opacity:1}
+.cover-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3)}
+.cover-edit-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:6px 14px;font-size:.62rem;font-weight:700;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;z-index:2;backdrop-filter:blur(4px)}
+
+/* ── FOTO DE PERFIL ── */
+.profile-section{padding:0 16px;position:relative}
+.av-wrap{position:relative;display:inline-block;margin-top:-44px;z-index:3}
+.av{width:88px;height:88px;border-radius:50%;border:4px solid #fff;overflow:hidden;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:2.2rem;box-shadow:0 4px 16px rgba(0,0,0,.18);cursor:pointer}
 .av img{width:100%;height:100%;object-fit:cover}
-.avb{position:absolute;bottom:0;right:0;width:26px;height:26px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;box-shadow:0 2px 8px rgba(0,0,0,.2);pointer-events:none}
-.phn{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.3)}
-.phe{font-size:.63rem;color:rgba(255,255,255,.7);margin-bottom:12px}
-.phc{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.chip{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;font-size:.62rem;font-weight:600;color:#fff}
-.ebtn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:7px 20px;font-size:.65rem;font-weight:700;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif}
-.scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
-.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
+.av-camera{position:absolute;bottom:4px;right:4px;width:24px;height:24px;background:var(--b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;border:2px solid #fff;pointer-events:none}
+
+/* ── INFO PERFIL ── */
+.profile-info{padding:12px 16px 0}
+.profile-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--t);margin-bottom:2px}
+.profile-email{font-size:.68rem;color:var(--tl);margin-bottom:10px}
+.profile-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pchip{background:var(--sky);border-radius:20px;padding:4px 12px;font-size:.62rem;font-weight:600;color:var(--b2);border:1px solid rgba(46,158,224,0.15)}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px;margin-bottom:14px}
+.sc{background:#fff;border-radius:14px;padding:12px 8px;text-align:center;box-shadow:0 2px 8px rgba(46,158,224,0.07);border:1px solid rgba(46,158,224,0.07)}
+.sn{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--t)}
+.sl{font-size:.52rem;font-weight:600;color:var(--tl);margin-top:2px}
+
+/* ── CARDS ── */
+.scroll{padding:0 16px;display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 3px 12px rgba(46,158,224,0.07);border:1px solid rgba(46,158,224,0.07)}
 .ctitle{font-size:.73rem;font-weight:700;color:var(--t);margin-bottom:12px}
-.epanel-hidden{display:none !important}
-/* EDITAR */
-.ep-avr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.ep-av{width:54px;height:54px;border-radius:50%;overflow:hidden;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:2px solid rgba(46,158,224,0.2);flex-shrink:0}
-.ep-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.ep-pb{flex:1;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:12px;padding:12px;font-size:.7rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
-.ep-lbl{font-size:.6rem;font-weight:700;color:#3A5570;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;margin-top:12px}
-.ep-in{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:4px;-webkit-appearance:none;display:block}
-.ep-in:focus{border-color:var(--b);background:#fff}
-.ep-sel{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:4px;-webkit-appearance:none;display:block;cursor:pointer}
-.ep-sel:focus{border-color:var(--b)}
-/* COLORES HEADER */
-.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
-.copt{height:36px;border-radius:10px;cursor:pointer;border:3px solid transparent;transition:all .15s;position:relative}
-.copt.sel{border-color:#fff;box-shadow:0 0 0 2px var(--b)}
-.copt.sel::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:.8rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}
-/* FOTO DE FONDO */
-.bg-photo-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.bg-photo-btn{flex:1;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:12px;padding:11px;font-size:.7rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
-.bg-remove-btn{background:rgba(232,84,122,0.08);border:1.5px solid rgba(232,84,122,0.2);border-radius:12px;padding:11px 14px;font-size:.7rem;font-weight:700;color:var(--pk);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
-.bg-preview{width:100%;height:60px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:6px;display:none;border:1.5px solid rgba(46,158,224,0.15)}
-/* SAVE/CANCEL */
-.ep-save{width:100%;background:var(--g2);border:none;border-radius:12px;padding:13px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;margin-bottom:8px;display:block}
-.ep-cancel{width:100%;background:transparent;border:none;padding:9px;font-size:.7rem;color:var(--tl);cursor:pointer;font-family:'DM Sans',sans-serif;display:block}
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.sc{background:var(--sky);border-radius:16px;padding:14px;text-align:center}
-.sn{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700}
-.sl{font-size:.6rem;font-weight:600;color:var(--tl);margin-top:2px}
 .shdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .gbtn{background:var(--g2);border:none;border-radius:10px;padding:7px 14px;color:#fff;font-size:.62rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 .stxt{font-size:.72rem;color:#3A5570;line-height:1.65}
 .stxt.empty{color:var(--tl);font-style:italic}
-/* NOTIF */
-.nrow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(46,158,224,0.07)}
-.nrow:last-child{border-bottom:none}
-.ninfo{flex:1;padding-right:12px}
-.ntitle{font-size:.73rem;font-weight:600}
-.nsub{font-size:.6rem;color:var(--tl);margin-top:2px}
-.toggle{width:46px;height:27px;background:#d1d5db;border-radius:14px;position:relative;cursor:pointer;transition:background .22s;flex-shrink:0}
-.toggle.on{background:var(--gr)}
-.toggle::after{content:'';position:absolute;width:21px;height:21px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .22s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
-.toggle.on::after{left:22px}
-.nmsg{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:10px 12px;font-size:.65rem;color:#92400E;display:none;margin-top:8px;line-height:1.55}
-/* MENU */
+
+/* ── MENÚ ── */
 .mitem{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(46,158,224,0.07);cursor:pointer}
 .mitem:last-child{border-bottom:none}
 .micon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
 .mtext{flex:1;font-size:.73rem;font-weight:500}
 .marr{font-size:.75rem;color:var(--tl)}
-.logout{width:100%;background:rgba(232,84,122,0.08);border:1.5px solid rgba(232,84,122,0.2);border-radius:14px;padding:13px;color:var(--pk);font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
-/* NAV */
+.logout{width:100%;background:rgba(232,84,122,0.08);border:1.5px solid rgba(232,84,122,0.2);border-radius:14px;padding:13px;color:var(--pk);font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin:0 16px;width:calc(100% - 32px)}
+
+/* ── MODAL EDITAR PERFIL ── */
+.overlay{position:fixed;inset:0;background:rgba(13,33,55,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.ep-modal{background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 44px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);max-height:90vh;overflow-y:auto}
+.overlay.show .ep-modal{transform:translateY(0)}
+.ep-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ep-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
+.ep-close{background:var(--sky);border:none;border-radius:50%;width:30px;height:30px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ep-lbl{font-size:.6rem;font-weight:700;color:#3A5570;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;margin-top:12px}
+.ep-in{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;display:block}
+.ep-in:focus{border-color:var(--b);background:#fff}
+.ep-sel{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;display:block;cursor:pointer}
+.ep-sel:focus{border-color:var(--b)}
+/* Foto de perfil en modal */
+.ep-av-row{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.ep-av-mini{width:54px;height:54px;border-radius:50%;overflow:hidden;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:2px solid rgba(46,158,224,0.2);flex-shrink:0}
+.ep-av-mini img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.ep-photo-btn{flex:1;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:12px;padding:11px;font-size:.7rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
+/* Colores */
+.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
+.copt{height:34px;border-radius:10px;cursor:pointer;border:3px solid transparent;position:relative;transition:all .15s}
+.copt.sel{border-color:#fff;box-shadow:0 0 0 2px var(--b)}
+.copt.sel::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:.75rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+/* Foto de fondo */
+.bg-preview{width:100%;height:54px;border-radius:10px;background-size:cover;background-position:center;display:none;border:1.5px solid rgba(46,158,224,0.15);margin-bottom:6px}
+.bg-row{display:flex;gap:8px}
+.bg-btn{flex:1;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:12px;padding:10px;font-size:.68rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
+.bg-remove{background:rgba(232,84,122,0.07);border:1.5px solid rgba(232,84,122,0.2);border-radius:12px;padding:10px 12px;font-size:.68rem;font-weight:700;color:var(--pk);cursor:pointer;font-family:'DM Sans',sans-serif}
+/* Notificaciones en modal */
+.nrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(46,158,224,0.07)}
+.nrow:last-child{border-bottom:none}
+.ninfo{flex:1;padding-right:12px}
+.ntitle{font-size:.73rem;font-weight:600}
+.nsub{font-size:.6rem;color:var(--tl);margin-top:2px}
+.toggle{width:44px;height:26px;background:#d1d5db;border-radius:13px;position:relative;cursor:pointer;transition:background .22s;flex-shrink:0}
+.toggle.on{background:var(--gr)}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .22s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.toggle.on::after{left:21px}
+.nmsg{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:8px 10px;font-size:.62rem;color:#92400E;display:none;margin-top:6px;line-height:1.55}
+/* Guardar */
+.ep-save{width:100%;background:var(--g2);border:none;border-radius:12px;padding:13px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;margin-bottom:8px;display:block}
+.ep-cancel-btn{width:100%;background:transparent;border:none;padding:9px;font-size:.7rem;color:var(--tl);cursor:pointer;font-family:'DM Sans',sans-serif;display:block}
+
+/* ── NAV ── */
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
 .ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none}
 .ni.active{background:var(--sky)}
@@ -100,142 +116,47 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 </head>
 <body>
 <div class="app">
-  <div class="ph" id="ph">
-    <div class="ph-bg" id="ph-bg"></div>
-    <div class="ph-overlay" id="ph-overlay" style="display:none"></div>
-    <div class="orb o1"></div><div class="orb o2"></div>
-    <div class="ph-in">
-      <div class="avw" id="avw">
-        <div class="av" id="av"><span>👩🏻</span></div>
-        <div class="avb">📷</div>
-      </div>
-      <input type="file" id="avinput" accept="image/*" style="display:none">
-      <input type="file" id="bginput" accept="image/*" style="display:none">
-      <div class="phn" id="phn">Cargando...</div>
-      <div class="phe" id="phe"></div>
-      <div class="phc">
-        <div class="chip">🔒 Privado</div>
-        <div class="chip">🪙 <span id="coins">0</span></div>
-        <div class="chip" id="since">Miembro</div>
-      </div>
-      <button class="ebtn" id="btn-edit">✏️ Editar perfil</button>
+
+  <!-- PORTADA -->
+  <div class="cover" id="cover">
+    <div class="cover-bg" id="cover-bg"></div>
+    <div class="cover-overlay"></div>
+    <button class="cover-edit-btn" id="btn-edit">✏️ Editar perfil</button>
+  </div>
+
+  <!-- FOTO + INFO -->
+  <div class="profile-section">
+    <div class="av-wrap" id="avw">
+      <div class="av" id="av"><span>👩🏻</span></div>
+      <div class="av-camera">📷</div>
+    </div>
+  </div>
+  <div class="profile-info">
+    <div class="profile-name" id="phn">Cargando...</div>
+    <div class="profile-email" id="phe"></div>
+    <div class="profile-chips">
+      <div class="pchip">🔒 Privado</div>
+      <div class="pchip">🪙 <span id="coins">0</span> coins</div>
+      <div class="pchip" id="since">Miembro</div>
     </div>
   </div>
 
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="sc"><div class="sn" id="sh">0</div><div class="sl">🎯 Hábitos</div></div>
+    <div class="sc"><div class="sn" id="sr">0</div><div class="sl">🔥 Racha</div></div>
+    <div class="sc"><div class="sn" id="st">0</div><div class="sl">✅ Tareas</div></div>
+    <div class="sc"><div class="sn" id="sn2">0</div><div class="sl">🗒️ Notas</div></div>
+  </div>
+
+  <!-- CONTENIDO -->
   <div class="scroll">
-    <!-- PANEL EDITAR -->
-    <div class="card epanel-hidden" id="epanel">
-      <div class="ctitle">✏️ Editar perfil</div>
-
-      <!-- Foto de perfil -->
-      <div class="ep-avr">
-        <div class="ep-av" id="epav"><span>👩🏻</span></div>
-        <button class="ep-pb" id="btn-change-photo">📷 Cambiar foto de perfil</button>
-      </div>
-
-      <!-- Nombre -->
-      <div class="ep-lbl">Nombre</div>
-      <input class="ep-in" id="epname" placeholder="Tu nombre completo">
-
-      <!-- Moneda -->
-      <div class="ep-lbl">Moneda</div>
-      <select class="ep-sel" id="ep-currency">
-        <option value="MXN">🇲🇽 MXN — Peso mexicano</option>
-        <option value="USD">🇺🇸 USD — Dólar americano</option>
-        <option value="CLP">🇨🇱 CLP — Peso chileno</option>
-        <option value="COP">🇨🇴 COP — Peso colombiano</option>
-        <option value="ARS">🇦🇷 ARS — Peso argentino</option>
-        <option value="PEN">🇵🇪 PEN — Sol peruano</option>
-        <option value="CAD">🇨🇦 CAD — Dólar canadiense</option>
-        <option value="EUR">🇪🇺 EUR — Euro</option>
-        <option value="GBP">🇬🇧 GBP — Libra esterlina</option>
-      </select>
-
-      <!-- Zona horaria -->
-      <div class="ep-lbl">Zona horaria</div>
-      <select class="ep-sel" id="ep-timezone">
-        <option value="auto">📍 Detectar automáticamente</option>
-        <optgroup label="México">
-          <option value="America/Cancun">Cancún / Playa del Carmen (UTC-5)</option>
-          <option value="America/Mexico_City">CDMX / Guadalajara / Monterrey (UTC-6)</option>
-          <option value="America/Chihuahua">Chihuahua (UTC-7)</option>
-          <option value="America/Tijuana">Tijuana / Mexicali (UTC-8)</option>
-        </optgroup>
-        <optgroup label="Chile">
-          <option value="America/Santiago">Santiago / Valparaíso (UTC-3/-4)</option>
-        </optgroup>
-        <optgroup label="USA">
-          <option value="America/New_York">Nueva York / Miami (UTC-4/-5)</option>
-          <option value="America/Chicago">Chicago / Houston (UTC-5/-6)</option>
-          <option value="America/Denver">Denver / Phoenix (UTC-6/-7)</option>
-          <option value="America/Los_Angeles">Los Ángeles / San Francisco (UTC-7/-8)</option>
-        </optgroup>
-        <optgroup label="Canadá">
-          <option value="America/Toronto">Toronto / Montreal (UTC-4/-5)</option>
-          <option value="America/Vancouver">Vancouver (UTC-7/-8)</option>
-        </optgroup>
-        <optgroup label="Sudamérica">
-          <option value="America/Bogota">Bogotá / Lima (UTC-5)</option>
-          <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
-          <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
-        </optgroup>
-        <optgroup label="Europa">
-          <option value="Europe/Madrid">Madrid / Barcelona (UTC+1/+2)</option>
-          <option value="Europe/London">Londres (UTC+0/+1)</option>
-        </optgroup>
-      </select>
-
-      <!-- Color del header -->
-      <div class="ep-lbl">Color del encabezado</div>
-      <div class="color-grid" id="color-grid">
-        <div class="copt sel" data-bg="linear-gradient(160deg,#0D2137,#1470A8)" style="background:linear-gradient(160deg,#0D2137,#1470A8)"></div>
-        <div class="copt" data-bg="linear-gradient(160deg,#1470A8,#2E9EE0)" style="background:linear-gradient(160deg,#1470A8,#2E9EE0)"></div>
-        <div class="copt" data-bg="linear-gradient(160deg,#0D2137,#2EAF7D)" style="background:linear-gradient(160deg,#0D2137,#2EAF7D)"></div>
-        <div class="copt" data-bg="linear-gradient(160deg,#1a0a2e,#E8547A)" style="background:linear-gradient(160deg,#1a0a2e,#E8547A)"></div>
-        <div class="copt" data-bg="linear-gradient(160deg,#0f2027,#F59E0B)" style="background:linear-gradient(160deg,#0f2027,#F59E0B)"></div>
-        <div class="copt" data-bg="linear-gradient(160deg,#0f2027,#8B5CF6)" style="background:linear-gradient(160deg,#0f2027,#8B5CF6)"></div>
-        <div class="copt" data-bg="linear-gradient(160deg,#0D2137,#0D2137)" style="background:#0D2137"></div>
-        <div class="copt" data-bg="linear-gradient(135deg,#2E9EE0,#1470A8)" style="background:linear-gradient(135deg,#2E9EE0,#1470A8)"></div>
-      </div>
-
-      <!-- Foto de fondo del header -->
-      <div class="ep-lbl">Foto de fondo del encabezado</div>
-      <div id="bg-preview" class="bg-preview"></div>
-      <div class="bg-photo-row">
-        <button class="bg-photo-btn" id="btn-bg-photo">🖼️ Elegir foto de fondo</button>
-        <button class="bg-remove-btn" id="btn-bg-remove">Quitar</button>
-      </div>
-
-      <button class="ep-save" id="btn-save-profile">✓ Guardar cambios</button>
-      <button class="ep-cancel" id="btn-cancel-edit">Cancelar</button>
-    </div>
-
-    <div class="stats">
-      <div class="sc"><div class="sn" id="sh">0</div><div class="sl">🎯 Hábitos</div></div>
-      <div class="sc"><div class="sn" id="sr">0</div><div class="sl">🔥 Mejor racha</div></div>
-      <div class="sc"><div class="sn" id="st">0</div><div class="sl">✅ Tareas semana</div></div>
-      <div class="sc"><div class="sn" id="sn2">0</div><div class="sl">🗒️ Notas</div></div>
-    </div>
-
     <div class="card">
       <div class="shdr">
         <div class="ctitle" style="margin:0">📊 Resumen semanal IA</div>
         <button class="gbtn" id="btn-summary">✨ Generar</button>
       </div>
       <div class="stxt empty" id="stxt">Toca "Generar" para tu resumen personalizado.</div>
-    </div>
-
-    <div class="card">
-      <div class="ctitle">🔔 Notificaciones</div>
-      <div class="nrow">
-        <div class="ninfo"><div class="ntitle">Activar notificaciones</div><div class="nsub">Alertas mientras usas la app</div></div>
-        <div class="toggle" id="tp" data-key="push"></div>
-      </div>
-      <div class="nrow">
-        <div class="ninfo"><div class="ntitle">Recordatorio diario 🌅</div><div class="nsub">Al abrir la app después de las 8 AM</div></div>
-        <div class="toggle" id="td" data-key="daily"></div>
-      </div>
-      <div class="nmsg" id="nmsg"></div>
     </div>
 
     <div class="card">
@@ -256,6 +177,114 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
     <a class="ni active" href="profile.html"><div class="ni-icon">👤</div><div class="ni-label">Perfil</div></a>
   </nav>
 </div>
+
+<!-- MODAL EDITAR PERFIL -->
+<div class="overlay" id="ep-overlay">
+  <div class="ep-modal">
+    <div class="ep-header">
+      <div class="ep-title">✏️ Editar perfil</div>
+      <button class="ep-close" id="btn-ep-close">✕</button>
+    </div>
+
+    <!-- Foto de perfil -->
+    <div class="ep-lbl">Foto de perfil</div>
+    <div class="ep-av-row">
+      <div class="ep-av-mini" id="epav"><span>👩🏻</span></div>
+      <button class="ep-photo-btn" id="btn-change-photo">📷 Cambiar foto</button>
+    </div>
+    <input type="file" id="avinput" accept="image/*" style="display:none">
+
+    <!-- Nombre -->
+    <div class="ep-lbl">Nombre</div>
+    <input class="ep-in" id="epname" placeholder="Tu nombre completo">
+
+    <!-- Moneda -->
+    <div class="ep-lbl">Moneda</div>
+    <select class="ep-sel" id="ep-currency">
+      <option value="MXN">🇲🇽 MXN — Peso mexicano</option>
+      <option value="USD">🇺🇸 USD — Dólar americano</option>
+      <option value="CLP">🇨🇱 CLP — Peso chileno</option>
+      <option value="COP">🇨🇴 COP — Peso colombiano</option>
+      <option value="ARS">🇦🇷 ARS — Peso argentino</option>
+      <option value="PEN">🇵🇪 PEN — Sol peruano</option>
+      <option value="CAD">🇨🇦 CAD — Dólar canadiense</option>
+      <option value="EUR">🇪🇺 EUR — Euro</option>
+      <option value="GBP">🇬🇧 GBP — Libra esterlina</option>
+    </select>
+
+    <!-- Zona horaria -->
+    <div class="ep-lbl">Zona horaria</div>
+    <select class="ep-sel" id="ep-timezone">
+      <option value="auto">📍 Detectar automáticamente</option>
+      <optgroup label="México">
+        <option value="America/Cancun">Cancún / Playa del Carmen (UTC-5)</option>
+        <option value="America/Mexico_City">CDMX / Guadalajara / Monterrey (UTC-6)</option>
+        <option value="America/Chihuahua">Chihuahua (UTC-7)</option>
+        <option value="America/Tijuana">Tijuana / Mexicali (UTC-8)</option>
+      </optgroup>
+      <optgroup label="Chile">
+        <option value="America/Santiago">Santiago / Valparaíso (UTC-3/-4)</option>
+      </optgroup>
+      <optgroup label="USA">
+        <option value="America/New_York">Nueva York / Miami (UTC-4/-5)</option>
+        <option value="America/Chicago">Chicago / Houston (UTC-5/-6)</option>
+        <option value="America/Denver">Denver / Phoenix (UTC-6/-7)</option>
+        <option value="America/Los_Angeles">Los Ángeles / San Francisco (UTC-7/-8)</option>
+      </optgroup>
+      <optgroup label="Canadá">
+        <option value="America/Toronto">Toronto / Montreal (UTC-4/-5)</option>
+        <option value="America/Vancouver">Vancouver (UTC-7/-8)</option>
+      </optgroup>
+      <optgroup label="Sudamérica">
+        <option value="America/Bogota">Bogotá / Lima (UTC-5)</option>
+        <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
+        <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+      </optgroup>
+      <optgroup label="Europa">
+        <option value="Europe/Madrid">Madrid / Barcelona (UTC+1/+2)</option>
+        <option value="Europe/London">Londres (UTC+0/+1)</option>
+      </optgroup>
+    </select>
+
+    <!-- Color de portada -->
+    <div class="ep-lbl">Color de la portada</div>
+    <div class="color-grid" id="color-grid">
+      <div class="copt sel" data-bg="linear-gradient(160deg,#0D2137,#1470A8)" style="background:linear-gradient(160deg,#0D2137,#1470A8)"></div>
+      <div class="copt" data-bg="linear-gradient(160deg,#1470A8,#2E9EE0)" style="background:linear-gradient(160deg,#1470A8,#2E9EE0)"></div>
+      <div class="copt" data-bg="linear-gradient(160deg,#0D2137,#2EAF7D)" style="background:linear-gradient(160deg,#0D2137,#2EAF7D)"></div>
+      <div class="copt" data-bg="linear-gradient(160deg,#1a0a2e,#E8547A)" style="background:linear-gradient(160deg,#1a0a2e,#E8547A)"></div>
+      <div class="copt" data-bg="linear-gradient(160deg,#0f2027,#F59E0B)" style="background:linear-gradient(160deg,#0f2027,#F59E0B)"></div>
+      <div class="copt" data-bg="linear-gradient(160deg,#0f2027,#8B5CF6)" style="background:linear-gradient(160deg,#0f2027,#8B5CF6)"></div>
+      <div class="copt" data-bg="linear-gradient(160deg,#0D2137,#0D2137)" style="background:#0D2137"></div>
+      <div class="copt" data-bg="linear-gradient(135deg,#2E9EE0,#1470A8)" style="background:linear-gradient(135deg,#2E9EE0,#1470A8)"></div>
+    </div>
+
+    <!-- Foto de fondo de portada -->
+    <div class="ep-lbl">Foto de fondo de portada</div>
+    <div class="bg-preview" id="bg-preview"></div>
+    <div class="bg-row">
+      <button class="bg-btn" id="btn-bg-photo">🖼️ Elegir foto</button>
+      <button class="bg-remove" id="btn-bg-remove">Quitar</button>
+    </div>
+    <input type="file" id="bginput" accept="image/*" style="display:none">
+
+    <!-- Notificaciones -->
+    <div class="ep-lbl">Notificaciones</div>
+    <div class="nrow">
+      <div class="ninfo"><div class="ntitle">Activar notificaciones</div><div class="nsub">Alertas mientras usas la app</div></div>
+      <div class="toggle" id="tp" data-key="push"></div>
+    </div>
+    <div class="nrow">
+      <div class="ninfo"><div class="ntitle">Recordatorio diario 🌅</div><div class="nsub">Al abrir la app después de las 8 AM</div></div>
+      <div class="toggle" id="td" data-key="daily"></div>
+    </div>
+    <div class="nmsg" id="nmsg"></div>
+
+    <button class="ep-save" id="btn-save-profile">✓ Guardar cambios</button>
+    <button class="ep-cancel-btn" id="btn-ep-cancel">Cancelar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -267,29 +296,22 @@ const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDo
 const auth=getAuth(app),db=getFirestore(app);
 let uid=null,notif={push:false,daily:false};
 let selectedColor='linear-gradient(160deg,#0D2137,#1470A8)';
-let selectedBgPhoto=null; // base64 de la foto de fondo
+let selectedBgPhoto=null;
 
-function toast(msg,c){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.style.background=c||'#0D2137';
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2800);
-}
+function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+function showMsg(msg){const el=document.getElementById('nmsg');el.textContent='⚠️ '+msg;el.style.display='block';}
+function hideMsg(){document.getElementById('nmsg').style.display='none';}
 
-function applyHeader(color, bgPhoto){
-  const ph=document.getElementById('ph');
-  const phBg=document.getElementById('ph-bg');
-  const overlay=document.getElementById('ph-overlay');
+function applyCover(color,bgPhoto){
+  const cover=document.getElementById('cover');
+  const bg=document.getElementById('cover-bg');
   if(bgPhoto){
-    ph.style.background='#0D2137';
-    phBg.style.backgroundImage=`url(${bgPhoto})`;
-    phBg.classList.add('active');
-    overlay.style.display='block';
+    cover.style.background='#0D2137';
+    bg.style.backgroundImage=`url(${bgPhoto})`;
+    bg.classList.add('active');
   } else {
-    ph.style.background=color||selectedColor;
-    phBg.classList.remove('active');
-    overlay.style.display='none';
+    cover.style.background=color||selectedColor;
+    bg.classList.remove('active');
   }
 }
 
@@ -319,11 +341,14 @@ function compressImage(file,maxPx,quality){
   });
 }
 
+function openEpModal(){document.getElementById('ep-overlay').classList.add('show');}
+function closeEpModal(){document.getElementById('ep-overlay').classList.remove('show');}
+
 onAuthStateChanged(auth,async user=>{
   if(!user){location.href='index.html';return;}
   uid=user.uid;
 
-  // Cargar datos de Firestore
+  // Cargar datos
   try{
     const snap=await getDoc(doc(db,'users',uid));
     let name=user.displayName||user.email||'';
@@ -331,44 +356,30 @@ onAuthStateChanged(auth,async user=>{
       const d=snap.data();
       if(d.displayName) name=d.displayName;
       if(d.coins) document.getElementById('coins').textContent=d.coins;
-      if(d.createdAt?.toDate){
-        const dt=d.createdAt.toDate();
-        document.getElementById('since').textContent='Desde '+dt.toLocaleDateString('es-MX',{month:'short',year:'numeric'});
-      }
+      if(d.createdAt?.toDate){const dt=d.createdAt.toDate();document.getElementById('since').textContent='Desde '+dt.toLocaleDateString('es-MX',{month:'short',year:'numeric'});}
       if(d.currency) document.getElementById('ep-currency').value=d.currency;
       if(d.timezone&&d.timezone!=='auto'){
         const sel=document.getElementById('ep-timezone');
         if([...sel.options].some(o=>o.value===d.timezone)) sel.value=d.timezone;
       }
-      // Aplicar color del header guardado
       if(d.headerColor){
         selectedColor=d.headerColor;
-        document.querySelectorAll('.copt').forEach(c=>{
-          c.classList.toggle('sel',c.dataset.bg===d.headerColor);
-        });
+        document.querySelectorAll('.copt').forEach(c=>c.classList.toggle('sel',c.dataset.bg===d.headerColor));
       }
-      // Aplicar foto de fondo guardada
       if(d.headerBgPhoto){
         selectedBgPhoto=d.headerBgPhoto;
-        applyHeader(selectedColor,d.headerBgPhoto);
+        applyCover(selectedColor,d.headerBgPhoto);
         const prev=document.getElementById('bg-preview');
         prev.style.backgroundImage=`url(${d.headerBgPhoto})`;
         prev.style.display='block';
       } else {
-        applyHeader(selectedColor,null);
+        applyCover(selectedColor,null);
       }
-      // Foto de perfil
-      if(d.photoBase64){
-        setAv(d.photoBase64);
-      } else {
-        const saved=localStorage.getItem('lt_av_'+uid);
-        if(saved) setAv(saved);
-        else if(user.photoURL) setAv(user.photoURL);
-      }
+      if(d.photoBase64) setAv(d.photoBase64);
+      else{const s=localStorage.getItem('lt_av_'+uid);if(s)setAv(s);else if(user.photoURL)setAv(user.photoURL);}
     } else {
-      const saved=localStorage.getItem('lt_av_'+uid);
-      if(saved) setAv(saved);
-      else if(user.photoURL) setAv(user.photoURL);
+      const s=localStorage.getItem('lt_av_'+uid);if(s)setAv(s);else if(user.photoURL)setAv(user.photoURL);
+      applyCover(selectedColor,null);
     }
     document.getElementById('phn').textContent=name;
     document.getElementById('epname').value=name;
@@ -392,6 +403,14 @@ onAuthStateChanged(auth,async user=>{
   if(notif.daily&&new Date().getHours()>=8) toast('🌅 Buenos días. Revisa tus tareas.','#2E9EE0');
   loadStats();
 
+  // ── ABRIR/CERRAR MODAL ──
+  document.getElementById('btn-edit').addEventListener('click',openEpModal);
+  document.getElementById('btn-ep-close').addEventListener('click',closeEpModal);
+  document.getElementById('btn-ep-cancel').addEventListener('click',closeEpModal);
+  document.getElementById('ep-overlay').addEventListener('click',e=>{
+    if(e.target===document.getElementById('ep-overlay')) closeEpModal();
+  });
+
   // ── FOTO DE PERFIL ──
   document.getElementById('avw').addEventListener('click',()=>document.getElementById('avinput').click());
   document.getElementById('btn-change-photo').addEventListener('click',()=>document.getElementById('avinput').click());
@@ -400,76 +419,42 @@ onAuthStateChanged(auth,async user=>{
     try{
       const b64=await compressImage(f,300,0.75);
       await setDoc(doc(db,'users',uid),{photoBase64:b64,updatedAt:serverTimestamp()},{merge:true});
-      setAv(b64);
-      toast('📸 Foto guardada','#2EAF7D');
+      setAv(b64);toast('📸 Foto guardada','#2EAF7D');
     }catch(err){toast('Error guardando foto','#E8547A');}
     e.target.value='';
   });
 
-  // ── FOTO DE FONDO DEL HEADER ──
+  // ── FOTO DE FONDO ──
   document.getElementById('btn-bg-photo').addEventListener('click',()=>document.getElementById('bginput').click());
   document.getElementById('bginput').addEventListener('change',async e=>{
     const f=e.target.files[0];if(!f)return;
     try{
       const b64=await compressImage(f,800,0.7);
       selectedBgPhoto=b64;
-      applyHeader(selectedColor,b64);
+      applyCover(selectedColor,b64);
       const prev=document.getElementById('bg-preview');
       prev.style.backgroundImage=`url(${b64})`;
       prev.style.display='block';
-      toast('🖼️ Foto de fondo lista. Toca Guardar.','#2E9EE0');
+      toast('🖼️ Foto lista. Toca Guardar.','#2E9EE0');
     }catch(err){toast('Error','#E8547A');}
     e.target.value='';
   });
-
   document.getElementById('btn-bg-remove').addEventListener('click',()=>{
     selectedBgPhoto=null;
-    applyHeader(selectedColor,null);
+    applyCover(selectedColor,null);
     const prev=document.getElementById('bg-preview');
     prev.style.display='none';
     prev.style.backgroundImage='';
     toast('Foto de fondo quitada','#0D2137');
   });
 
-  // ── COLORES DEL HEADER ──
+  // ── COLORES ──
   document.getElementById('color-grid').addEventListener('click',e=>{
     const copt=e.target.closest('.copt');if(!copt)return;
     document.querySelectorAll('.copt').forEach(x=>x.classList.remove('sel'));
     copt.classList.add('sel');
     selectedColor=copt.dataset.bg;
-    applyHeader(selectedColor,selectedBgPhoto);
-  });
-
-  // ── PANEL EDITAR ──
-  document.getElementById('btn-edit').addEventListener('click',()=>{
-    const p=document.getElementById('epanel');
-    p.classList.remove('epanel-hidden');
-    setTimeout(()=>p.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
-  });
-  document.getElementById('btn-cancel-edit').addEventListener('click',()=>{
-    document.getElementById('epanel').classList.add('epanel-hidden');
-  });
-
-  // ── GUARDAR PERFIL ──
-  document.getElementById('btn-save-profile').addEventListener('click',async()=>{
-    const name=document.getElementById('epname').value.trim();
-    const currency=document.getElementById('ep-currency').value;
-    let timezone=document.getElementById('ep-timezone').value;
-    if(timezone==='auto'){
-      try{timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||'America/Cancun';}
-      catch(e){timezone='America/Cancun';}
-    }
-    if(!name){toast('⚠️ Escribe tu nombre','#E8547A');return;}
-    try{
-      const saveData={displayName:name,currency,timezone,headerColor:selectedColor,updatedAt:serverTimestamp()};
-      if(selectedBgPhoto!==null) saveData.headerBgPhoto=selectedBgPhoto;
-      // Si se quitó la foto, guardar null explícitamente
-      if(selectedBgPhoto===null) saveData.headerBgPhoto=null;
-      await setDoc(doc(db,'users',uid),saveData,{merge:true});
-      document.getElementById('phn').textContent=name;
-      document.getElementById('epanel').classList.add('epanel-hidden');
-      toast('✓ Perfil guardado','#2EAF7D');
-    }catch(e){toast('Error: '+e.message,'#E8547A');}
+    applyCover(selectedColor,selectedBgPhoto);
   });
 
   // ── NOTIFICACIONES ──
@@ -477,23 +462,13 @@ onAuthStateChanged(auth,async user=>{
     toggle.addEventListener('click',async()=>{
       const key=toggle.dataset.key;
       if(key==='push'&&!notif.push){
-        if(!('Notification' in window)){
-          showMsg('Las notificaciones no están disponibles en este navegador.');return;
-        }
-        if(Notification.permission==='denied'){
-          showMsg('Bloqueadas. Ve a Configuración → Safari → Notificaciones → Permitir life-tracker-sandy.vercel.app');return;
-        }
+        if(!('Notification' in window)){showMsg('No disponible en este navegador.');return;}
+        if(Notification.permission==='denied'){showMsg('Bloqueadas. Ve a Configuración → Safari → Notificaciones → Permitir life-tracker-sandy.vercel.app');return;}
         try{
-          const perm=await new Promise(res=>{
-            const r=Notification.requestPermission(p=>res(p));
-            if(r&&r.then) r.then(res);
-          });
-          if(perm!=='granted'){showMsg('Permiso denegado. Actívalo en Configuración del navegador.');return;}
-          hideMsg();
-          toast('🔔 Notificaciones activadas','#2EAF7D');
-        }catch(e){
-          showMsg('Para notificaciones en iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;
-        }
+          const perm=await new Promise(res=>{const r=Notification.requestPermission(p=>res(p));if(r&&r.then)r.then(res);});
+          if(perm!=='granted'){showMsg('Permiso denegado.');return;}
+          hideMsg();toast('🔔 Notificaciones activadas','#2EAF7D');
+        }catch(e){showMsg('En iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;}
       }
       notif[key]=!notif[key];
       toggle.classList.toggle('on',notif[key]);
@@ -502,22 +477,28 @@ onAuthStateChanged(auth,async user=>{
     });
   });
 
+  // ── GUARDAR PERFIL ──
+  document.getElementById('btn-save-profile').addEventListener('click',async()=>{
+    const name=document.getElementById('epname').value.trim();
+    const currency=document.getElementById('ep-currency').value;
+    let timezone=document.getElementById('ep-timezone').value;
+    if(timezone==='auto'){try{timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||'America/Cancun';}catch(e){timezone='America/Cancun';}}
+    if(!name){toast('⚠️ Escribe tu nombre','#E8547A');return;}
+    try{
+      const data={displayName:name,currency,timezone,headerColor:selectedColor,headerBgPhoto:selectedBgPhoto,updatedAt:serverTimestamp()};
+      await setDoc(doc(db,'users',uid),data,{merge:true});
+      document.getElementById('phn').textContent=name;
+      closeEpModal();toast('✓ Perfil guardado','#2EAF7D');
+    }catch(e){toast('Error: '+e.message,'#E8547A');}
+  });
+
   // ── MENÚ ──
   document.getElementById('go-assistant').addEventListener('click',()=>location.href='assistant.html');
   document.getElementById('go-finance').addEventListener('click',()=>location.href='finance.html');
   document.getElementById('go-habits').addEventListener('click',()=>location.href='habits.html');
-
-  // ── LOGOUT ──
-  document.getElementById('btn-logout').addEventListener('click',async()=>{
-    if(confirm('¿Cerrar sesión?')){await signOut(auth);location.href='index.html';}
-  });
-
-  // ── RESUMEN IA ──
+  document.getElementById('btn-logout').addEventListener('click',async()=>{if(confirm('¿Cerrar sesión?')){await signOut(auth);location.href='index.html';}});
   document.getElementById('btn-summary').addEventListener('click',generateSummary);
 });
-
-function showMsg(msg){const el=document.getElementById('nmsg');el.textContent='⚠️ '+msg;el.style.display='block';}
-function hideMsg(){document.getElementById('nmsg').style.display='none';}
 
 async function loadStats(){
   const weekStart=new Date();weekStart.setDate(weekStart.getDate()-7);
@@ -536,15 +517,11 @@ async function generateSummary(){
     const weekStart=new Date();weekStart.setDate(weekStart.getDate()-7);
     let tasks=0;ts.forEach(d=>{if(d.data().doneAt?.toDate&&d.data().doneAt.toDate()>=weekStart)tasks++;});
     const name=document.getElementById('phn').textContent.split(' ')[0];
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:280,messages:[{role:'user',content:`Resumen semanal motivador para ${name}. Hábitos: ${habits.join(', ')||'ninguno'}. Tareas esta semana: ${tasks}. 3-4 oraciones en español, cálido y motivador.`}]})
-    });
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:280,messages:[{role:'user',content:`Resumen semanal motivador para ${name}. Hábitos: ${habits.join(', ')||'ninguno'}. Tareas esta semana: ${tasks}. 3-4 oraciones en español, cálido y motivador.`}]})});
     const data=await res.json();
     document.getElementById('stxt').textContent=data.content?.[0]?.text||'No se pudo generar.';
     document.getElementById('stxt').classList.remove('empty');
-  }catch(e){document.getElementById('stxt').textContent='Error de conexión. Intenta de nuevo.';}
+  }catch(e){document.getElementById('stxt').textContent='Error de conexión.';}
   btn.innerHTML='✨ Generar';btn.disabled=false;
 }
 </script>

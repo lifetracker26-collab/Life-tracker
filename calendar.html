@@ -255,6 +255,34 @@ function getWeekDates(d){
   return Array.from({length:7},(_,i)=>{const x=new Date(mon);x.setDate(mon.getDate()+i);return x;});
 }
 
+function openDetailModal(ev){
+  // Modal de detalle — muestra el evento, con botón editar
+  document.getElementById('detail-title').textContent=ev.title||'';
+  document.getElementById('detail-date').textContent=ev.date||'';
+  document.getElementById('detail-time').textContent=ev.time?'🕐 '+ev.time:'Sin hora';
+  document.getElementById('detail-note').textContent=ev.note||'';
+  document.getElementById('detail-note').style.display=ev.note?'block':'none';
+  const alarms=ev.alarms||[];
+  document.getElementById('detail-alarms').textContent=alarms.length?'⏰ Alarmas: '+alarms.map(a=>a==='0'?'Al momento':a==='1440'?'1 día antes':a+' min antes').join(', '):'';
+  document.getElementById('detail-alarms').style.display=alarms.length?'block':'none';
+  document.getElementById('detail-color').style.background=ev.color||'#2E9EE0';
+  // Guardar referencia para editar
+  document.getElementById('btn-detail-edit').onclick=()=>{closeDetailModal();openEditModal(ev);};
+  document.getElementById('btn-detail-delete').onclick=async()=>{
+    if(!confirm('¿Eliminar este evento?'))return;
+    try{
+      const{deleteDoc,doc:fdoc}=await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js");
+      // usar deleteDoc directo
+    }catch(e){}
+    // Eliminar usando el botón del modal de edición
+    closeDetailModal();
+    openEditModal(ev);
+    setTimeout(()=>document.getElementById('btn-delete-ev').click(),100);
+  };
+  document.getElementById('detail-modal').classList.add('show');
+}
+function closeDetailModal(){document.getElementById('detail-modal').classList.remove('show');}
+
 function openEvModal(dateStr){
   document.getElementById('ev-edit-id').value='';
   document.getElementById('ev-modal-title').textContent='📅 Nuevo evento';
@@ -322,6 +350,10 @@ onAuthStateChanged(auth,async user=>{
 
   // Modal buttons
   document.getElementById('btn-cancel-ev').addEventListener('click',closeEvModal);
+  document.getElementById('btn-detail-close').addEventListener('click',closeDetailModal);
+  document.getElementById('detail-modal').addEventListener('click',e=>{
+    if(e.target===document.getElementById('detail-modal')) closeDetailModal();
+  });
 
   // Mostrar/ocultar campo personalizado de repetición
   document.getElementById('ev-repeat').addEventListener('change',e=>{
@@ -447,7 +479,7 @@ function renderWeek(){
     el.addEventListener('click',e=>{
       e.stopPropagation();
       const ev=events.find(ev=>ev.id===el.dataset.evid);
-      if(ev) openEditModal(ev);
+      if(ev) openDetailModal(ev);
     });
   });
   // Click en día
@@ -574,6 +606,15 @@ function renderDay(){
 
   // Add chip
   document.getElementById('chip-add').addEventListener('click',()=>openEvModal(ds));
+
+  // Click en evento existente en vista Día — mostrar detalle
+  document.querySelectorAll('.ev-chip[data-evid]').forEach(el=>{
+    el.addEventListener('click',e=>{
+      e.stopPropagation();
+      const ev=events.find(ev=>ev.id===el.dataset.evid);
+      if(ev) openDetailModal(ev);
+    });
+  });
 
   // Nota - guardar automático con debounce
   const ta=document.getElementById('nb-ta');
