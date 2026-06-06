@@ -216,6 +216,20 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
     <button class="mcancel" id="btn-cancel-ev">Cancelar</button>
   </div>
 </div>
+<div class="overlay" id="detail-modal">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div id="detail-color" style="width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>
+      <div id="detail-title" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;flex:1"></div>
+    </div>
+    <div id="detail-date" style="font-size:.72rem;color:var(--tl);margin-bottom:3px"></div>
+    <div id="detail-time" style="font-size:.72rem;color:var(--b);font-weight:600;margin-bottom:10px"></div>
+    <div id="detail-note" style="font-size:.75rem;color:var(--t);line-height:1.6;margin-bottom:10px;white-space:pre-wrap;display:none"></div>
+    <div id="detail-alarms" style="font-size:.68rem;color:var(--gr);margin-bottom:16px;display:none"></div>
+    <button id="btn-detail-edit" style="width:100%;background:var(--g2);border:none;border-radius:12px;padding:13px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px;display:block">✏️ Editar evento</button>
+    <button id="btn-detail-close" style="width:100%;background:transparent;border:none;padding:9px;font-size:.7rem;color:var(--tl);cursor:pointer;font-family:'DM Sans',sans-serif;display:block">Cerrar</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -256,29 +270,16 @@ function getWeekDates(d){
 }
 
 function openDetailModal(ev){
-  // Modal de detalle — muestra el evento, con botón editar
   document.getElementById('detail-title').textContent=ev.title||'';
   document.getElementById('detail-date').textContent=ev.date||'';
   document.getElementById('detail-time').textContent=ev.time?'🕐 '+ev.time:'Sin hora';
   document.getElementById('detail-note').textContent=ev.note||'';
   document.getElementById('detail-note').style.display=ev.note?'block':'none';
   const alarms=ev.alarms||[];
-  document.getElementById('detail-alarms').textContent=alarms.length?'⏰ Alarmas: '+alarms.map(a=>a==='0'?'Al momento':a==='1440'?'1 día antes':a+' min antes').join(', '):'';
+  document.getElementById('detail-alarms').textContent=alarms.length?'⏰ '+alarms.map(a=>a==='0'?'Al momento':a==='1440'?'1 día antes':a+' min antes').join(', '):'';
   document.getElementById('detail-alarms').style.display=alarms.length?'block':'none';
   document.getElementById('detail-color').style.background=ev.color||'#2E9EE0';
-  // Guardar referencia para editar
   document.getElementById('btn-detail-edit').onclick=()=>{closeDetailModal();openEditModal(ev);};
-  document.getElementById('btn-detail-delete').onclick=async()=>{
-    if(!confirm('¿Eliminar este evento?'))return;
-    try{
-      const{deleteDoc,doc:fdoc}=await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js");
-      // usar deleteDoc directo
-    }catch(e){}
-    // Eliminar usando el botón del modal de edición
-    closeDetailModal();
-    openEditModal(ev);
-    setTimeout(()=>document.getElementById('btn-delete-ev').click(),100);
-  };
   document.getElementById('detail-modal').classList.add('show');
 }
 function closeDetailModal(){document.getElementById('detail-modal').classList.remove('show');}
