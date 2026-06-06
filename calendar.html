@@ -140,7 +140,8 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 <!-- EVENT MODAL -->
 <div class="overlay" id="ev-modal">
   <div class="modal" style="max-height:90vh;overflow-y:auto">
-    <div class="mtitle">📅 Nuevo evento</div>
+    <div class="mtitle" id="ev-modal-title">📅 Nuevo evento</div>
+    <input type="hidden" id="ev-edit-id" value="">
     <div class="mlbl">Título</div>
     <input class="min" id="ev-title" placeholder="¿Qué tienes planeado?">
     <div class="mlbl">Nota</div>
@@ -187,6 +188,19 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
         <option value="1440">1 día antes</option>
       </select>
     </div>
+    <div style="margin-top:10px">
+      <div class="mlbl">🔁 Repetir alarma</div>
+      <select class="min" id="ev-repeat">
+        <option value="">Sin repetición</option>
+        <option value="daily">Cada día</option>
+        <option value="every2days">Cada 2 días</option>
+        <option value="weekly">Una vez a la semana</option>
+        <option value="monthly">Una vez al mes</option>
+        <option value="yearly">Una vez al año</option>
+        <option value="custom">Personalizado</option>
+      </select>
+      <input class="min" id="ev-repeat-custom" placeholder="Ej: cada 3 días" style="display:none;margin-top:4px">
+    </div>
     <div style="margin:10px 0 8px">
       <div class="mlbl">Color</div>
       <div class="clrs" id="ev-colors">
@@ -198,6 +212,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
       </div>
     </div>
     <button class="msave" id="btn-save-ev">Guardar evento →</button>
+    <button class="mcancel" id="btn-delete-ev" style="display:none;color:#E8547A">🗑️ Eliminar evento</button>
     <button class="mcancel" id="btn-cancel-ev">Cancelar</button>
   </div>
 </div>
@@ -206,7 +221,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,updateDoc,deleteDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
@@ -241,6 +256,8 @@ function getWeekDates(d){
 }
 
 function openEvModal(dateStr){
+  document.getElementById('ev-edit-id').value='';
+  document.getElementById('ev-modal-title').textContent='📅 Nuevo evento';
   document.getElementById('ev-title').value='';
   document.getElementById('ev-note').value='';
   document.getElementById('ev-date').value=dateStr||selDate.toISOString().split('T')[0];
@@ -248,8 +265,36 @@ function openEvModal(dateStr){
   document.getElementById('ev-alarm1').value='';
   document.getElementById('ev-alarm2').value='';
   document.getElementById('ev-alarm3').value='';
+  document.getElementById('ev-repeat').value='';
+  document.getElementById('ev-repeat-custom').style.display='none';
+  document.getElementById('btn-delete-ev').style.display='none';
+  document.getElementById('btn-save-ev').textContent='Guardar evento →';
+  evColor='#2E9EE0';
+  document.querySelectorAll('#ev-colors .clr').forEach(b=>b.classList.toggle('sel',b.dataset.color==='#2E9EE0'));
   document.getElementById('ev-modal').classList.add('show');
 }
+
+function openEditModal(ev){
+  document.getElementById('ev-edit-id').value=ev.id;
+  document.getElementById('ev-modal-title').textContent='✏️ Editar evento';
+  document.getElementById('ev-title').value=ev.title||'';
+  document.getElementById('ev-note').value=ev.note||'';
+  document.getElementById('ev-date').value=ev.date||'';
+  document.getElementById('ev-time').value=ev.time||'';
+  const alarms=ev.alarms||[];
+  document.getElementById('ev-alarm1').value=alarms[0]||'';
+  document.getElementById('ev-alarm2').value=alarms[1]||'';
+  document.getElementById('ev-alarm3').value=alarms[2]||'';
+  document.getElementById('ev-repeat').value=ev.repeat||'';
+  document.getElementById('ev-repeat-custom').style.display=ev.repeat==='custom'?'block':'none';
+  document.getElementById('ev-repeat-custom').value=ev.repeatCustom||'';
+  document.getElementById('btn-delete-ev').style.display='block';
+  document.getElementById('btn-save-ev').textContent='Guardar cambios →';
+  evColor=ev.color||'#2E9EE0';
+  document.querySelectorAll('#ev-colors .clr').forEach(b=>b.classList.toggle('sel',b.dataset.color===evColor));
+  document.getElementById('ev-modal').classList.add('show');
+}
+
 function closeEvModal(){document.getElementById('ev-modal').classList.remove('show');}
 
 onAuthStateChanged(auth,async user=>{
@@ -277,9 +322,26 @@ onAuthStateChanged(auth,async user=>{
 
   // Modal buttons
   document.getElementById('btn-cancel-ev').addEventListener('click',closeEvModal);
+
+  // Mostrar/ocultar campo personalizado de repetición
+  document.getElementById('ev-repeat').addEventListener('change',e=>{
+    document.getElementById('ev-repeat-custom').style.display=e.target.value==='custom'?'block':'none';
+  });
+
+  // Eliminar evento
+  document.getElementById('btn-delete-ev').addEventListener('click',async()=>{
+    const editId=document.getElementById('ev-edit-id').value;
+    if(!editId||!confirm('¿Eliminar este evento?'))return;
+    try{
+      await deleteDoc(doc(db,'events',editId));
+      events=events.filter(e=>e.id!==editId);
+      closeEvModal();renderView();toast('Evento eliminado','#E8547A');
+    }catch(e){toast('Error: '+e.message,'#E8547A');}
+  });
   document.getElementById('ev-modal').addEventListener('click',e=>{if(e.target===document.getElementById('ev-modal'))closeEvModal();});
 
   document.getElementById('btn-save-ev').addEventListener('click',async()=>{
+    const editId=document.getElementById('ev-edit-id').value;
     const title=document.getElementById('ev-title').value.trim();
     const note=document.getElementById('ev-note').value.trim();
     const date=document.getElementById('ev-date').value;
@@ -287,30 +349,39 @@ onAuthStateChanged(auth,async user=>{
     const alarm1=document.getElementById('ev-alarm1').value;
     const alarm2=document.getElementById('ev-alarm2').value;
     const alarm3=document.getElementById('ev-alarm3').value;
+    const repeat=document.getElementById('ev-repeat').value||null;
+    const repeatCustom=repeat==='custom'?document.getElementById('ev-repeat-custom').value.trim():null;
     if(!title){toast('⚠️ Escribe un título','#E8547A');return;}
     if(!date){toast('⚠️ Selecciona una fecha','#E8547A');return;}
     try{
       const hour=time?parseInt(time.split(':')[0]):null;
       const alarms=[alarm1,alarm2,alarm3].filter(a=>a!=='');
-      const ref=await addDoc(collection(db,'events'),{uid,title,note,date,time,hour,color:evColor,alarms,createdAt:serverTimestamp()});
-      const ev={id:ref.id,uid,title,note,date,time,hour,color:evColor,alarms};
-      events.push(ev);
-      // Programar alarmas via backend (funcionan con app cerrada)
-      if(alarms.length&&time){
-        const evDate=new Date(date+'T'+time);
-        for(const mins of alarms){
-          const alertTime=new Date(evDate.getTime()-parseInt(mins)*60000);
-          const body=mins==='0'?'¡El evento es ahora!':mins==='1440'?'Mañana: '+title:'En '+mins+' minutos: '+title;
-          try{
-            await fetch('/api/schedule-alarm',{
-              method:'POST',
-              headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({uid,title:'📅 '+title,body,fireAt:alertTime.getTime()})
-            });
-          }catch(e){}
+      const data={uid,title,note,date,time,hour,color:evColor,alarms,repeat,repeatCustom,updatedAt:serverTimestamp()};
+      if(editId){
+        // EDITAR
+        await updateDoc(doc(db,'events',editId),data);
+        const idx=events.findIndex(e=>e.id===editId);
+        if(idx>=0) events[idx]={id:editId,...data};
+        closeEvModal();renderView();toast('✓ Evento actualizado','#2EAF7D');
+      } else {
+        // CREAR
+        data.createdAt=serverTimestamp();
+        const ref=await addDoc(collection(db,'events'),data);
+        events.push({id:ref.id,...data});
+        // Programar alarmas locales si la app está abierta
+        if(alarms.length&&time){
+          const evDate=new Date(date+'T'+time);
+          for(const mins of alarms){
+            const alertTime=new Date(evDate.getTime()-parseInt(mins)*60000);
+            const msUntil=alertTime-new Date();
+            if(msUntil>0&&'Notification' in window&&Notification.permission==='granted'){
+              const body=mins==='0'?'¡El evento es ahora!':mins==='1440'?'Mañana: '+title:'En '+mins+' minutos: '+title;
+              setTimeout(()=>{try{new Notification('📅 '+title,{body,icon:'/icon-192.png'});}catch(e){}},msUntil);
+            }
+          }
         }
+        closeEvModal();renderView();toast('📅 Evento guardado','#2EAF7D');
       }
-      closeEvModal();renderView();toast('📅 Evento guardado','#2EAF7D');
     }catch(e){toast('Error: '+e.message,'#E8547A');}
   });
 });
@@ -364,13 +435,21 @@ function renderWeek(){
     week.forEach(d=>{
       const ds=d.toISOString().split('T')[0];
       const ev=events.filter(e=>e.date===ds&&e.hour===HOURS_N[hi]);
-      const evHtml=ev.map(e=>`<div class="wev" style="background:${e.color||'#2E9EE0'}">${e.title}</div>`).join('');
+      const evHtml=ev.map(e=>`<div class="wev" style="background:${e.color||'#2E9EE0'}" data-evid="${e.id}">${e.title}</div>`).join('');
       html+=`<div class="wdcol" data-date="${ds}">${evHtml}</div>`;
     });
   });
   html+=`</div></div>`;
   const cont=document.getElementById('view-container');
   cont.innerHTML=html;
+  // Click en evento (editar)
+  cont.querySelectorAll('.wev').forEach(el=>{
+    el.addEventListener('click',e=>{
+      e.stopPropagation();
+      const ev=events.find(ev=>ev.id===el.dataset.evid);
+      if(ev) openEditModal(ev);
+    });
+  });
   // Click en día
   cont.querySelectorAll('.wdcol,.wdd').forEach(el=>{
     el.addEventListener('click',()=>{
@@ -450,7 +529,7 @@ function renderDay(){
   const isT=selDate.toDateString()===today.toDateString();
   const label=isT?'Hoy':`${DAYS_FULL[selDate.getDay()]} ${selDate.getDate()} ${MONTHS[selDate.getMonth()]}`;
   const dayEvs=events.filter(e=>e.date===ds);
-  let chips=dayEvs.map(e=>`<div class="ev-chip"><div class="ev-dot" style="background:${e.color}"></div>${e.time||''} ${e.title}</div>`).join('');
+  let chips=dayEvs.map(e=>`<div class="ev-chip" data-evid="${e.id}" style="cursor:pointer"><div class="ev-dot" style="background:${e.color}"></div>${e.time||''} ${e.title} <span style="font-size:.55rem;color:var(--tl)">✏️</span></div>`).join('');
   chips+=`<div class="ev-chip add-chip" id="chip-add">＋ Evento</div>`;
 
   const spiralRings=Array(12).fill('<div class="ring"></div>').join('');

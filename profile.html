@@ -10,40 +10,55 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--g2:linear-gradient(135deg,#2E9EE0,#1470A8);--g3:linear-gradient(160deg,#0D2137,#1470A8)}
+:root{--b:#2E9EE0;--b2:#1470A8;--sky:#EAF5FF;--t:#0D2137;--tl:#7A9AB8;--gr:#2EAF7D;--pk:#E8547A;--g2:linear-gradient(135deg,#2E9EE0,#1470A8)}
 body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 .app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
-.ph{background:var(--g3);padding:50px 20px 32px;position:relative;overflow:hidden}
+.ph{padding:50px 20px 32px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0D2137,#1470A8);transition:background .3s}
+.ph-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .3s}
+.ph-bg.active{opacity:1}
+.ph-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.38);pointer-events:none}
 .ph::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:#f0f7ff;border-radius:30px 30px 0 0}
 .orb{position:absolute;border-radius:50%;filter:blur(50px);pointer-events:none}
-.o1{width:200px;height:200px;background:rgba(46,158,224,0.22);top:-80px;right:-60px}
-.o2{width:150px;height:150px;background:rgba(46,158,224,0.12);bottom:-40px;left:-40px}
-.ph-in{position:relative;z-index:1;text-align:center}
+.o1{width:200px;height:200px;background:rgba(255,255,255,0.1);top:-80px;right:-60px}
+.o2{width:150px;height:150px;background:rgba(255,255,255,0.07);bottom:-40px;left:-40px}
+.ph-in{position:relative;z-index:2;text-align:center}
 .avw{position:relative;width:84px;margin:0 auto 12px;cursor:pointer}
-.av{width:84px;height:84px;border-radius:50%;background:var(--g2);border:3px solid rgba(255,255,255,.3);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 24px rgba(13,33,55,.25)}
+.av{width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.45);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .av img{width:100%;height:100%;object-fit:cover}
 .avb{position:absolute;bottom:0;right:0;width:26px;height:26px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;box-shadow:0 2px 8px rgba(0,0,0,.2);pointer-events:none}
-.phn{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:2px}
-.phe{font-size:.63rem;color:rgba(255,255,255,.55);margin-bottom:12px}
+.phn{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.phe{font-size:.63rem;color:rgba(255,255,255,.7);margin-bottom:12px}
 .phc{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.chip{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:.62rem;font-weight:600;color:rgba(255,255,255,.9)}
-.ebtn{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);border-radius:20px;padding:7px 20px;font-size:.65rem;font-weight:700;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif}
+.chip{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;font-size:.62rem;font-weight:600;color:#fff}
+.ebtn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:7px 20px;font-size:.65rem;font-weight:700;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif}
 .scroll{padding:16px;display:flex;flex-direction:column;gap:14px}
 .card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(46,158,224,0.08);border:1px solid rgba(46,158,224,0.07)}
 .ctitle{font-size:.73rem;font-weight:700;color:var(--t);margin-bottom:12px}
-/* PANEL EDITAR - oculto con clase, no con ID */
 .epanel-hidden{display:none !important}
+/* EDITAR */
 .ep-avr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ep-av{width:54px;height:54px;border-radius:50%;overflow:hidden;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:2px solid rgba(46,158,224,0.2);flex-shrink:0}
 .ep-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .ep-pb{flex:1;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:12px;padding:12px;font-size:.7rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
-.ep-lbl{font-size:.6rem;font-weight:700;color:#3A5570;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;margin-top:10px}
+.ep-lbl{font-size:.6rem;font-weight:700;color:#3A5570;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;margin-top:12px}
 .ep-in{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:4px;-webkit-appearance:none;display:block}
 .ep-in:focus{border-color:var(--b);background:#fff}
 .ep-sel{width:100%;background:var(--sky);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;font-size:.8rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:4px;-webkit-appearance:none;display:block;cursor:pointer}
 .ep-sel:focus{border-color:var(--b)}
-.ep-save{width:100%;background:var(--g2);border:none;border-radius:12px;padding:13px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:12px;margin-bottom:8px;display:block}
+/* COLORES HEADER */
+.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+.copt{height:36px;border-radius:10px;cursor:pointer;border:3px solid transparent;transition:all .15s;position:relative}
+.copt.sel{border-color:#fff;box-shadow:0 0 0 2px var(--b)}
+.copt.sel::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:.8rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+/* FOTO DE FONDO */
+.bg-photo-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.bg-photo-btn{flex:1;background:var(--sky);border:1.5px solid rgba(46,158,224,0.2);border-radius:12px;padding:11px;font-size:.7rem;font-weight:700;color:var(--b2);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center}
+.bg-remove-btn{background:rgba(232,84,122,0.08);border:1.5px solid rgba(232,84,122,0.2);border-radius:12px;padding:11px 14px;font-size:.7rem;font-weight:700;color:var(--pk);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.bg-preview{width:100%;height:60px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:6px;display:none;border:1.5px solid rgba(46,158,224,0.15)}
+/* SAVE/CANCEL */
+.ep-save{width:100%;background:var(--g2);border:none;border-radius:12px;padding:13px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;margin-bottom:8px;display:block}
 .ep-cancel{width:100%;background:transparent;border:none;padding:9px;font-size:.7rem;color:var(--tl);cursor:pointer;font-family:'DM Sans',sans-serif;display:block}
+/* STATS */
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .sc{background:var(--sky);border-radius:16px;padding:14px;text-align:center}
 .sn{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700}
@@ -52,6 +67,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 .gbtn{background:var(--g2);border:none;border-radius:10px;padding:7px 14px;color:#fff;font-size:.62rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 .stxt{font-size:.72rem;color:#3A5570;line-height:1.65}
 .stxt.empty{color:var(--tl);font-style:italic}
+/* NOTIF */
 .nrow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(46,158,224,0.07)}
 .nrow:last-child{border-bottom:none}
 .ninfo{flex:1;padding-right:12px}
@@ -62,12 +78,14 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 .toggle::after{content:'';position:absolute;width:21px;height:21px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .22s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
 .toggle.on::after{left:22px}
 .nmsg{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:10px 12px;font-size:.65rem;color:#92400E;display:none;margin-top:8px;line-height:1.55}
+/* MENU */
 .mitem{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(46,158,224,0.07);cursor:pointer}
 .mitem:last-child{border-bottom:none}
 .micon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
 .mtext{flex:1;font-size:.73rem;font-weight:500}
 .marr{font-size:.75rem;color:var(--tl)}
 .logout{width:100%;background:rgba(232,84,122,0.08);border:1.5px solid rgba(232,84,122,0.2);border-radius:14px;padding:13px;color:var(--pk);font-size:.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* NAV */
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid rgba(46,158,224,0.1);padding:8px 6px 24px;display:flex;justify-content:space-around;z-index:50}
 .ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:14px;text-decoration:none}
 .ni.active{background:var(--sky)}
@@ -82,7 +100,9 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 </head>
 <body>
 <div class="app">
-  <div class="ph">
+  <div class="ph" id="ph">
+    <div class="ph-bg" id="ph-bg"></div>
+    <div class="ph-overlay" id="ph-overlay" style="display:none"></div>
     <div class="orb o1"></div><div class="orb o2"></div>
     <div class="ph-in">
       <div class="avw" id="avw">
@@ -90,6 +110,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
         <div class="avb">📷</div>
       </div>
       <input type="file" id="avinput" accept="image/*" style="display:none">
+      <input type="file" id="bginput" accept="image/*" style="display:none">
       <div class="phn" id="phn">Cargando...</div>
       <div class="phe" id="phe"></div>
       <div class="phc">
@@ -102,34 +123,89 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
   </div>
 
   <div class="scroll">
-    <!-- PANEL EDITAR - empieza oculto con clase -->
+    <!-- PANEL EDITAR -->
     <div class="card epanel-hidden" id="epanel">
       <div class="ctitle">✏️ Editar perfil</div>
+
+      <!-- Foto de perfil -->
       <div class="ep-avr">
         <div class="ep-av" id="epav"><span>👩🏻</span></div>
-        <button class="ep-pb" id="btn-change-photo">📷 Cambiar foto</button>
+        <button class="ep-pb" id="btn-change-photo">📷 Cambiar foto de perfil</button>
       </div>
+
+      <!-- Nombre -->
       <div class="ep-lbl">Nombre</div>
       <input class="ep-in" id="epname" placeholder="Tu nombre completo">
+
+      <!-- Moneda -->
       <div class="ep-lbl">Moneda</div>
       <select class="ep-sel" id="ep-currency">
         <option value="MXN">🇲🇽 MXN — Peso mexicano</option>
-        <option value="USD">🇺🇸 USD — Dólar</option>
+        <option value="USD">🇺🇸 USD — Dólar americano</option>
         <option value="CLP">🇨🇱 CLP — Peso chileno</option>
         <option value="COP">🇨🇴 COP — Peso colombiano</option>
         <option value="ARS">🇦🇷 ARS — Peso argentino</option>
+        <option value="PEN">🇵🇪 PEN — Sol peruano</option>
+        <option value="CAD">🇨🇦 CAD — Dólar canadiense</option>
         <option value="EUR">🇪🇺 EUR — Euro</option>
+        <option value="GBP">🇬🇧 GBP — Libra esterlina</option>
       </select>
+
+      <!-- Zona horaria -->
       <div class="ep-lbl">Zona horaria</div>
       <select class="ep-sel" id="ep-timezone">
-        <option value="America/Cancun">Playa del Carmen / Cancún (UTC-5)</option>
-        <option value="America/Mexico_City">Ciudad de México (UTC-6)</option>
-        <option value="America/Santiago">Santiago de Chile (UTC-3/-4)</option>
-        <option value="America/Bogota">Bogotá (UTC-5)</option>
-        <option value="America/Buenos_Aires">Buenos Aires (UTC-3)</option>
-        <option value="America/New_York">Nueva York (UTC-4/-5)</option>
-        <option value="Europe/Madrid">Madrid (UTC+1/+2)</option>
+        <option value="auto">📍 Detectar automáticamente</option>
+        <optgroup label="México">
+          <option value="America/Cancun">Cancún / Playa del Carmen (UTC-5)</option>
+          <option value="America/Mexico_City">CDMX / Guadalajara / Monterrey (UTC-6)</option>
+          <option value="America/Chihuahua">Chihuahua (UTC-7)</option>
+          <option value="America/Tijuana">Tijuana / Mexicali (UTC-8)</option>
+        </optgroup>
+        <optgroup label="Chile">
+          <option value="America/Santiago">Santiago / Valparaíso (UTC-3/-4)</option>
+        </optgroup>
+        <optgroup label="USA">
+          <option value="America/New_York">Nueva York / Miami (UTC-4/-5)</option>
+          <option value="America/Chicago">Chicago / Houston (UTC-5/-6)</option>
+          <option value="America/Denver">Denver / Phoenix (UTC-6/-7)</option>
+          <option value="America/Los_Angeles">Los Ángeles / San Francisco (UTC-7/-8)</option>
+        </optgroup>
+        <optgroup label="Canadá">
+          <option value="America/Toronto">Toronto / Montreal (UTC-4/-5)</option>
+          <option value="America/Vancouver">Vancouver (UTC-7/-8)</option>
+        </optgroup>
+        <optgroup label="Sudamérica">
+          <option value="America/Bogota">Bogotá / Lima (UTC-5)</option>
+          <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
+          <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+        </optgroup>
+        <optgroup label="Europa">
+          <option value="Europe/Madrid">Madrid / Barcelona (UTC+1/+2)</option>
+          <option value="Europe/London">Londres (UTC+0/+1)</option>
+        </optgroup>
       </select>
+
+      <!-- Color del header -->
+      <div class="ep-lbl">Color del encabezado</div>
+      <div class="color-grid" id="color-grid">
+        <div class="copt sel" data-bg="linear-gradient(160deg,#0D2137,#1470A8)" style="background:linear-gradient(160deg,#0D2137,#1470A8)"></div>
+        <div class="copt" data-bg="linear-gradient(160deg,#1470A8,#2E9EE0)" style="background:linear-gradient(160deg,#1470A8,#2E9EE0)"></div>
+        <div class="copt" data-bg="linear-gradient(160deg,#0D2137,#2EAF7D)" style="background:linear-gradient(160deg,#0D2137,#2EAF7D)"></div>
+        <div class="copt" data-bg="linear-gradient(160deg,#1a0a2e,#E8547A)" style="background:linear-gradient(160deg,#1a0a2e,#E8547A)"></div>
+        <div class="copt" data-bg="linear-gradient(160deg,#0f2027,#F59E0B)" style="background:linear-gradient(160deg,#0f2027,#F59E0B)"></div>
+        <div class="copt" data-bg="linear-gradient(160deg,#0f2027,#8B5CF6)" style="background:linear-gradient(160deg,#0f2027,#8B5CF6)"></div>
+        <div class="copt" data-bg="linear-gradient(160deg,#0D2137,#0D2137)" style="background:#0D2137"></div>
+        <div class="copt" data-bg="linear-gradient(135deg,#2E9EE0,#1470A8)" style="background:linear-gradient(135deg,#2E9EE0,#1470A8)"></div>
+      </div>
+
+      <!-- Foto de fondo del header -->
+      <div class="ep-lbl">Foto de fondo del encabezado</div>
+      <div id="bg-preview" class="bg-preview"></div>
+      <div class="bg-photo-row">
+        <button class="bg-photo-btn" id="btn-bg-photo">🖼️ Elegir foto de fondo</button>
+        <button class="bg-remove-btn" id="btn-bg-remove">Quitar</button>
+      </div>
+
       <button class="ep-save" id="btn-save-profile">✓ Guardar cambios</button>
       <button class="ep-cancel" id="btn-cancel-edit">Cancelar</button>
     </div>
@@ -186,35 +262,60 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,collection,getDocs,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-import{getMessaging,getToken}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-messaging.js";
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
 let uid=null,notif={push:false,daily:false};
+let selectedColor='linear-gradient(160deg,#0D2137,#1470A8)';
+let selectedBgPhoto=null; // base64 de la foto de fondo
 
-function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+function toast(msg,c){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.background=c||'#0D2137';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function applyHeader(color, bgPhoto){
+  const ph=document.getElementById('ph');
+  const phBg=document.getElementById('ph-bg');
+  const overlay=document.getElementById('ph-overlay');
+  if(bgPhoto){
+    ph.style.background='#0D2137';
+    phBg.style.backgroundImage=`url(${bgPhoto})`;
+    phBg.classList.add('active');
+    overlay.style.display='block';
+  } else {
+    ph.style.background=color||selectedColor;
+    phBg.classList.remove('active');
+    overlay.style.display='none';
+  }
+}
 
 function setAv(src){
   document.getElementById('av').innerHTML=`<img src="${src}" style="width:100%;height:100%;object-fit:cover">`;
   document.getElementById('epav').innerHTML=`<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  if(uid) localStorage.setItem('lt_av_'+uid,src);
 }
 
-function compressImage(file){
+function compressImage(file,maxPx,quality){
   return new Promise(resolve=>{
-    const reader=new FileReader();
-    reader.onload=ev=>{
+    const r=new FileReader();
+    r.onload=ev=>{
       const img=new Image();
       img.onload=()=>{
         const canvas=document.createElement('canvas');
-        const MAX=300;let w=img.width,h=img.height;
+        let w=img.width,h=img.height;
+        const MAX=maxPx||300;
         if(w>h){if(w>MAX){h=h*(MAX/w);w=MAX;}}else{if(h>MAX){w=w*(MAX/h);h=MAX;}}
         canvas.width=w;canvas.height=h;
         canvas.getContext('2d').drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg',0.7));
+        resolve(canvas.toDataURL('image/jpeg',quality||0.7));
       };
       img.src=ev.target.result;
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(file);
   });
 }
 
@@ -222,24 +323,56 @@ onAuthStateChanged(auth,async user=>{
   if(!user){location.href='index.html';return;}
   uid=user.uid;
 
-  // Cargar datos
+  // Cargar datos de Firestore
   try{
     const snap=await getDoc(doc(db,'users',uid));
     let name=user.displayName||user.email||'';
-    let photo=user.photoURL||null;
     if(snap.exists()){
       const d=snap.data();
       if(d.displayName) name=d.displayName;
-      if(d.photoBase64) photo=d.photoBase64;
       if(d.coins) document.getElementById('coins').textContent=d.coins;
-      if(d.createdAt?.toDate){const dt=d.createdAt.toDate();document.getElementById('since').textContent='Desde '+dt.toLocaleDateString('es-MX',{month:'short',year:'numeric'});}
+      if(d.createdAt?.toDate){
+        const dt=d.createdAt.toDate();
+        document.getElementById('since').textContent='Desde '+dt.toLocaleDateString('es-MX',{month:'short',year:'numeric'});
+      }
       if(d.currency) document.getElementById('ep-currency').value=d.currency;
-      if(d.timezone) document.getElementById('ep-timezone').value=d.timezone;
+      if(d.timezone&&d.timezone!=='auto'){
+        const sel=document.getElementById('ep-timezone');
+        if([...sel.options].some(o=>o.value===d.timezone)) sel.value=d.timezone;
+      }
+      // Aplicar color del header guardado
+      if(d.headerColor){
+        selectedColor=d.headerColor;
+        document.querySelectorAll('.copt').forEach(c=>{
+          c.classList.toggle('sel',c.dataset.bg===d.headerColor);
+        });
+      }
+      // Aplicar foto de fondo guardada
+      if(d.headerBgPhoto){
+        selectedBgPhoto=d.headerBgPhoto;
+        applyHeader(selectedColor,d.headerBgPhoto);
+        const prev=document.getElementById('bg-preview');
+        prev.style.backgroundImage=`url(${d.headerBgPhoto})`;
+        prev.style.display='block';
+      } else {
+        applyHeader(selectedColor,null);
+      }
+      // Foto de perfil
+      if(d.photoBase64){
+        setAv(d.photoBase64);
+      } else {
+        const saved=localStorage.getItem('lt_av_'+uid);
+        if(saved) setAv(saved);
+        else if(user.photoURL) setAv(user.photoURL);
+      }
+    } else {
+      const saved=localStorage.getItem('lt_av_'+uid);
+      if(saved) setAv(saved);
+      else if(user.photoURL) setAv(user.photoURL);
     }
     document.getElementById('phn').textContent=name;
     document.getElementById('epname').value=name;
     document.getElementById('phe').textContent=user.email||'';
-    if(photo) setAv(photo);
   }catch(e){
     document.getElementById('phn').textContent=user.displayName||user.email||'';
     document.getElementById('phe').textContent=user.email||'';
@@ -256,27 +389,58 @@ onAuthStateChanged(auth,async user=>{
     }
   }catch(e){}
 
-  // Recordatorio diario al abrir
-  if(notif.daily&&new Date().getHours()>=8) toast('🌅 Buenos días. Revisa tus tareas y hábitos.','#2E9EE0');
-
+  if(notif.daily&&new Date().getHours()>=8) toast('🌅 Buenos días. Revisa tus tareas.','#2E9EE0');
   loadStats();
 
-  // ── BOTONES ──
-
-  // Foto
+  // ── FOTO DE PERFIL ──
   document.getElementById('avw').addEventListener('click',()=>document.getElementById('avinput').click());
   document.getElementById('btn-change-photo').addEventListener('click',()=>document.getElementById('avinput').click());
   document.getElementById('avinput').addEventListener('change',async e=>{
     const f=e.target.files[0];if(!f)return;
     try{
-      const b64=await compressImage(f);
+      const b64=await compressImage(f,300,0.75);
       await setDoc(doc(db,'users',uid),{photoBase64:b64,updatedAt:serverTimestamp()},{merge:true});
-      setAv(b64);toast('📸 Foto guardada','#2EAF7D');
+      setAv(b64);
+      toast('📸 Foto guardada','#2EAF7D');
     }catch(err){toast('Error guardando foto','#E8547A');}
     e.target.value='';
   });
 
-  // Editar perfil - usa classList para mostrar/ocultar
+  // ── FOTO DE FONDO DEL HEADER ──
+  document.getElementById('btn-bg-photo').addEventListener('click',()=>document.getElementById('bginput').click());
+  document.getElementById('bginput').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{
+      const b64=await compressImage(f,800,0.7);
+      selectedBgPhoto=b64;
+      applyHeader(selectedColor,b64);
+      const prev=document.getElementById('bg-preview');
+      prev.style.backgroundImage=`url(${b64})`;
+      prev.style.display='block';
+      toast('🖼️ Foto de fondo lista. Toca Guardar.','#2E9EE0');
+    }catch(err){toast('Error','#E8547A');}
+    e.target.value='';
+  });
+
+  document.getElementById('btn-bg-remove').addEventListener('click',()=>{
+    selectedBgPhoto=null;
+    applyHeader(selectedColor,null);
+    const prev=document.getElementById('bg-preview');
+    prev.style.display='none';
+    prev.style.backgroundImage='';
+    toast('Foto de fondo quitada','#0D2137');
+  });
+
+  // ── COLORES DEL HEADER ──
+  document.getElementById('color-grid').addEventListener('click',e=>{
+    const copt=e.target.closest('.copt');if(!copt)return;
+    document.querySelectorAll('.copt').forEach(x=>x.classList.remove('sel'));
+    copt.classList.add('sel');
+    selectedColor=copt.dataset.bg;
+    applyHeader(selectedColor,selectedBgPhoto);
+  });
+
+  // ── PANEL EDITAR ──
   document.getElementById('btn-edit').addEventListener('click',()=>{
     const p=document.getElementById('epanel');
     p.classList.remove('epanel-hidden');
@@ -286,58 +450,49 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('epanel').classList.add('epanel-hidden');
   });
 
-  // Guardar perfil
+  // ── GUARDAR PERFIL ──
   document.getElementById('btn-save-profile').addEventListener('click',async()=>{
     const name=document.getElementById('epname').value.trim();
     const currency=document.getElementById('ep-currency').value;
-    const timezone=document.getElementById('ep-timezone').value;
+    let timezone=document.getElementById('ep-timezone').value;
+    if(timezone==='auto'){
+      try{timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||'America/Cancun';}
+      catch(e){timezone='America/Cancun';}
+    }
     if(!name){toast('⚠️ Escribe tu nombre','#E8547A');return;}
     try{
-      await setDoc(doc(db,'users',uid),{displayName:name,currency,timezone,updatedAt:serverTimestamp()},{merge:true});
+      const saveData={displayName:name,currency,timezone,headerColor:selectedColor,updatedAt:serverTimestamp()};
+      if(selectedBgPhoto!==null) saveData.headerBgPhoto=selectedBgPhoto;
+      // Si se quitó la foto, guardar null explícitamente
+      if(selectedBgPhoto===null) saveData.headerBgPhoto=null;
+      await setDoc(doc(db,'users',uid),saveData,{merge:true});
       document.getElementById('phn').textContent=name;
       document.getElementById('epanel').classList.add('epanel-hidden');
       toast('✓ Perfil guardado','#2EAF7D');
     }catch(e){toast('Error: '+e.message,'#E8547A');}
   });
 
-  // Notificaciones con FCM
+  // ── NOTIFICACIONES ──
   document.querySelectorAll('.toggle').forEach(toggle=>{
     toggle.addEventListener('click',async()=>{
       const key=toggle.dataset.key;
-      if(key==='push'){
-        if(!notif.push){
-          // Activar — pedir permiso y registrar token FCM
-          try{
-            const perm=await Notification.requestPermission();
-            if(perm!=='granted'){
-              const el=document.getElementById('nmsg');
-              el.textContent='⚠️ Permiso denegado. Ve a Configuración → Safari → Notificaciones → Permitir life-tracker-sandy.vercel.app';
-              el.style.display='block';
-              return;
-            }
-            document.getElementById('nmsg').style.display='none';
-            // Registrar SW y obtener FCM token
-            const reg=await navigator.serviceWorker.ready;
-            const messaging=getMessaging();
-            const fcmToken=await getToken(messaging,{
-              vapidKey:'BP2Oo-JUV4i1R6VJ1vXeEutlOW6rqUtEoynNmWnkeEOJHYd7PuYpyGTe-XXO4fT2RRawD2E5H_cO6tbOZo9Y-EY',
-              serviceWorkerRegistration:reg
-            });
-            if(fcmToken){
-              // Guardar token en backend
-              await fetch('/api/save-token',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({uid,token:fcmToken})
-              });
-              toast('🔔 Notificaciones activadas','#2EAF7D');
-            }
-          }catch(e){
-            const el=document.getElementById('nmsg');
-            el.textContent='⚠️ Error: '+e.message+'. En iPhone instala la app primero (Compartir → Añadir a pantalla de inicio).';
-            el.style.display='block';
-            return;
-          }
+      if(key==='push'&&!notif.push){
+        if(!('Notification' in window)){
+          showMsg('Las notificaciones no están disponibles en este navegador.');return;
+        }
+        if(Notification.permission==='denied'){
+          showMsg('Bloqueadas. Ve a Configuración → Safari → Notificaciones → Permitir life-tracker-sandy.vercel.app');return;
+        }
+        try{
+          const perm=await new Promise(res=>{
+            const r=Notification.requestPermission(p=>res(p));
+            if(r&&r.then) r.then(res);
+          });
+          if(perm!=='granted'){showMsg('Permiso denegado. Actívalo en Configuración del navegador.');return;}
+          hideMsg();
+          toast('🔔 Notificaciones activadas','#2EAF7D');
+        }catch(e){
+          showMsg('Para notificaciones en iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;
         }
       }
       notif[key]=!notif[key];
@@ -347,19 +502,22 @@ onAuthStateChanged(auth,async user=>{
     });
   });
 
-  // Resumen IA
-  document.getElementById('btn-summary').addEventListener('click',generateSummary);
-
-  // Menú
+  // ── MENÚ ──
   document.getElementById('go-assistant').addEventListener('click',()=>location.href='assistant.html');
   document.getElementById('go-finance').addEventListener('click',()=>location.href='finance.html');
   document.getElementById('go-habits').addEventListener('click',()=>location.href='habits.html');
 
-  // Logout
+  // ── LOGOUT ──
   document.getElementById('btn-logout').addEventListener('click',async()=>{
     if(confirm('¿Cerrar sesión?')){await signOut(auth);location.href='index.html';}
   });
+
+  // ── RESUMEN IA ──
+  document.getElementById('btn-summary').addEventListener('click',generateSummary);
 });
+
+function showMsg(msg){const el=document.getElementById('nmsg');el.textContent='⚠️ '+msg;el.style.display='block';}
+function hideMsg(){document.getElementById('nmsg').style.display='none';}
 
 async function loadStats(){
   const weekStart=new Date();weekStart.setDate(weekStart.getDate()-7);
@@ -371,11 +529,11 @@ async function loadStats(){
 async function generateSummary(){
   const btn=document.getElementById('btn-summary');
   btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
-  const weekStart=new Date();weekStart.setDate(weekStart.getDate()-7);
   try{
     const hs=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
     const habits=[];hs.forEach(d=>habits.push(d.data().name+': '+(d.data().streak||0)+' días'));
     const ts=await getDocs(query(collection(db,'tasks'),where('uid','==',uid),where('done','==',true)));
+    const weekStart=new Date();weekStart.setDate(weekStart.getDate()-7);
     let tasks=0;ts.forEach(d=>{if(d.data().doneAt?.toDate&&d.data().doneAt.toDate()>=weekStart)tasks++;});
     const name=document.getElementById('phn').textContent.split(' ')[0];
     const res=await fetch('https://api.anthropic.com/v1/messages',{
