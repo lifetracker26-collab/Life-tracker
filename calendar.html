@@ -401,15 +401,20 @@ onAuthStateChanged(auth,async user=>{
         data.createdAt=serverTimestamp();
         const ref=await addDoc(collection(db,'events'),data);
         events.push({id:ref.id,...data});
-        // Programar alarmas locales si la app está abierta
+        // Guardar alarmas en Firestore — Firebase Function las manda a la hora exacta
         if(alarms.length&&time){
           const evDate=new Date(date+'T'+time);
           for(const mins of alarms){
             const alertTime=new Date(evDate.getTime()-parseInt(mins)*60000);
-            const msUntil=alertTime-new Date();
-            if(msUntil>0&&'Notification' in window&&Notification.permission==='granted'){
+            if(alertTime>new Date()){
               const body=mins==='0'?'¡El evento es ahora!':mins==='1440'?'Mañana: '+title:'En '+mins+' minutos: '+title;
-              setTimeout(()=>{try{new Notification('📅 '+title,{body,icon:'/icon-192.png'});}catch(e){}},msUntil);
+              try{
+                await addDoc(collection(db,'scheduled_alarms'),{
+                  uid,title:'📅 '+title,body,
+                  fireAt:alertTime,
+                  sent:false,createdAt:new Date()
+                });
+              }catch(e){console.error('Error guardando alarma',e);}
             }
           }
         }
