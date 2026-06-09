@@ -161,8 +161,8 @@ async function sendText(text){
   chat.appendChild(typing);chat.scrollTop=chat.scrollHeight;
   try{
     const history=messages.slice(-10).map(m=>({role:m.role,content:m.content}));
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    const res=await fetch('/api/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:sysPrompt,messages:history})
     });
     const data=await res.json();
