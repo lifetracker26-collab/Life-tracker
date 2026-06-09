@@ -117,10 +117,10 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
       </div>
     </div>
     <div class="vtabs">
-      <div class="vtab active" data-view="week">Semana</div>
+      <div class="vtab active" data-view="day">Día</div>
+      <div class="vtab" data-view="week">Semana</div>
       <div class="vtab" data-view="month">Mes</div>
       <div class="vtab" data-view="year">Año</div>
-      <div class="vtab" data-view="day">Día</div>
     </div>
   </div>
 
@@ -235,7 +235,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,updateDoc,deleteDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,updateDoc,deleteDoc,query,where,serverTimestamp,Timestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
@@ -247,7 +247,7 @@ const DAYS_FULL=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sá
 const HOURS=['6 AM','7 AM','8 AM','9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM','5 PM','6 PM','7 PM','8 PM','9 PM','10 PM','11 PM'];
 const HOURS_N=[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 
-let uid=null,curView='week',selDate=new Date(),events=[],evColor='#2E9EE0';
+let uid=null,curView='day',selDate=new Date(),events=[],evColor='#2E9EE0';
 let noteSaveTimer=null;
 
 const today=new Date();
@@ -411,7 +411,7 @@ onAuthStateChanged(auth,async user=>{
               try{
                 await addDoc(collection(db,'scheduled_alarms'),{
                   uid,title:'📅 '+title,body,
-                  fireAt:alertTime,
+                  fireAt:Timestamp.fromDate(alertTime),
                   sent:false,createdAt:new Date()
                 });
               }catch(e){console.error('Error guardando alarma',e);}
