@@ -262,7 +262,6 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,updateDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-import{getMessaging,getToken}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-messaging.js";
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
@@ -373,20 +372,26 @@ onAuthStateChanged(auth,async user=>{
           const perm=await new Promise(res=>{const r=Notification.requestPermission(p=>res(p));if(r&&r.then)r.then(res);});
           if(perm!=='granted'){showMsg('Permiso denegado.');return;}
           document.getElementById('nmsg').style.display='none';
-          // Registrar token FCM
+          // Registrar suscripción Web Push
           try{
             const reg=await navigator.serviceWorker.ready;
-            const messaging=getMessaging();
-            const fcmToken=await getToken(messaging,{
-              vapidKey:'BP2Oo-JUV4i1R6VJ1vXeEutlOW6rqUtEoynNmWnkeEOJHYd7PuYpyGTe-XXO4fT2RRawD2E5H_cO6tbOZo9Y-EY',
-              serviceWorkerRegistration:reg
+            const vapidKey='BP2Oo-JUV4i1R6VJ1vXeEutlOW6rqUtEoynNmWnkeEOJHYd7PuYpyGTe-XXO4fT2RRawD2E5H_cO6tbOZo9Y-EY';
+            const rawKey=vapidKey.replace(/-/g,'+').replace(/_/g,'/');
+            const padding='='.repeat((4-rawKey.length%4)%4);
+            const keyBytes=Uint8Array.from(atob(rawKey+padding),c=>c.charCodeAt(0));
+            const sub=await reg.pushManager.subscribe({
+              userVisibleOnly:true,
+              applicationServerKey:keyBytes
             });
-            if(fcmToken){
-              await setDoc(doc(db,'fcm_tokens',uid),{uid,token:fcmToken,updatedAt:serverTimestamp()});
-              toast('🔔 Notificaciones activadas','#2EAF7D');
-            }
+            await setDoc(doc(db,'push_subscriptions',uid),{
+              uid,
+              subscription:JSON.parse(JSON.stringify(sub)),
+              updatedAt:serverTimestamp()
+            });
+            toast('🔔 Notificaciones activadas','#2EAF7D');
           }catch(fcmErr){
-            toast('🔔 Notificaciones activadas (sin push remoto)','#2EAF7D');
+            console.error('Push subscription error:',fcmErr);
+            toast('🔔 Notificaciones activadas (verifica permisos)','#2EAF7D');
           }
         }catch(e){showMsg('En iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;}
       }
