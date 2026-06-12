@@ -1,9 +1,6 @@
-// api/process-alarms.js — Vercel Cron Job: revisa alarmas pendientes y las manda
-// Configurar en vercel.json como cron cada minuto
-
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore, Timestamp } = require('firebase-admin/firestore');
-const { getMessaging } = require('firebase-admin/messaging');
+const webpush = require('web-push');
 
 if (!getApps().length) {
   initializeApp({
@@ -15,12 +12,17 @@ if (!getApps().length) {
   });
 }
 
+webpush.setVapidDetails(
+  'mailto:javi.figueroa.a@gmail.com',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
+
 const db = getFirestore();
 
 module.exports = async function handler(req, res) {
   try {
     const now = Timestamp.now();
-    // Buscar alarmas que deben dispararse ahora
     const snap = await db.collection('scheduled_alarms')
       .where('sent', '==', false)
       .where('fireAt', '<=', now)
@@ -28,25 +30,14 @@ module.exports = async function handler(req, res) {
 
     const promises = snap.docs.map(async docSnap => {
       const alarm = docSnap.data();
-      // Obtener FCM token del usuario
-      const tokenSnap = await db.collection('fcm_tokens').doc(alarm.uid).get();
-      if (!tokenSnap.exists) return;
-      const fcmToken = tokenSnap.data().token;
+      const subSnap = await db.collection('push_subscriptions').doc(alarm.uid).get();
+      if (!subSnap.exists) return;
+      const subscription = subSnap.data().subscription;
       try {
-        await getMessaging().send({
-          token: fcmToken,
-          notification: { title: alarm.title, body: alarm.body },
-          webpush: {
-            notification: {
-              title: alarm.title,
-              body: alarm.body,
-              icon: '/icon-192.png',
-              vibrate: [200, 100, 200],
-            },
-            fcmOptions: { link: 'https://life-tracker-sandy.vercel.app/calendar.html' }
-          }
-        });
-        // Marcar como enviada
+        await webpush.sendNotification(
+          subscription,
+          JSON.stringify({ title: alarm.title, body: alarm.body || '' })
+        );
         await docSnap.ref.update({ sent: true, sentAt: new Date() });
       } catch (e) {
         console.error('Error sending to', alarm.uid, e.message);

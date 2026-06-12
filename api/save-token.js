@@ -1,5 +1,3 @@
-// api/save-token.js — Guarda el FCM token del dispositivo en Firestore
-
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
@@ -23,13 +21,13 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { uid, token } = req.body;
-    if (!uid || !token) return res.status(400).json({ error: 'Missing uid or token' });
-
-    await db.collection('fcm_tokens').doc(uid).set({
-      uid, token, updatedAt: new Date()
+    const { uid, subscription } = req.body;
+    if (!uid || !subscription) return res.status(400).json({ error: 'Missing uid or subscription' });
+    await db.collection('push_subscriptions').doc(uid).set({
+      uid,
+      subscription,
+      updatedAt: new Date()
     });
-
     res.status(200).json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });

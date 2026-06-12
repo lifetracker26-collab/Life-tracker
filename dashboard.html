@@ -375,7 +375,7 @@ onAuthStateChanged(auth,async user=>{
           // Registrar suscripción Web Push
           try{
             const reg=await navigator.serviceWorker.ready;
-            const vapidKey='BP2Oo-JUV4i1R6VJ1vXeEutlOW6rqUtEoynNmWnkeEOJHYd7PuYpyGTe-XXO4fT2RRawD2E5H_cO6tbOZo9Y-EY';
+            const vapidKey='BAIUvUsIczt9quInCwrw6N34Xvp6v4xEBeHAzznnsehhG1f3LdYETO8gkggt0mYgLOIIL1RHJEVxAKFVHNDlsFs';
             const rawKey=vapidKey.replace(/-/g,'+').replace(/_/g,'/');
             const padding='='.repeat((4-rawKey.length%4)%4);
             const keyBytes=Uint8Array.from(atob(rawKey+padding),c=>c.charCodeAt(0));
@@ -383,15 +383,20 @@ onAuthStateChanged(auth,async user=>{
               userVisibleOnly:true,
               applicationServerKey:keyBytes
             });
-            await setDoc(doc(db,'push_subscriptions',uid),{
-              uid,
-              subscription:JSON.parse(JSON.stringify(sub)),
-              updatedAt:serverTimestamp()
+            const subJson=JSON.parse(JSON.stringify(sub));
+            const saveRes=await fetch('/api/save-token',{
+              method:'POST',
+              headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({uid,subscription:subJson})
             });
-            toast('🔔 Notificaciones activadas','#2EAF7D');
+            if(saveRes.ok){
+              toast('🔔 Notificaciones activadas','#2EAF7D');
+            } else {
+              toast('⚠️ Error guardando suscripción','#E8547A');
+            }
           }catch(fcmErr){
-            console.error('Push subscription error:',fcmErr);
-            toast('🔔 Notificaciones activadas (verifica permisos)','#2EAF7D');
+            console.error('Push subscription error:',fcmErr.message);
+            showMsg('Error: '+fcmErr.message+' — Asegúrate de abrir la app desde la pantalla de inicio, no desde Safari.');
           }
         }catch(e){showMsg('En iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;}
       }
