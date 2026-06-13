@@ -374,29 +374,45 @@ onAuthStateChanged(auth,async user=>{
           document.getElementById('nmsg').style.display='none';
           // Registrar suscripción Web Push
           try{
-            const reg=await navigator.serviceWorker.ready;
-            const vapidKey='BAIUvUsIczt9quInCwrw6N34Xvp6v4xEBeHAzznnsehhG1f3LdYETO8gkggt0mYgLOIIL1RHJEVxAKFVHNDlsFs';
-            const rawKey=vapidKey.replace(/-/g,'+').replace(/_/g,'/');
-            const padding='='.repeat((4-rawKey.length%4)%4);
-            const keyBytes=Uint8Array.from(atob(rawKey+padding),c=>c.charCodeAt(0));
-            const sub=await reg.pushManager.subscribe({
-              userVisibleOnly:true,
-              applicationServerKey:keyBytes
-            });
+            if(!('serviceWorker' in navigator)){showMsg('Tu navegador no soporta notificaciones.');return;}
+            // PASO 1: registrar y esperar SW
+            let swReg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+            swReg=await navigator.serviceWorker.ready;
+            // PASO 2: convertir VAPID key correctamente
+            const VAPID='BAIUvUsIczt9quInCwrw6N34Xvp6v4xEBeHAzznnsehhG1f3LdYETO8gkggt0mYgLOIIL1RHJEVxAKFVHNDlsFs';
+            const b64=VAPID.replace(/-/g,'+').replace(/_/g,'/');
+            const pad='='.repeat((4-b64.length%4)%4);
+            const keyBytes=Uint8Array.from(atob(b64+pad),ch=>ch.charCodeAt(0));
+            // PASO 3: suscribir
+            let sub;
+            try{
+              alert('PASO A: Service Worker activo. Intentando suscribir...');
+              sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes});
+              alert('PASO B: Suscripción creada correctamente!');
+            }catch(subErr){
+              alert('ERROR EN SUBSCRIBE: '+subErr.name+' — '+subErr.message);
+              console.error('SUBSCRIBE ERROR FULL:',subErr);
+              return;
+            }
+            // PASO 4: guardar en Firestore via API
+            if(!sub){showMsg('No se pudo obtener suscripción.');return;}
             const subJson=JSON.parse(JSON.stringify(sub));
+            if(!uid||!subJson){showMsg('Datos de suscripción inválidos.');return;}
             const saveRes=await fetch('/api/save-token',{
               method:'POST',
               headers:{'Content-Type':'application/json'},
               body:JSON.stringify({uid,subscription:subJson})
             });
             if(saveRes.ok){
+              alert('PASO C: Guardado en Firestore OK! Notificaciones activadas.');
               toast('🔔 Notificaciones activadas','#2EAF7D');
             } else {
-              toast('⚠️ Error guardando suscripción','#E8547A');
+              const errBody=await saveRes.text();
+              alert('ERROR GUARDANDO ('+saveRes.status+'): '+errBody);
             }
           }catch(fcmErr){
             console.error('Push subscription error:',fcmErr.message);
-            showMsg('Error: '+fcmErr.message+' — Asegúrate de abrir la app desde la pantalla de inicio, no desde Safari.');
+            showMsg('Error: '+fcmErr.message);
           }
         }catch(e){showMsg('En iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;}
       }

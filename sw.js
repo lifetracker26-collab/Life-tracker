@@ -1,5 +1,5 @@
 // LIFE TRACKER · SERVICE WORKER v4 — FCM Push + Cache
-const CACHE_NAME = 'lifetracker-v4';
+const CACHE_NAME = 'lifetracker-v5';
 const STATIC_ASSETS = [
   '/', '/index.html', '/dashboard.html', '/calendar.html',
   '/tasks.html', '/habits.html', '/finance.html',
@@ -42,8 +42,6 @@ self.addEventListener('push', event => {
   event.waitUntil(
     self.registration.showNotification(data.title || 'Life Tracker', {
       body: data.body || '',
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
       vibrate: [200, 100, 200],
       tag: data.tag || 'lt-notification',
       data: { url: data.url || '/dashboard.html' }
@@ -74,7 +72,7 @@ self.addEventListener('message', event => {
     const { title, body, delay, tag, url } = event.data;
     setTimeout(() => {
       self.registration.showNotification(title, {
-        body, icon: '/icon-192.png', badge: '/icon-192.png',
+        body,
         vibrate: [200, 100, 200], tag: tag || 'lt-scheduled',
         data: { url: url || '/dashboard.html' }
       });
