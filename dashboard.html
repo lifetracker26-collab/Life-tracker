@@ -283,6 +283,33 @@ function closeCfg(){document.getElementById('cfg-overlay').classList.remove('sho
 onAuthStateChanged(auth,async user=>{
   if(!user){location.href='index.html';return;}
   uid=user.uid;
+  // Retomar push subscription pendiente después de reload iOS
+  const pendingUid=sessionStorage.getItem('pendingPush');
+  if(pendingUid&&pendingUid===user.uid){
+    sessionStorage.removeItem('pendingPush');
+    setTimeout(async()=>{
+      try{
+        const VAPID='BE1oQqS41xWtH4UNP4840PQYM4qwIKQch6AxRmi21QqyaK4o87Uaf7oyXf_ub6bUZXhIuSGnteg2QwKqyz3KgdQ';
+        const b64=VAPID.replace(/-/g,'+').replace(/_/g,'/');
+        const pad='='.repeat((4-b64.length%4)%4);
+        const keyBytes=Uint8Array.from(atob(b64+pad),ch=>ch.charCodeAt(0));
+        const swReg=await navigator.serviceWorker.ready;
+        const oldSub=await swReg.pushManager.getSubscription();
+        if(oldSub) await oldSub.unsubscribe();
+        const sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes});
+        if(sub){
+          const subJson=JSON.parse(JSON.stringify(sub));
+          const r=await fetch('/api/save-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid:user.uid,subscription:subJson})});
+          if(r.ok){
+            notif.push=true;
+            document.getElementById('tp').classList.add('on');
+            toast('🔔 Notificaciones activadas','#2EAF7D');
+            try{await setDoc(doc(db,'settings',user.uid),{notifications:notif,updatedAt:serverTimestamp()},{merge:true});}catch(e){}
+          }else showMsg('Error guardando suscripción');
+        }else{showMsg('No se pudo crear suscripción tras reload');}
+      }catch(e){showMsg('Error push tras reload: '+e.message);}
+    },1000);
+  }
 
   const name=(user.displayName||user.email||'').split(' ')[0];
   document.getElementById('hname').textContent=name;
@@ -374,45 +401,47 @@ onAuthStateChanged(auth,async user=>{
           document.getElementById('nmsg').style.display='none';
           // Registrar suscripción Web Push
           try{
-            if(!('serviceWorker' in navigator)){showMsg('Tu navegador no soporta notificaciones.');return;}
-            // PASO 1: registrar y esperar SW
-            let swReg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
-            swReg=await navigator.serviceWorker.ready;
-            // PASO 2: convertir VAPID key correctamente
+            if(!('serviceWorker' in navigator)||!('PushManager' in window)){
+              showMsg('Notificaciones push no disponibles en este navegador. Asegúrate de abrir la app desde la pantalla de inicio.');return;
+            }
             const VAPID='BE1oQqS41xWtH4UNP4840PQYM4qwIKQch6AxRmi21QqyaK4o87Uaf7oyXf_ub6bUZXhIuSGnteg2QwKqyz3KgdQ';
             const b64=VAPID.replace(/-/g,'+').replace(/_/g,'/');
             const pad='='.repeat((4-b64.length%4)%4);
             const keyBytes=Uint8Array.from(atob(b64+pad),ch=>ch.charCodeAt(0));
-            // PASO 3: suscribir
-            let sub;
-            try{
-              
-              sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes});
-              
-            }catch(subErr){
-              showMsg('Error activando notificaciones: '+subErr.name+' — '+subErr.message);
-              console.error('SUBSCRIBE ERROR FULL:',subErr);
+            // Registrar SW y esperar que esté listo
+            await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+            const swReg=await navigator.serviceWorker.ready;
+            // iOS requiere que el SW controle la página - si no lo hace, recargar
+            if(!navigator.serviceWorker.controller){
+              sessionStorage.setItem('pendingPush',uid);
+              window.location.reload();
               return;
             }
-            // PASO 4: guardar en Firestore via API
-            if(!sub){showMsg('No se pudo obtener suscripción.');return;}
+            // Cancelar suscripción vieja si existe
+            const oldSub=await swReg.pushManager.getSubscription();
+            if(oldSub) await oldSub.unsubscribe();
+            // Crear nueva suscripción
+            const sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes});
+            if(!sub){showMsg('No se pudo crear suscripción. Intenta reinstalar la app.');return;}
             const subJson=JSON.parse(JSON.stringify(sub));
-            if(!uid||!subJson){showMsg('Datos de suscripción inválidos.');return;}
             const saveRes=await fetch('/api/save-token',{
               method:'POST',
               headers:{'Content-Type':'application/json'},
               body:JSON.stringify({uid,subscription:subJson})
             });
             if(saveRes.ok){
-              
+              notif.push=true;
+              document.getElementById('tp').classList.add('on');
               toast('🔔 Notificaciones activadas','#2EAF7D');
-            } else {
+              // Guardar en Firestore
+              try{await setDoc(doc(db,'settings',uid),{notifications:notif,updatedAt:serverTimestamp()},{merge:true});}catch(e){}
+            }else{
               const errBody=await saveRes.text();
               showMsg('Error guardando ('+saveRes.status+'): '+errBody);
             }
           }catch(fcmErr){
-            console.error('Push subscription error:',fcmErr.message);
-            showMsg('Error: '+fcmErr.message);
+            console.error('Push error:',fcmErr);
+            showMsg('Error: '+fcmErr.name+' — '+fcmErr.message);
           }
         }catch(e){showMsg('En iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí.');return;}
       }
