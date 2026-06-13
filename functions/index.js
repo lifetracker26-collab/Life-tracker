@@ -8,7 +8,7 @@ const db = getFirestore();
 
 webpush.setVapidDetails(
   "mailto:javi.figueroa.a@gmail.com",
-  "BP2Oo-JUV4i1R6VJ1vXeEutlOW6rqUtEoynNmWnkeEOJHYd7PuYpyGTe-XXO4fT2RRawD2E5H_cO6tbOZo9Y-EY",
+  "BAIUvUsIczt9quInCwrw6N34Xvp6v4xEBeHAzznnsehhG1f3LdYETO8gkggt0mYgLOIIL1RHJEVxAKFVHNDlsFs",
   "FXr-ymsu4nFFsMwAgiO7cWdqvjY0jysbvRPxReWZnXQ"
 );
 
