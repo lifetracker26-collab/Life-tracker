@@ -379,18 +379,18 @@ onAuthStateChanged(auth,async user=>{
             let swReg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
             swReg=await navigator.serviceWorker.ready;
             // PASO 2: convertir VAPID key correctamente
-            const VAPID='BAIUvUsIczt9quInCwrw6N34Xvp6v4xEBeHAzznnsehhG1f3LdYETO8gkggt0mYgLOIIL1RHJEVxAKFVHNDlsFs';
+            const VAPID='BE1oQqS41xWtH4UNP4840PQYM4qwIKQch6AxRmi21QqyaK4o87Uaf7oyXf_ub6bUZXhIuSGnteg2QwKqyz3KgdQ';
             const b64=VAPID.replace(/-/g,'+').replace(/_/g,'/');
             const pad='='.repeat((4-b64.length%4)%4);
             const keyBytes=Uint8Array.from(atob(b64+pad),ch=>ch.charCodeAt(0));
             // PASO 3: suscribir
             let sub;
             try{
-              alert('PASO A: Service Worker activo. Intentando suscribir...');
+              
               sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes});
-              alert('PASO B: Suscripción creada correctamente!');
+              
             }catch(subErr){
-              alert('ERROR EN SUBSCRIBE: '+subErr.name+' — '+subErr.message);
+              showMsg('Error activando notificaciones: '+subErr.name+' — '+subErr.message);
               console.error('SUBSCRIBE ERROR FULL:',subErr);
               return;
             }
@@ -404,11 +404,11 @@ onAuthStateChanged(auth,async user=>{
               body:JSON.stringify({uid,subscription:subJson})
             });
             if(saveRes.ok){
-              alert('PASO C: Guardado en Firestore OK! Notificaciones activadas.');
+              
               toast('🔔 Notificaciones activadas','#2EAF7D');
             } else {
               const errBody=await saveRes.text();
-              alert('ERROR GUARDANDO ('+saveRes.status+'): '+errBody);
+              showMsg('Error guardando ('+saveRes.status+'): '+errBody);
             }
           }catch(fcmErr){
             console.error('Push subscription error:',fcmErr.message);

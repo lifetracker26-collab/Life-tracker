@@ -8,8 +8,8 @@ const db = getFirestore();
 
 webpush.setVapidDetails(
   "mailto:javi.figueroa.a@gmail.com",
-  "BAIUvUsIczt9quInCwrw6N34Xvp6v4xEBeHAzznnsehhG1f3LdYETO8gkggt0mYgLOIIL1RHJEVxAKFVHNDlsFs",
-  "FXr-ymsu4nFFsMwAgiO7cWdqvjY0jysbvRPxReWZnXQ"
+  "BE1oQqS41xWtH4UNP4840PQYM4qwIKQch6AxRmi21QqyaK4o87Uaf7oyXf_ub6bUZXhIuSGnteg2QwKqyz3KgdQ",
+  "QmjfO-Hv6VGzjIeR52meHWtvyqeMhCC91oe_qZi55M8"
 );
 
 exports.processAlarms = onSchedule("every 1 minutes", async () => {
