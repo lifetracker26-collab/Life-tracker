@@ -251,7 +251,13 @@ let uid=null,curView='day',selDate=new Date(),events=[],evColor='#2E9EE0';
 let noteSaveTimer=null;
 
 const today=new Date();
-const todayStr=today.toISOString().split('T')[0];
+function localDateStr(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+}
+const todayStr=localDateStr(today);
 
 function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
 
@@ -289,7 +295,7 @@ function openEvModal(dateStr){
   document.getElementById('ev-modal-title').textContent='📅 Nuevo evento';
   document.getElementById('ev-title').value='';
   document.getElementById('ev-note').value='';
-  document.getElementById('ev-date').value=dateStr||selDate.toISOString().split('T')[0];
+  document.getElementById('ev-date').value=dateStr||localDateStr(selDate);
   document.getElementById('ev-time').value='';
   document.getElementById('ev-alarm1').value='';
   document.getElementById('ev-alarm2').value='';
@@ -469,14 +475,14 @@ function renderWeek(){
   let html=`<div class="week-head"><div></div>`;
   week.forEach((d,i)=>{
     const isT=d.toDateString()===today.toDateString();
-    const ds=d.toISOString().split('T')[0];
+    const ds=localDateStr(d);
     html+=`<div class="wcol"><div class="wdn">${DAYS_L[i]}</div><div class="wdd ${isT?'today':''}" data-date="${ds}">${d.getDate()}</div></div>`;
   });
   html+=`</div><div class="week-body"><div class="week-grid">`;
   HOURS.forEach((h,hi)=>{
     html+=`<div class="tslot">${h}</div>`;
     week.forEach(d=>{
-      const ds=d.toISOString().split('T')[0];
+      const ds=localDateStr(d);
       const ev=events.filter(e=>e.date===ds&&e.hour===HOURS_N[hi]);
       const evHtml=ev.map(e=>`<div class="wev" style="background:${e.color||'#2E9EE0'}" data-evid="${e.id}">${e.title}</div>`).join('');
       html+=`<div class="wdcol" data-date="${ds}">${evHtml}</div>`;
@@ -516,7 +522,7 @@ function renderMonth(){
   for(let i=0;i<start;i++){const d=new Date(yr,mo,1-start+i);html+=`<div class="mday other"><div class="dnum">${d.getDate()}</div></div>`;}
   for(let d=1;d<=last.getDate();d++){
     const date=new Date(yr,mo,d);
-    const ds=date.toISOString().split('T')[0];
+    const ds=localDateStr(date);
     const isT=date.toDateString()===today.toDateString();
     const evs=events.filter(e=>e.date===ds);
     const dots=evs.slice(0,3).map(e=>`<div class="ddot" style="background:${e.color||'#2E9EE0'}"></div>`).join('');
@@ -546,7 +552,7 @@ function renderYear(){
     for(let i=0;i<start;i++)days+=`<div class="ymd"></div>`;
     for(let d=1;d<=last.getDate();d++){
       const date=new Date(yr,m,d);
-      const ds=date.toISOString().split('T')[0];
+      const ds=localDateStr(date);
       const isT=date.toDateString()===today.toDateString();
       const hasEv=events.some(e=>e.date===ds);
       days+=`<div class="ymd ${isT?'today':hasEv?'has-ev':''}">${d}</div>`;
@@ -568,7 +574,7 @@ function renderYear(){
 }
 
 function renderDay(){
-  const ds=selDate.toISOString().split('T')[0];
+  const ds=localDateStr(selDate);
   const isT=selDate.toDateString()===today.toDateString();
   const label=isT?'Hoy':`${DAYS_FULL[selDate.getDay()]} ${selDate.getDate()} ${MONTHS[selDate.getMonth()]}`;
   const dayEvs=events.filter(e=>e.date===ds);
