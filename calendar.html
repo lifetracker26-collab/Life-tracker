@@ -401,6 +401,26 @@ onAuthStateChanged(auth,async user=>{
         await updateDoc(doc(db,'events',editId),data);
         const idx=events.findIndex(e=>e.id===editId);
         if(idx>=0) events[idx]={id:editId,...data};
+        // Guardar alarmas actualizadas si tiene hora
+        if(alarms.length&&time){
+          const [yr,mo,dy]=date.split('-').map(Number);
+          const [hr,mn]=time.split(':').map(Number);
+          const evDate=new Date(yr,mo-1,dy,hr,mn,0,0);
+          const twoMinsAgo=new Date(Date.now()-120000);
+          for(const mins of alarms){
+            const alertTime=new Date(evDate.getTime()-parseInt(mins)*60000);
+            if(alertTime>=twoMinsAgo){
+              const body=mins==='0'?'¡El evento es ahora!':mins==='1440'?'Mañana: '+title:'En '+mins+' minutos: '+title;
+              try{
+                await addDoc(collection(db,'scheduled_alarms'),{
+                  uid,title:'📅 '+title,body,
+                  fireAt:Timestamp.fromDate(alertTime),
+                  sent:false,createdAt:new Date()
+                });
+              }catch(e){console.error('Error guardando alarma al editar',e);}
+            }
+          }
+        }
         closeEvModal();renderView();toast('✓ Evento actualizado','#2EAF7D');
       } else {
         // CREAR

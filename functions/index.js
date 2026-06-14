@@ -13,27 +13,44 @@ webpush.setVapidDetails(
 );
 
 exports.processAlarms = onSchedule("every 1 minutes", async () => {
-  const now = Timestamp.now();
-  const snap = await db.collection("scheduled_alarms")
-    .where("sent", "==", false)
-    .where("fireAt", "<=", now)
-    .get();
+  try {
+    const now = Timestamp.now();
+    console.log("processAlarms running, now:", now.toDate().toISOString());
+    
+    const snap = await db.collection("scheduled_alarms")
+      .where("sent", "==", false)
+      .where("fireAt", "<=", now)
+      .get();
 
-  const promises = snap.docs.map(async (docSnap) => {
-    const alarm = docSnap.data();
-    const subSnap = await db.collection("push_subscriptions").doc(alarm.uid).get();
-    if (!subSnap.exists) return;
-    const subscription = subSnap.data().subscription;
-    try {
-      await webpush.sendNotification(
-        subscription,
-        JSON.stringify({title: alarm.title, body: alarm.body || ""})
-      );
-      await docSnap.ref.update({sent: true, sentAt: new Date()});
-    } catch (e) {
-      console.error("Error sending to", alarm.uid, e.message);
-    }
-  });
+    console.log("Alarmas pendientes encontradas:", snap.size);
 
-  await Promise.all(promises);
+    const promises = snap.docs.map(async (docSnap) => {
+      const alarm = docSnap.data();
+      console.log("Procesando alarma:", alarm.title, "uid:", alarm.uid);
+      
+      const subSnap = await db.collection("push_subscriptions").doc(alarm.uid).get();
+      if (!subSnap.exists) {
+        console.log("No hay suscripción para uid:", alarm.uid);
+        return;
+      }
+      
+      const subscription = subSnap.data().subscription;
+      console.log("Enviando push a endpoint:", subscription.endpoint ? subscription.endpoint.substring(0,50) : "sin endpoint");
+      
+      try {
+        await webpush.sendNotification(
+          subscription,
+          JSON.stringify({title: alarm.title, body: alarm.body || ""})
+        );
+        console.log("Push enviado exitosamente");
+        await docSnap.ref.update({sent: true, sentAt: new Date()});
+      } catch (e) {
+        console.error("Error enviando push:", e.message, "statusCode:", e.statusCode);
+      }
+    });
+
+    await Promise.all(promises);
+  } catch (e) {
+    console.error("Error en processAlarms:", e.message);
+  }
 });
