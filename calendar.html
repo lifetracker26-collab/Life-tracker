@@ -406,7 +406,9 @@ onAuthStateChanged(auth,async user=>{
           const evDate=new Date(date+'T'+time);
           for(const mins of alarms){
             const alertTime=new Date(evDate.getTime()-parseInt(mins)*60000);
-            if(alertTime>new Date()){
+            // Guardar si la alarma es en el futuro O si es dentro de los próximos 2 minutos
+            const twoMinsAgo=new Date(Date.now()-120000);
+            if(alertTime>=twoMinsAgo){
               const body=mins==='0'?'¡El evento es ahora!':mins==='1440'?'Mañana: '+title:'En '+mins+' minutos: '+title;
               try{
                 await addDoc(collection(db,'scheduled_alarms'),{
