@@ -403,7 +403,10 @@ onAuthStateChanged(auth,async user=>{
         events.push({id:ref.id,...data});
         // Guardar alarmas en Firestore — Firebase Function las manda a la hora exacta
         if(alarms.length&&time){
-          const evDate=new Date(date+'T'+time);
+          // Usar Date.parse con hora local explícita para evitar problemas de timezone
+          const [yr,mo,dy]=date.split('-').map(Number);
+          const [hr,mn]=time.split(':').map(Number);
+          const evDate=new Date(yr,mo-1,dy,hr,mn,0,0);
           for(const mins of alarms){
             const alertTime=new Date(evDate.getTime()-parseInt(mins)*60000);
             // Guardar si la alarma es en el futuro O si es dentro de los próximos 2 minutos
