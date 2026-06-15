@@ -417,6 +417,18 @@ onAuthStateChanged(auth,async user=>{
                   fireAt:Timestamp.fromDate(alertTime),
                   sent:false,createdAt:new Date()
                 });
+                // Notificación local via SW para iOS
+                const msUntil=alertTime.getTime()-Date.now();
+                if(msUntil>0&&'serviceWorker' in navigator){
+                  const swReg=await navigator.serviceWorker.ready;
+                  swReg.active&&swReg.active.postMessage({
+                    type:'SCHEDULE_NOTIFICATION',
+                    title:'📅 '+title,
+                    body,
+                    delay:msUntil,
+                    tag:'alarm-'+alertTime.getTime()
+                  });
+                }
               }catch(e){console.error('Error guardando alarma al editar',e);}
             }
           }
@@ -445,6 +457,18 @@ onAuthStateChanged(auth,async user=>{
                   fireAt:Timestamp.fromDate(alertTime),
                   sent:false,createdAt:new Date()
                 });
+                // Notificación local via SW para iOS
+                const msUntil=alertTime.getTime()-Date.now();
+                if(msUntil>0&&'serviceWorker' in navigator){
+                  const swReg=await navigator.serviceWorker.ready;
+                  swReg.active&&swReg.active.postMessage({
+                    type:'SCHEDULE_NOTIFICATION',
+                    title:'📅 '+title,
+                    body,
+                    delay:msUntil,
+                    tag:'alarm-'+alertTime.getTime()
+                  });
+                }
               }catch(e){console.error('Error guardando alarma',e);}
             }
           }

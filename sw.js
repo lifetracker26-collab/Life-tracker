@@ -1,10 +1,10 @@
-// LIFE TRACKER · SERVICE WORKER v4 — FCM Push + Cache
-const CACHE_NAME = 'lifetracker-v5';
+// LIFE TRACKER · SERVICE WORKER v6 — Web Push + Cache
+const CACHE_NAME = 'lifetracker-v6';
 const STATIC_ASSETS = [
   '/', '/index.html', '/dashboard.html', '/calendar.html',
   '/tasks.html', '/habits.html', '/finance.html',
   '/notes.html', '/assistant.html', '/profile.html',
-  '/manifest.json'
+  '/manifest.json', '/icon-192.png', '/icon-512.png'
 ];
 
 // INSTALL
