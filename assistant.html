@@ -43,6 +43,13 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 .mic-btn.listening{background:var(--pk);border-color:var(--pk)}
 .send-btn{width:40px;height:40px;background:var(--g2);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;flex-shrink:0;color:#fff}
 .send-btn:disabled{opacity:.5}
+.action-card{background:#fff;border:1.5px solid rgba(46,158,224,0.2);border-radius:14px;padding:12px;margin-top:6px;font-size:.7rem}
+.action-card .action-title{font-weight:700;color:var(--b2);margin-bottom:4px}
+.action-card .action-body{color:var(--t);line-height:1.5}
+.action-card .action-confirm{display:flex;gap:8px;margin-top:10px}
+.action-card .action-confirm button{flex:1;padding:8px;border:none;border-radius:10px;font-size:.65rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.action-card .btn-yes{background:var(--g2);color:#fff}
+.action-card .btn-no{background:var(--sky);color:var(--b2)}
 </style>
 </head>
 <body>
@@ -58,11 +65,12 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
     </div>
   </div>
   <div class="sugs" id="sugs-row">
-    <div class="sug" data-text="¿Cómo voy con mis hábitos?">📊 ¿Cómo voy?</div>
-    <div class="sug" data-text="Dame un resumen de mi semana">📋 Mi resumen</div>
-    <div class="sug" data-text="Necesito motivación para hoy">💪 Motivación</div>
-    <div class="sug" data-text="Ayúdame a organizar mi día">🗓️ Organizar día</div>
-    <div class="sug" data-text="Dame un consejo de productividad">🧠 Consejo</div>
+    <div class="sug" data-text="¿Qué tengo hoy?">📋 ¿Qué tengo hoy?</div>
+    <div class="sug" data-text="Agrega una tarea para hoy">✅ Nueva tarea</div>
+    <div class="sug" data-text="Crea un evento para mañana">📅 Nuevo evento</div>
+    <div class="sug" data-text="¿Cómo voy con mis hábitos?">🔥 Mis hábitos</div>
+    <div class="sug" data-text="Anota algo importante">📝 Nueva nota</div>
+    <div class="sug" data-text="Registra un gasto">💰 Registrar gasto</div>
   </div>
   <div class="chat" id="chat"></div>
   <div class="input-bar">
@@ -75,31 +83,31 @@ body{font-family:'DM Sans',sans-serif;background:#f0f7ff;color:var(--t)}
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import{getFirestore,collection,getDocs,query,where}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import{getFirestore,collection,getDocs,addDoc,updateDoc,doc,query,where,serverTimestamp,Timestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
 
 function localDateStr(d){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
-let uid=null,messages=[],isListening=false,recognition=null,sysPrompt='Eres Life AI, asistente personal. Hablas en español, eres cálido y conciso.';
+
+let uid=null,userName='',messages=[],isListening=false,recognition=null,sysPrompt='';
 const today=localDateStr(new Date());
 
-// Mensaje de bienvenida
-addMsg('Hola 👋 Soy tu asistente personal. ¿En qué te ayudo hoy?','ai',true);
+// Datos en memoria para contexto
+let myTasks=[],myHabits=[],myEvents=[],myNotes=[],myGoals=[],myTxs=[];
 
-// Input resize
+addMsg('Hola 👋 Soy tu asistente personal. Puedo crear eventos, tareas, hábitos, notas, metas y registrar gastos. ¿En qué te ayudo?','ai',true);
+
 const inp=document.getElementById('msg-input');
 inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,100)+'px';document.getElementById('send-btn').disabled=!inp.value.trim();});
 inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
 document.getElementById('send-btn').addEventListener('click',sendMsg);
 
-// Sugerencias
 document.getElementById('sugs-row').addEventListener('click',e=>{
   const sug=e.target.closest('.sug');if(!sug)return;
   sendText(sug.dataset.text);
 });
 
-// Limpiar
 document.getElementById('btn-clear').addEventListener('click',()=>{
   messages=[];document.getElementById('chat').innerHTML='';
   addMsg('Chat limpiado. ¿En qué te ayudo? 😊','ai',true);
@@ -107,7 +115,7 @@ document.getElementById('btn-clear').addEventListener('click',()=>{
 
 // Micrófono
 document.getElementById('mic-btn').addEventListener('click',()=>{
-  if(!('webkitSpeechRecognition'in window||'SpeechRecognition'in window)){alert('Tu navegador no soporta voz. Usa Chrome.');return;}
+  if(!('webkitSpeechRecognition'in window||'SpeechRecognition'in window)){alert('Tu navegador no soporta voz.');return;}
   if(isListening){if(recognition)recognition.stop();return;}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   recognition=new SR();recognition.lang='es-MX';recognition.interimResults=false;
@@ -123,18 +131,80 @@ function stopListening(){isListening=false;document.getElementById('mic-btn').cl
 onAuthStateChanged(auth,async user=>{
   if(!user){location.href='index.html';return;}
   uid=user.uid;
-  const name=(user.displayName||user.email||'').split(' ')[0];
-  try{
-    const hsnap=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
-    const habits=[];hsnap.forEach(d=>habits.push(d.data().name+' ('+( d.data().streak||0)+' días)'));
-    const tsnap=await getDocs(query(collection(db,'tasks'),where('uid','==',uid),where('date','==',today),where('done','==',false)));
-    const tasks=[];tsnap.forEach(d=>tasks.push(d.data().text));
-    sysPrompt=`Eres Life AI, asistente personal de Life Tracker para ${name}. Hablas en español, eres cálido, motivador y conciso (máx 3 oraciones). Fecha: ${today}. Tareas hoy: ${tasks.join(', ')||'ninguna'}. Hábitos: ${habits.join(', ')||'ninguno'}.`;
-  }catch(e){}
+  userName=(user.displayName||user.email||'').split(' ')[0];
+  await loadAllData();
+  buildSysPrompt();
 });
 
+async function loadAllData(){
+  try{
+    // Tareas de hoy
+    const tsnap=await getDocs(query(collection(db,'tasks'),where('uid','==',uid),where('date','==',today)));
+    myTasks=[];tsnap.forEach(d=>myTasks.push({id:d.id,...d.data()}));
+    // Hábitos
+    const hsnap=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
+    myHabits=[];hsnap.forEach(d=>myHabits.push({id:d.id,...d.data()}));
+    // Eventos de hoy y mañana
+    const tomorrow=localDateStr(new Date(Date.now()+86400000));
+    const esnap=await getDocs(query(collection(db,'events'),where('uid','==',uid)));
+    myEvents=[];esnap.forEach(d=>myEvents.push({id:d.id,...d.data()}));
+    // Notas recientes
+    const nsnap=await getDocs(query(collection(db,'quick_notes'),where('uid','==',uid)));
+    myNotes=[];nsnap.forEach(d=>myNotes.push({id:d.id,...d.data()}));
+    // Metas
+    const gsnap=await getDocs(query(collection(db,'goals'),where('uid','==',uid)));
+    myGoals=[];gsnap.forEach(d=>myGoals.push({id:d.id,...d.data()}));
+    // Transacciones recientes
+    const txsnap=await getDocs(query(collection(db,'transactions'),where('uid','==',uid)));
+    myTxs=[];txsnap.forEach(d=>myTxs.push({id:d.id,...d.data()}));
+  }catch(e){console.error('Error cargando datos:',e);}
+}
+
+function buildSysPrompt(){
+  const tareasPendientes=myTasks.filter(t=>!t.done).map(t=>t.text).join(', ')||'ninguna';
+  const tareasHechas=myTasks.filter(t=>t.done).map(t=>t.text).join(', ')||'ninguna';
+  const habitos=myHabits.map(h=>`${h.name} (racha: ${h.streak||0} días, hoy: ${(h.completedDates||[]).includes(today)?'✓':'✗'})`).join(', ')||'ninguno';
+  const eventosHoy=myEvents.filter(e=>e.date===today).map(e=>`${e.time||''} ${e.title}`).join(', ')||'ninguno';
+  const metas=myGoals.map(g=>`${g.emoji||''} ${g.name} (${g.progress||0}%)`).join(', ')||'ninguna';
+  
+  sysPrompt=`Eres Life AI, el asistente personal inteligente de Life Tracker para ${userName}. 
+Fecha de hoy: ${today} (${new Date().toLocaleDateString('es-MX',{weekday:'long'})}).
+
+DATOS ACTUALES DEL USUARIO:
+- Tareas pendientes hoy: ${tareasPendientes}
+- Tareas completadas hoy: ${tareasHechas}
+- Hábitos: ${habitos}
+- Eventos de hoy: ${eventosHoy}
+- Metas activas: ${metas}
+
+CAPACIDADES - Puedes ejecutar estas acciones respondiendo con JSON estructurado:
+
+1. CREAR TAREA: {"action":"create_task","text":"texto de la tarea","date":"YYYY-MM-DD"}
+2. CREAR EVENTO: {"action":"create_event","title":"título","date":"YYYY-MM-DD","time":"HH:MM","note":"nota opcional"}
+3. CREAR HÁBITO: {"action":"create_habit","name":"nombre del hábito"}
+4. CREAR NOTA: {"action":"create_note","title":"título","content":"contenido"}
+5. CREAR META: {"action":"create_goal","name":"nombre","emoji":"🎯","progress":0}
+6. REGISTRAR GASTO: {"action":"create_transaction","type":"gasto","description":"descripción","amount":0,"category":"categoría"}
+7. REGISTRAR INGRESO: {"action":"create_transaction","type":"ingreso","description":"descripción","amount":0,"category":"categoría"}
+8. MARCAR TAREA HECHA: {"action":"complete_task","taskId":"id de la tarea"}
+9. MARCAR HÁBITO HECHO: {"action":"complete_habit","habitId":"id del hábito"}
+10. SOLO RESPONDER: {"action":"reply","message":"tu respuesta"}
+
+IDs de tareas de hoy: ${myTasks.map(t=>`${t.text}→${t.id}`).join(', ')||'ninguna'}
+IDs de hábitos: ${myHabits.map(h=>`${h.name}→${h.id}`).join(', ')||'ninguno'}
+
+REGLAS:
+- Siempre responde con JSON válido
+- Si el usuario pide crear algo, ejecuta la acción y confirma
+- Si faltan datos (como fecha u hora), usa hoy o pregunta
+- Sé cálido, conciso y en español
+- Para acciones, incluye también un campo "message" con tu respuesta al usuario
+- Si el usuario saluda o hace preguntas generales, usa action:"reply"
+- Para fechas relativas: "mañana"=${localDateStr(new Date(Date.now()+86400000))}, "hoy"=${today}
+- Moneda del usuario: MXN`;
+}
+
 function addMsg(text,role,skipHistory=false){
-  const time=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
   if(!skipHistory) messages.push({role:role==='ai'?'assistant':'user',content:text});
   const chat=document.getElementById('chat');
   const div=document.createElement('div');
@@ -143,6 +213,86 @@ function addMsg(text,role,skipHistory=false){
   else div.innerHTML=`<div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;
   chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
+}
+
+function showActionCard(actionData,message){
+  const chat=document.getElementById('chat');
+  const card=document.createElement('div');
+  card.className='msg ai';
+  
+  let preview='';
+  switch(actionData.action){
+    case 'create_task': preview=`✅ Crear tarea: "<b>${actionData.text}</b>" para el ${actionData.date}`; break;
+    case 'create_event': preview=`📅 Crear evento: "<b>${actionData.title}</b>" el ${actionData.date}${actionData.time?' a las '+actionData.time:''}`; break;
+    case 'create_habit': preview=`🔥 Crear hábito: "<b>${actionData.name}</b>"`; break;
+    case 'create_note': preview=`📝 Crear nota: "<b>${actionData.title}</b>"`; break;
+    case 'create_goal': preview=`🎯 Crear meta: "${actionData.emoji||''}  <b>${actionData.name}</b>"`; break;
+    case 'create_transaction': preview=`💰 Registrar ${actionData.type}: "<b>${actionData.description}</b>" $${actionData.amount}`; break;
+    case 'complete_task': preview=`✓ Marcar tarea como hecha`; break;
+    case 'complete_habit': preview=`✓ Marcar hábito como hecho hoy`; break;
+  }
+
+  card.innerHTML=`<div class="msg-av">✨</div><div style="flex:1"><div class="bubble">${message}</div><div class="action-card"><div class="action-title">¿Confirmar acción?</div><div class="action-body">${preview}</div><div class="action-confirm"><button class="btn-yes">✓ Sí, hacerlo</button><button class="btn-no">✗ No</button></div></div></div>`;
+  chat.appendChild(card);
+  chat.scrollTop=chat.scrollHeight;
+
+  card.querySelector('.btn-yes').addEventListener('click',async()=>{
+    card.querySelector('.action-confirm').innerHTML='<span style="color:var(--tl);font-size:.65rem">Ejecutando...</span>';
+    await executeAction(actionData);
+    card.querySelector('.action-confirm').innerHTML='<span style="color:var(--gr);font-size:.65rem">✓ ¡Listo!</span>';
+  });
+  card.querySelector('.btn-no').addEventListener('click',()=>{
+    card.querySelector('.action-confirm').innerHTML='<span style="color:var(--tl);font-size:.65rem">Cancelado.</span>';
+  });
+}
+
+async function executeAction(a){
+  try{
+    switch(a.action){
+      case 'create_task':
+        await addDoc(collection(db,'tasks'),{uid,text:a.text,date:a.date||today,done:false,createdAt:serverTimestamp()});
+        break;
+      case 'create_event':
+        const hour=a.time?parseInt(a.time.split(':')[0]):null;
+        await addDoc(collection(db,'events'),{uid,title:a.title,note:a.note||'',date:a.date||today,time:a.time||null,hour,color:'#2E9EE0',alarms:[],repeat:null,repeatCustom:null,createdAt:serverTimestamp()});
+        break;
+      case 'create_habit':
+        // Buscar primer grupo disponible o crear sin grupo
+        const gsnap=await getDocs(query(collection(db,'habit_groups'),where('uid','==',uid)));
+        let groupId=null;
+        gsnap.forEach(d=>{if(!groupId)groupId=d.id;});
+        if(!groupId){
+          const gref=await addDoc(collection(db,'habit_groups'),{uid,name:'Mis hábitos',color:'#2E9EE0',createdAt:serverTimestamp()});
+          groupId=gref.id;
+        }
+        await addDoc(collection(db,'habits'),{uid,name:a.name,groupId,completedDates:[],streak:0,createdAt:serverTimestamp()});
+        break;
+      case 'create_note':
+        await addDoc(collection(db,'quick_notes'),{uid,title:a.title,content:a.content||'',color:'#fff',createdAt:serverTimestamp()});
+        break;
+      case 'create_goal':
+        await addDoc(collection(db,'goals'),{uid,name:a.name,emoji:a.emoji||'🎯',progress:a.progress||0,createdAt:serverTimestamp()});
+        break;
+      case 'create_transaction':
+        await addDoc(collection(db,'transactions'),{uid,type:a.type,description:a.description,amount:parseFloat(a.amount)||0,date:today,category:a.category||null,createdAt:serverTimestamp()});
+        break;
+      case 'complete_task':
+        if(a.taskId) await updateDoc(doc(db,'tasks',a.taskId),{done:true,doneAt:serverTimestamp()});
+        break;
+      case 'complete_habit':
+        if(a.habitId){
+          const h=myHabits.find(h=>h.id===a.habitId);
+          if(h){
+            const dates=[...(h.completedDates||[])];
+            if(!dates.includes(today)){dates.push(today);}
+            await updateDoc(doc(db,'habits',a.habitId),{completedDates:dates,updatedAt:serverTimestamp()});
+          }
+        }
+        break;
+    }
+    await loadAllData();
+    buildSysPrompt();
+  }catch(e){console.error('Error ejecutando acción:',e);}
 }
 
 function sendMsg(){
@@ -154,23 +304,46 @@ function sendMsg(){
 
 async function sendText(text){
   addMsg(text,'user');
-  document.getElementById('ai-status').textContent='Escribiendo...';
-  // Typing indicator
+  document.getElementById('ai-status').textContent='Pensando...';
   const chat=document.getElementById('chat');
   const typing=document.createElement('div');
   typing.className='msg ai';typing.id='typing';
   typing.innerHTML='<div class="msg-av">✨</div><div class="typing"><span></span><span></span><span></span></div>';
   chat.appendChild(typing);chat.scrollTop=chat.scrollHeight;
+
   try{
     const history=messages.slice(-10).map(m=>({role:m.role,content:m.content}));
     const res=await fetch('/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:sysPrompt,messages:history})
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:600,
+        system:sysPrompt,
+        messages:history
+      })
     });
     const data=await res.json();
     document.getElementById('typing')?.remove();
-    const reply=data.content?.[0]?.text||'Lo siento, no pude responder. Intenta de nuevo.';
-    addMsg(reply,'ai');
+    const rawReply=data.content?.[0]?.text||'{"action":"reply","message":"Lo siento, no pude responder."}';
+    
+    // Intentar parsear como JSON
+    let parsed=null;
+    try{
+      // Extraer JSON si viene envuelto en texto
+      const jsonMatch=rawReply.match(/\{[\s\S]*\}/);
+      if(jsonMatch) parsed=JSON.parse(jsonMatch[0]);
+    }catch(e){parsed=null;}
+
+    if(parsed&&parsed.action&&parsed.action!=='reply'){
+      // Acción a ejecutar - mostrar card de confirmación
+      const msg=parsed.message||'Encontré lo que necesitas. ¿Confirmas?';
+      messages.push({role:'assistant',content:msg});
+      showActionCard(parsed,msg);
+    } else {
+      // Solo respuesta de texto
+      const msg=parsed?.message||rawReply;
+      addMsg(msg,'ai');
+    }
   }catch(e){
     document.getElementById('typing')?.remove();
     addMsg('Error de conexión. Verifica tu internet.','ai');
