@@ -137,19 +137,21 @@ import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.
 import{getFirestore,doc,collection,getDocs,addDoc,updateDoc,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
-const today=new Date().toISOString().split('T')[0];
+const today=localDateStr(new Date());
 const MIN=15;
+
+function localDateStr(d){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
 let uid=null,groups=[],habits=[],selColor='#2E9EE0';
 
 function toast(msg,c){const el=document.getElementById('toast');el.textContent=msg;el.style.background=c||'#0D2137';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
 
 function getLast15(){
-  return Array.from({length:MIN},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(MIN-1-i));return d.toISOString().split('T')[0];});
+  return Array.from({length:MIN},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(MIN-1-i));return localDateStr(d);});
 }
 function calcStreak(dates){
   if(!dates?.length)return 0;
   let s=0,check=today;
-  for(let i=0;i<365;i++){if(dates.includes(check))s++;else if(s>0)break;const d=new Date(check);d.setDate(d.getDate()-1);check=d.toISOString().split('T')[0];}
+  for(let i=0;i<365;i++){if(dates.includes(check))s++;else if(s>0)break;const d=new Date(check);d.setDate(d.getDate()-1);check=localDateStr(d);}
   return s;
 }
 

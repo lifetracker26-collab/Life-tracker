@@ -79,8 +79,10 @@ import{getFirestore,collection,getDocs,query,where}from"https://www.gstatic.com/
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
+
+function localDateStr(d){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
 let uid=null,messages=[],isListening=false,recognition=null,sysPrompt='Eres Life AI, asistente personal. Hablas en español, eres cálido y conciso.';
-const today=new Date().toISOString().split('T')[0];
+const today=localDateStr(new Date());
 
 // Mensaje de bienvenida
 addMsg('Hola 👋 Soy tu asistente personal. ¿En qué te ayudo hoy?','ai',true);

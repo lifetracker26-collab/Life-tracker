@@ -124,6 +124,8 @@ import{getFirestore,collection,getDocs,addDoc,deleteDoc,doc,query,where,serverTi
 
 const app=initializeApp({apiKey:"AIzaSyB1SG1XpJh8yeH-Ub4sMfWN5NpYkCHhTNM",authDomain:"lifetracker26-30037.firebaseapp.com",projectId:"lifetracker26-30037",storageBucket:"lifetracker26-30037.firebasestorage.app",messagingSenderId:"375272536562",appId:"1:375272536562:web:33cfead324a6e3a049136b"});
 const auth=getAuth(app),db=getFirestore(app);
+
+function localDateStr(d){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
 let uid=null,txs=[],curType='income',curCat='',viewDate=new Date();
 const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const CATS={income:['💼 Comisión','🏠 Renta','💳 Consultoría','🎁 Bono','💵 Otro'],expense:['🍽 Comida','🚗 Transporte','📱 Servicios','👗 Ropa','🏥 Salud','📚 Educación','💡 Casa','💵 Otro']};
@@ -144,7 +146,7 @@ function renderCats(){
   });
 }
 
-document.getElementById('tx-date').value=new Date().toISOString().split('T')[0];
+document.getElementById('tx-date').value=localDateStr(new Date());
 updateMonthLabel();
 renderCats();
 
