@@ -323,6 +323,12 @@ async function sendText(text){
     });
     const data=await res.json();
     document.getElementById('typing')?.remove();
+    if(data.error||!data.content){
+      alert('DEBUG ERROR: '+JSON.stringify(data));
+      addMsg('Error: '+(data.error?.message||JSON.stringify(data)),'ai');
+      document.getElementById('ai-status').textContent='En línea';
+      return;
+    }
     const rawReply=data.content?.[0]?.text||'{"action":"reply","message":"Lo siento, no pude responder."}';
     
     // Intentar parsear como JSON
