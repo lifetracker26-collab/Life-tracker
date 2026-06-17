@@ -144,8 +144,7 @@ async function loadAllData(){
     // Hábitos
     const hsnap=await getDocs(query(collection(db,'habits'),where('uid','==',uid)));
     myHabits=[];hsnap.forEach(d=>myHabits.push({id:d.id,...d.data()}));
-    // Eventos de hoy y mañana
-    const tomorrow=localDateStr(new Date(Date.now()+86400000));
+    // Eventos
     const esnap=await getDocs(query(collection(db,'events'),where('uid','==',uid)));
     myEvents=[];esnap.forEach(d=>myEvents.push({id:d.id,...d.data()}));
     // Notas recientes
@@ -316,7 +315,7 @@ async function sendText(text){
     const res=await fetch('/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:600,
         system:sysPrompt,
         messages:history
