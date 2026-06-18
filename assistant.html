@@ -329,6 +329,9 @@ async function sendText(text){
       document.getElementById('ai-status').textContent='En línea';
       return;
     }
+    if(!data.content||!data.content.length||!data.content[0]?.text){
+      alert('DEBUG: respuesta vacía. Data completa: '+JSON.stringify(data).substring(0,500));
+    }
     const rawReply=data.content?.[0]?.text||'{"action":"reply","message":"Lo siento, no pude responder."}';
     
     // Intentar parsear como JSON
